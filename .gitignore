@@ -1,0 +1,62 @@
+# Ignore all to ignore executables with no extension
+*
+
+# Unignore all directories
+!*/
+
+# Unignore all files with extensions
+!*.*
+
+# Unignore Makefile and testing scripts
+!Makefile
+!makefile
+!bin/run_tests
+!bin/vd
+!bin/vde
+
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# MacOS indexing
+.DS_Store
+
+# Windows indexing
+thumbs.db
+
+# Result output directories
+results
+
+# tar files
+*.tar
+*.tar.gz
+
+# Executables
+*.exe
+*.app
+a.out

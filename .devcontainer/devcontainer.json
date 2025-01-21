@@ -1,0 +1,5 @@
+{
+  "image": "javawolfpack/inginious-c-gcc11:latest",
+  "features": {
+  }
+}
