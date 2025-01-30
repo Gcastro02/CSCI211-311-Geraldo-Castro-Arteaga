@@ -37,7 +37,7 @@ int main() {
             } else {
                 cout << " ";
             }
-            cout << " ";
+            cout << "";
         }
         cout << endl;
     }
