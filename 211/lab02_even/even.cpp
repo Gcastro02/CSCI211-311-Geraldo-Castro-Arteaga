@@ -1,20 +1,29 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
-int main()
-{
-    int value = 0;
+int main() {
+    int num;
+    vector<int> numbers;
 
-    while(cin >> value) {
-        cin >> value;
+    while (cin >> num) {
+        numbers.push_back(num);
     }
-    
-    if(value % 2 == 0){
+
+    bool allEven = true;
+    for (int n : numbers) {
+        if (n % 2 != 0) {
+            allEven = false;
+            break;
+        }
+    }
+
+    if (allEven) {
         cout << "all even" << endl;
-        return 1;
-    }else{
-        cerr << "not all even" << endl;
         return 0;
+    } else {
+        cerr << "not all even" << endl;
+        return 1;
     }
 }
