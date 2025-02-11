@@ -17,6 +17,9 @@ bool compareByTitle(Video* a, Video* b) {
     return a->getTitle() < b->getTitle();
 }
 
+//Function sorts an array of video pointers using the bubble sort algorithm. Takes three parameters 
+//and then goes through the array of video pointers and compares them based on the criteria given 
+//by the compare function
 void bubbleSort(Video* videos[], int count, bool (*compare)(Video*, Video*)) {
     for (int i = 0; i < count - 1; ++i) {
         for (int j = 0; j < count - i - 1; ++j) {
