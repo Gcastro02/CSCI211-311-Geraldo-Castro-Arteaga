@@ -14,6 +14,9 @@ class Video {
     public:
         Video(std::string t, std::string u, std::string c, double l, int r);
         void print();
+        std::string getTitle() const;
+        double getLength() const;
+        int getRating() const;
 };
 
 #endif

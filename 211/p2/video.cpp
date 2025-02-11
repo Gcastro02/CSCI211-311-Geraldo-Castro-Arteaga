@@ -12,3 +12,15 @@ void Video::print() {
     }
     cout << "\n";
 }
+
+string Video::getTitle() const {
+    return title;
+}
+
+double Video::getLength() const {
+    return length;
+}
+
+int Video::getRating() const {
+    return rating;
+}
