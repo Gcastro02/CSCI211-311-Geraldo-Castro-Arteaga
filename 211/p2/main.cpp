@@ -1,10 +1,10 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include "video.h"
 
 using namespace std;
 
+//Functions define how to compare two videos based on the different criteria
 bool compareByRating(Video* a, Video* b) {
     return a->getRating() > b->getRating();
 }
@@ -15,6 +15,18 @@ bool compareByLength(Video* a, Video* b) {
 
 bool compareByTitle(Video* a, Video* b) {
     return a->getTitle() < b->getTitle();
+}
+
+void bubbleSort(Video* videos[], int count, bool (*compare)(Video*, Video*)) {
+    for (int i = 0; i < count - 1; ++i) {
+        for (int j = 0; j < count - i - 1; ++j) {
+            if (!compare(videos[j], videos[j + 1])) {
+                Video* temp = videos[j];
+                videos[j] = videos[j + 1];
+                videos[j + 1] = temp;
+            }
+        }
+    }
 }
 
 int main() {
@@ -51,11 +63,11 @@ int main() {
     }
 
     if (sortMethod == "rating") {
-        stable_sort(videos, videos + count, compareByRating);
+        bubbleSort(videos, count, compareByRating);
     } else if (sortMethod == "length") {
-        stable_sort(videos, videos + count, compareByLength);
+        bubbleSort(videos, count, compareByLength);
     } else if (sortMethod == "title") {
-        stable_sort(videos, videos + count, compareByTitle);
+        bubbleSort(videos, count, compareByTitle);
     }
 
     for (int i = 0; i < count; ++i) {
