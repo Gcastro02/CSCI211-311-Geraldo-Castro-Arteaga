@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// Functions define how to compare two videos based on the different criteria
+// Functions define how to compare two videos based on the different sorting methods
 bool compareByRating(Video* a, Video* b) {
     return a->getRating() > b->getRating();
 }
