@@ -4,7 +4,7 @@
 
 using namespace std;
 
-//Functions define how to compare two videos based on the different criteria
+// Functions define how to compare two videos based on the different criteria
 bool compareByRating(Video* a, Video* b) {
     return a->getRating() > b->getRating();
 }
@@ -17,9 +17,7 @@ bool compareByTitle(Video* a, Video* b) {
     return a->getTitle() < b->getTitle();
 }
 
-//Function sorts an array of video pointers using the bubble sort algorithm. Takes three parameters 
-//and then goes through the array of video pointers and compares them based on the criteria given 
-//by the compare function
+// Function sorts an array of video pointers using the bubble sort algorithm
 void bubbleSort(Video* videos[], int count, bool (*compare)(Video*, Video*)) {
     for (int i = 0; i < count - 1; ++i) {
         for (int j = 0; j < count - i - 1; ++j) {
