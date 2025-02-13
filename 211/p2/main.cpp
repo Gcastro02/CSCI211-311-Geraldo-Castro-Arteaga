@@ -4,24 +4,20 @@
 
 using namespace std;
 
-// Functions define how to compare two videos based on the different sorting methods
-bool compareByRating(Video* a, Video* b) {
-    return a->getRating() > b->getRating();
-}
-
-bool compareByLength(Video* a, Video* b) {
-    return a->getLength() < b->getLength();
-}
-
-bool compareByTitle(Video* a, Video* b) {
-    return a->getTitle() < b->getTitle();
-}
-
 // Function sorts an array of video pointers using the bubble sort algorithm
-void bubbleSort(Video* videos[], int count, bool (*compare)(Video*, Video*)) {
+void bubbleSort(Video* videos[], int count, const string& sortMethod) {
     for (int i = 0; i < count - 1; ++i) {
         for (int j = 0; j < count - i - 1; ++j) {
-            if (!compare(videos[j], videos[j + 1])) {
+            bool shouldSwap = false;
+            if (sortMethod == "rating") {
+                shouldSwap = videos[j]->getRating() < videos[j + 1]->getRating();
+            } else if (sortMethod == "length") {
+                shouldSwap = videos[j]->getLength() > videos[j + 1]->getLength();
+            } else if (sortMethod == "title") {
+                shouldSwap = videos[j]->getTitle() > videos[j + 1]->getTitle();
+            }
+
+            if (shouldSwap) {
                 Video* temp = videos[j];
                 videos[j] = videos[j + 1];
                 videos[j + 1] = temp;
@@ -63,13 +59,7 @@ int main() {
         return 1;
     }
 
-    if (sortMethod == "rating") {
-        bubbleSort(videos, count, compareByRating);
-    } else if (sortMethod == "length") {
-        bubbleSort(videos, count, compareByLength);
-    } else if (sortMethod == "title") {
-        bubbleSort(videos, count, compareByTitle);
-    }
+    bubbleSort(videos, count, sortMethod);
 
     for (int i = 0; i < count; ++i) {
         videos[i]->print();
