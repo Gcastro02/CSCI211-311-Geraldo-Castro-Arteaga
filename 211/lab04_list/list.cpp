@@ -34,6 +34,19 @@ void List::insert(int value)
     m_head = new Node(value, m_head);
 }
 
+void List::insert_at_end(int value) {
+    Node *new_node = new Node(value, nullptr);
+    if (m_head == nullptr) {
+        m_head = new_node;
+    } else {
+        Node *ptr = m_head;
+        while (ptr->m_next != nullptr) {
+            ptr = ptr->m_next;
+        }
+        ptr->m_next = new_node;
+    }
+}
+
 // iterate through all the Nodes in the list and print each Node
 void List::print()
 {
@@ -50,4 +63,14 @@ void List::print()
         cout << ptr->m_value << endl; 
     }
     */
+}
+
+int List::sum() {
+    int total = 0;
+    Node *ptr = m_head;
+    while (ptr != NULL) {
+        total += ptr->m_value;
+        ptr = ptr->m_next;
+    }
+    return total;
 }

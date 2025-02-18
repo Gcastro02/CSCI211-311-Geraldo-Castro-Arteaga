@@ -7,17 +7,17 @@ int main()
     // instantiate a List class (the constructor takes NO arguments)
     List list;
 
-    // NOTE:
-    // List list();  is incorrect, when there are no arguments don't use ()
+    int number;
+    // Read numbers from standard input until end of input
+    while (cin >> number) {
+        list.insert_at_end(number);
+    }
 
-    // insert numbers into the list
+    // Print all numbers in the list
     list.print();
-    list.insert(1);
-    list.print();
-    list.insert(2);
-    list.print();
-    list.insert(3);
-    list.print();
+
+    // Print the sum of elements in the list
+    cout << "sum = " << list.sum() << endl;
 
     return 0;
 }
