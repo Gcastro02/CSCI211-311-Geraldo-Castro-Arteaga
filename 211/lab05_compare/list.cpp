@@ -42,7 +42,21 @@ void List::print()
 
 void List::compare(int target, int &less_than, int &equal, int &greater_than)
 {
+    // Initialize the counts
+    less_than = 0;
+    equal = 0;
+    greater_than = 0;
 
-    // put your code here
-
+    // Traverse the list and compare each element with the target
+    Node *ptr = m_head;
+    while (ptr != nullptr) {
+        if (ptr->m_value < target) {
+            less_than++;
+        } else if (ptr->m_value == target) {
+            equal++;
+        } else {
+            greater_than++;
+        }
+        ptr = ptr->m_next;
+    }
 }
