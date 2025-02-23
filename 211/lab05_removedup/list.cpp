@@ -56,5 +56,24 @@ void List::print()
 
 void List::remove_duplicates()
 {
-    // put your code here
+    if (!m_head) // Check if the list is empty
+    {
+        return;
+    }
+
+    Node *current = m_head;
+    while (current->m_next)
+    {
+        if (current->m_value == current->m_next->m_value)
+        {
+            Node *duplicate = current->m_next;
+            current->m_next = current->m_next->m_next;
+            delete duplicate;
+            m_length--;
+        }
+        else
+        {
+            current = current->m_next;
+        }
+    }
 }

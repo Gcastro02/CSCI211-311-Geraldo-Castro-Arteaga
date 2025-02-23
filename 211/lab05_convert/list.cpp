@@ -44,5 +44,19 @@ void List::print()
 
 int *List::convert_to_array(int &size)
 {
-    // put your code here
+    size = length(); // Get the number of elements in the list
+    if (size == 0) // Check if the list is empty
+    {
+        return NULL;
+    }
+
+    int *array = new int[size]; // Dynamically allocate an array of integers
+    Node *ptr = m_head;
+    for (int i = 0; i < size; ++i)
+    {
+        array[i] = ptr->m_value; // Copy the list's values into the array
+        ptr = ptr->m_next;
+    }
+
+    return array;
 }

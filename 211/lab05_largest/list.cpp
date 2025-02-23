@@ -42,7 +42,18 @@ void List::print()
 
 bool List::largest_value(int &largest)
 {
+    if (!m_head) // Check if the list is empty
+    {
+        return false;
+    }
 
-    // put your code here 
-
+    largest = m_head->m_value; // Initialize largest with the value of the first node
+    for (Node *ptr = m_head->m_next; ptr; ptr = ptr->m_next)
+    {
+        if (ptr->m_value > largest)
+        {
+            largest = ptr->m_value; // Update largest if current node's value is greater
+        }
+    }
+    return true;
 }
