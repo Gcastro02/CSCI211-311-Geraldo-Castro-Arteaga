@@ -21,18 +21,25 @@ Vlist::~Vlist() {
 }
 
 bool Vlist::insert(Video* video) {
+    // Check for duplicates
+    Node* current = head;
+    while (current != nullptr) {
+        if (current->video->getTitle() == video->getTitle()) {
+            return false; // Video with the same title already exists
+        }
+        current = current->next;
+    }
+
+    // Insert the new video in the correct position
     Node* newNode = new Node{video, nullptr};
     if (head == nullptr || head->video->getTitle() > video->getTitle()) {
         newNode->next = head;
         head = newNode;
         return true;
     } else {
-        Node* current = head;
+        current = head;
         while (current->next != nullptr && current->next->video->getTitle() < video->getTitle()) {
             current = current->next;
-        }
-        if (current->next != nullptr && current->next->video->getTitle() == video->getTitle()) {
-            return false; // Video with the same title already exists
         }
         newNode->next = current->next;
         current->next = newNode;
