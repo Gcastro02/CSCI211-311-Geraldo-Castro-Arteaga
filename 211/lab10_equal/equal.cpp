@@ -3,10 +3,16 @@ using namespace std;
 
 bool equal_string(const char str1[], const char str2[])
 {
+    // Base case: if both strings reach the null terminator, they are equal
+    if (str1[0] == '\0' && str2[0] == '\0')
+        return true;
 
-    // replace this will the real code...
-    return true;
+    // If characters at the current position are different, return false
+    if (str1[0] != str2[0])
+        return false;
 
+    // Recursive case: compare the rest of the strings
+    return equal_string(str1 + 1, str2 + 1);
 }
 
 int main()

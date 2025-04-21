@@ -4,10 +4,18 @@ using namespace std;
 
 bool is_array_sorted(int values[], int size)
 {
-    assert(size > 0);
-    // replace this will the real code...
-    return true;
+    assert(size > 0); // Ensure the array has at least one element
 
+    // Base case: An array with 0 or 1 element is always sorted
+    if (size == 1)
+        return true;
+
+    // Check if the last two elements are in order
+    if (values[size - 2] > values[size - 1])
+        return false;
+
+    // Recursive case: Check the rest of the array
+    return is_array_sorted(values, size - 1);
 }
 
 int main()
