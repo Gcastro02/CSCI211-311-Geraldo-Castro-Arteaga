@@ -46,7 +46,7 @@ int main()
         {
             cin >> x;
             cin >> y;
-            cin >> size;
+            cin >> size; // Read the size of the square
             // create a new Square object and insert it into the vector
             shapes.push_back(new Square(x, y, size));
         }
