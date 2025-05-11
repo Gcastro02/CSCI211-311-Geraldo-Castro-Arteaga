@@ -21,7 +21,6 @@ DataList::~DataList() {
     }
     head = nullptr; // Ensure head is null after deletion
     count = 0;
-    // std::cout << "DataList destroyed. Memory deallocated." << std::endl; // Optional debug message
 }
 
 // Adds a new MonthlyData entry to the end of the list
