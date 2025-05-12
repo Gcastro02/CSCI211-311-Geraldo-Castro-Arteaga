@@ -85,7 +85,7 @@ void printDataPoint(const std::string& label, const std::optional<MonthlyData>& 
 int main() {
     // --- Configuration ---
     const std::string unemploymentFile = "UNRATE.csv";
-    const std::string cpiFile = "CORESTICKM159SFRBATL.csv"; // Assuming this is the CPI file
+    const std::string cpiFile = "CORESTICKM159SFRBATL.csv";
 
     try {
         // --- Data Loading ---
@@ -187,8 +187,8 @@ int main() {
     } catch (const std::exception& e) {
         // Catch potential errors (file not found, calculation errors)
         std::cerr << "An error occurred: " << e.what() << std::endl;
-        return 1; // Indicate failure
+        return 1;
     }
 
-    return 0; // Indicate success
+    return 0;
 }

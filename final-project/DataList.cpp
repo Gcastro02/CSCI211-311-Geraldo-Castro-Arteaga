@@ -68,7 +68,7 @@ int DataList::getSize() const {
 
 // Checks if the list is empty
 bool DataList::isEmpty() const {
-    return head == nullptr; // Or return count == 0;
+    return head == nullptr; 
 }
 
 // Retrieves all unemployment rates from the list
@@ -100,7 +100,7 @@ std::vector<double> DataList::getCPIs() const {
 // Finds the data point with the highest unemployment rate
 std::optional<MonthlyData> DataList::findMaxUnemployment() const {
     if (isEmpty()) {
-        return std::nullopt; // Return empty optional if list is empty
+        return std::nullopt; 
     }
 
     Node* maxNode = head;    // Assume first node is max initially
@@ -121,7 +121,7 @@ std::optional<MonthlyData> DataList::findMinUnemployment() const {
         return std::nullopt;
     }
 
-    Node* minNode = head;    // Assume first node is min initially
+    Node* minNode = head;    
     Node* current = head->next;
 
     while (current != nullptr) {
