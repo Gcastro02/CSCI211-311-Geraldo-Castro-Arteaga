@@ -182,7 +182,7 @@ int main () {
     int low = 0;
     int high = 1000000; // range for random values
 
-    // Algorithms to test (use short names that match sample CSV files)
+    // Algorithms to test
     vector<pair<string, void(*)(vector<int>&)>> algs = {
         {"bubble", bubbleSort},
         {"insertion", insertionSort},
@@ -196,7 +196,6 @@ int main () {
         {"worst", [&](int sz,int lo,int hi){ return worstCaseVector(sz,lo,hi); }}
     };
 
-    // For each algorithm and case, create a CSV file and write times
     // --- Small benchmark requested in assignment: 10 trials, vectors of length 100 ---
     const int smallTrials = 10;
     const int smallSize = 100;
@@ -207,8 +206,7 @@ int main () {
     benchmarkSort("Quick sort", quickSort, smallTrials, smallSize, low, high);
     // --- end small benchmark ---
 
-    // Create one CSV per case (average, best, worst) matching the sample format.
-    // Each line: algorithm,size,time (no header). We reuse the same trialsPerSize and sizes.
+    // Creating CSV files for each case
     for (auto &cs : cases) {
         string caseName = cs.first;
         auto genVec = cs.second;
@@ -227,7 +225,6 @@ int main () {
 
         cout << "Running case: " << caseName << " -> " << filename << endl;
 
-        // For each algorithm, size, and trial write a line: alg, size, time
         for (auto &alg : algs) {
             string algName = alg.first;
             auto sortFunc = alg.second;
@@ -247,7 +244,7 @@ int main () {
                         cerr << "Sorting failed for " << algName << " on size " << sz << " case " << caseName << " trial " << t << endl;
                     }
 
-                    // Write time with high precision; use scientific notation to keep small values readable
+                    // Using scientific notation to keep small values readable
                     fout << algName << "," << sz << "," << scientific << setprecision(6) << secs << "\n";
                 }
             }
