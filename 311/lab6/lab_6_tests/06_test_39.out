@@ -1,0 +1,479 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: salzfelle
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+10: salzfelle
+INSERT: fourneau
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+6: fourneau
+10: salzfelle
+INSERT: misthink
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: misthink
+6: fourneau
+10: salzfelle
+INSERT: retroform
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: misthink
+1: retroform
+6: fourneau
+10: salzfelle
+INSERT: conferree
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform
+6: fourneau
+10: salzfelle
+INSERT: aftercrop
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform
+3: aftercrop
+6: fourneau
+10: salzfelle
+INSERT: lightsman
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform
+2: lightsman
+3: aftercrop
+6: fourneau
+10: salzfelle
+SEARCH: arachnologist, -1
+INSERT: heraud
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform
+2: lightsman
+3: aftercrop
+6: fourneau
+10: salzfelle, heraud
+INSERT: lutreola
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform, lutreola
+2: lightsman
+3: aftercrop
+6: fourneau
+10: salzfelle, heraud
+INSERT: irascibly
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform, lutreola
+2: lightsman
+3: aftercrop
+6: fourneau, irascibly
+10: salzfelle, heraud
+INSERT: bolographic
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform, lutreola
+2: lightsman
+3: aftercrop
+6: fourneau, irascibly
+9: bolographic
+10: salzfelle, heraud
+SEARCH: divertedly, -1
+INSERT: tickney
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney
+6: fourneau, irascibly
+9: bolographic
+10: salzfelle, heraud
+INSERT: locoman
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney
+5: locoman
+6: fourneau, irascibly
+9: bolographic
+10: salzfelle, heraud
+INSERT: turbulence
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: misthink, conferree
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney
+5: locoman
+6: fourneau, irascibly
+7: turbulence
+9: bolographic
+10: salzfelle, heraud
+INSERT: steps
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney
+5: locoman
+6: fourneau, irascibly
+7: turbulence
+9: bolographic
+10: salzfelle, heraud
+SEARCH: ophiuchid, -1
+INSERT: rubbernecker
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney
+5: locoman
+6: fourneau, irascibly
+7: turbulence, rubbernecker
+9: bolographic
+10: salzfelle, heraud
+INSERT: springy
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney, springy
+5: locoman
+6: fourneau, irascibly
+7: turbulence, rubbernecker
+9: bolographic
+10: salzfelle, heraud
+INSERT: scombridae
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman
+6: fourneau, irascibly
+7: turbulence, rubbernecker
+9: bolographic
+10: salzfelle, heraud
+SEARCH: multidisciplinary, -1
+INSERT: heraud
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman
+6: fourneau, irascibly
+7: turbulence, rubbernecker
+9: bolographic
+10: salzfelle, heraud, heraud
+INSERT: wafdist
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker
+9: bolographic
+10: salzfelle, heraud, heraud
+INSERT: lanceman
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker
+9: bolographic, lanceman
+10: salzfelle, heraud, heraud
+INSERT: overdecked
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman
+10: salzfelle, heraud, heraud
+SEARCH: upthunder, -1
+INSERT: thirteenfold
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola, thirteenfold
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman
+10: salzfelle, heraud, heraud
+INSERT: trun
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola, thirteenfold
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman, trun
+10: salzfelle, heraud, heraud
+SEARCH: integraph, -1
+INSERT: oversleeps
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: misthink, conferree, steps
+1: retroform, lutreola, thirteenfold
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: salzfelle, heraud, heraud
+SEARCH: belly, -1
+INSERT: formidably
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: misthink, conferree, steps, formidably
+1: retroform, lutreola, thirteenfold
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: salzfelle, heraud, heraud
+SEARCH: hyperenthusiastically, -1
+INSERT: semimanufactured
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: misthink, conferree, steps, formidably
+1: retroform, lutreola, thirteenfold, semimanufactured
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: salzfelle, heraud, heraud
+INSERT: parbuckle
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: misthink, conferree, steps, formidably
+1: retroform, lutreola, thirteenfold, semimanufactured
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly, parbuckle
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: salzfelle, heraud, heraud
+INSERT: hyperenthusiastically
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: misthink, conferree, steps, formidably, hyperenthusiastically
+1: retroform, lutreola, thirteenfold, semimanufactured
+2: lightsman
+3: aftercrop, tickney, springy
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly, parbuckle
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: salzfelle, heraud, heraud
+INSERT: etherify
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: misthink, conferree, steps, formidably, hyperenthusiastically
+1: retroform, lutreola, thirteenfold, semimanufactured
+2: lightsman
+3: aftercrop, tickney, springy, etherify
+4: scombridae
+5: locoman, wafdist
+6: fourneau, irascibly, parbuckle
+7: turbulence, rubbernecker, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: salzfelle, heraud, heraud
+SEARCH: splenitive, -1
+RESIZE: 3
+HASH TABLE CONTENTS
+0: hyperenthusiastically, lutreola, semimanufactured, scombridae, irascibly, trun
+1: conferree, steps, retroform, tickney, wafdist, fourneau, turbulence, lanceman, salzfelle, heraud, heraud
+2: misthink, formidably, thirteenfold, lightsman, aftercrop, springy, etherify, locoman, parbuckle, rubbernecker, overdecked, bolographic, oversleeps
+RESIZE: 5
+HASH TABLE CONTENTS
+0: hyperenthusiastically, wafdist, fourneau, heraud, heraud, lightsman, springy, rubbernecker, bolographic
+1: semimanufactured, conferree, lanceman, aftercrop
+2: irascibly, trun, steps, retroform, misthink, etherify, locoman
+3: turbulence, salzfelle, overdecked, oversleeps
+4: lutreola, scombridae, tickney, formidably, thirteenfold, parbuckle
+RESIZE: 11
+REMOVE: lucubrates
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: heraud, heraud, salzfelle
+REMOVE: kiley
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: heraud, heraud, salzfelle
+SEARCH: cornettist, -1
+REMOVE: exacerbates
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: heraud, heraud, salzfelle
+REMOVE: redeploys
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: heraud, heraud, salzfelle
+REMOVE: tacticians
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: heraud, heraud, salzfelle
+SEARCH: tzutuhil, -1
+REMOVE: ornament
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: heraud, heraud, salzfelle
+REMOVE: harbourous
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, trun, oversleeps
+10: heraud, heraud, salzfelle
+REMOVE: trun
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, oversleeps
+10: heraud, heraud, salzfelle
+SEARCH: numidian, -1
+REMOVE: procambial
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, oversleeps
+10: heraud, heraud, salzfelle
+REMOVE: disguisedly
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: hyperenthusiastically, conferree, steps, misthink, formidably
+1: semimanufactured, retroform, lutreola, thirteenfold
+2: lightsman
+3: springy, aftercrop, etherify, tickney
+4: scombridae
+5: wafdist, locoman
+6: fourneau, irascibly, parbuckle
+7: rubbernecker, turbulence, overdecked
+9: bolographic, lanceman, oversleeps
+10: heraud, heraud, salzfelle

@@ -1,0 +1,159 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: unformally
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+2: unformally
+SEARCH: astroscope, -1
+INSERT: hyperploidy
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+2: unformally
+4: hyperploidy
+INSERT: chrysomelid
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: chrysomelid
+2: unformally
+4: hyperploidy
+INSERT: unorthodoxness
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: chrysomelid, unorthodoxness
+2: unformally
+4: hyperploidy
+SEARCH: precalculating, -1
+INSERT: surfacers
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: chrysomelid, unorthodoxness
+2: unformally, surfacers
+4: hyperploidy
+SEARCH: ilioperoneal, -1
+INSERT: geullah
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: chrysomelid, unorthodoxness, geullah
+2: unformally, surfacers
+4: hyperploidy
+INSERT: perameline
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: chrysomelid, unorthodoxness, geullah
+1: perameline
+2: unformally, surfacers
+4: hyperploidy
+SEARCH: unorthodoxness, 0
+INSERT: astroscope
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: chrysomelid, unorthodoxness, geullah
+1: perameline
+2: unformally, surfacers, astroscope
+4: hyperploidy
+INSERT: immunochemical
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: chrysomelid, unorthodoxness, geullah
+1: perameline
+2: unformally, surfacers, astroscope
+4: hyperploidy, immunochemical
+SEARCH: unformally, 2
+INSERT: dermatocele
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: chrysomelid, unorthodoxness, geullah
+1: perameline, dermatocele
+2: unformally, surfacers, astroscope
+4: hyperploidy, immunochemical
+RESIZE: 31
+HASH TABLE CONTENTS
+1: hyperploidy
+2: unorthodoxness
+4: chrysomelid
+10: immunochemical
+12: geullah, dermatocele
+13: perameline
+14: surfacers
+17: unformally
+21: astroscope
+RESIZE: 5
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele, perameline
+2: surfacers, unformally, astroscope
+4: hyperploidy, immunochemical
+REMOVE: hyperploidy
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele, perameline
+2: surfacers, unformally, astroscope
+4: immunochemical
+SEARCH: dermatocele, 1
+REMOVE: cismontanism
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele, perameline
+2: surfacers, unformally, astroscope
+4: immunochemical
+SEARCH: perameline, 1
+REMOVE: astroscope
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele, perameline
+2: surfacers, unformally
+4: immunochemical
+SEARCH: chrysomelid, 0
+REMOVE: hyperploidy
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele, perameline
+2: surfacers, unformally
+4: immunochemical
+REMOVE: perameline
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele
+2: surfacers, unformally
+4: immunochemical
+SEARCH: nonurbanite, -1
+REMOVE: smilers
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele
+2: surfacers, unformally
+4: immunochemical
+REMOVE: bodily
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele
+2: surfacers, unformally
+4: immunochemical
+SEARCH: surfacers, 2
+REMOVE: hyperploidy
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele
+2: surfacers, unformally
+4: immunochemical
+REMOVE: immunochemical
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele
+2: surfacers, unformally
+REMOVE: hyperploidy
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: unorthodoxness, chrysomelid, geullah
+1: dermatocele
+2: surfacers, unformally

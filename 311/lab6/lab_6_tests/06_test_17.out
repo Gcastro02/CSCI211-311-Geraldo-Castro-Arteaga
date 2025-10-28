@@ -1,0 +1,157 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: laborsomely
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+3: laborsomely
+INSERT: dervishhood
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+3: laborsomely, dervishhood
+SEARCH: repudiate, -1
+INSERT: epidiplosis
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+3: laborsomely, dervishhood
+4: epidiplosis
+SEARCH: botry, -1
+INSERT: stonyheartedness
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+2: stonyheartedness
+3: laborsomely, dervishhood
+4: epidiplosis
+INSERT: enlightens
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: enlightens
+2: stonyheartedness
+3: laborsomely, dervishhood
+4: epidiplosis
+INSERT: repudiate
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: enlightens
+2: stonyheartedness, repudiate
+3: laborsomely, dervishhood
+4: epidiplosis
+SEARCH: botry, -1
+INSERT: stonyheartedness
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: enlightens
+2: stonyheartedness, repudiate, stonyheartedness
+3: laborsomely, dervishhood
+4: epidiplosis
+SEARCH: botry, -1
+INSERT: macrocentrinae
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: enlightens
+2: stonyheartedness, repudiate, stonyheartedness, macrocentrinae
+3: laborsomely, dervishhood
+4: epidiplosis
+SEARCH: laborsomely, 3
+INSERT: parentdom
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: enlightens
+2: stonyheartedness, repudiate, stonyheartedness, macrocentrinae
+3: laborsomely, dervishhood
+4: epidiplosis, parentdom
+INSERT: inevasibly
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+1: enlightens
+2: stonyheartedness, repudiate, stonyheartedness, macrocentrinae
+3: laborsomely, dervishhood
+4: epidiplosis, parentdom, inevasibly
+SEARCH: inevasibly, 4
+RESIZE: 31
+HASH TABLE CONTENTS
+0: macrocentrinae
+2: stonyheartedness, stonyheartedness, parentdom
+3: dervishhood
+4: repudiate
+5: enlightens
+15: inevasibly
+16: laborsomely, epidiplosis
+RESIZE: 5
+HASH TABLE CONTENTS
+1: enlightens
+2: macrocentrinae, stonyheartedness, stonyheartedness, repudiate
+3: dervishhood, laborsomely
+4: parentdom, inevasibly, epidiplosis
+REMOVE: repudiate
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: enlightens
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom, inevasibly, epidiplosis
+REMOVE: epidiplosis
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: enlightens
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom, inevasibly
+SEARCH: epidiplosis, -1
+REMOVE: repudiate
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: enlightens
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom, inevasibly
+REMOVE: classifiers
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: enlightens
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom, inevasibly
+SEARCH: inevasibly, 4
+REMOVE: repudiate
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: enlightens
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom, inevasibly
+SEARCH: enlightens, 1
+REMOVE: enlightens
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom, inevasibly
+SEARCH: parentdom, 4
+REMOVE: inevasibly
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom
+SEARCH: parentdom, 4
+REMOVE: epidiplosis
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: dervishhood, laborsomely
+4: parentdom
+REMOVE: dervishhood
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: laborsomely
+4: parentdom
+SEARCH: macrocentrinae, 2
+REMOVE: sterling
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+2: macrocentrinae, stonyheartedness, stonyheartedness
+3: laborsomely
+4: parentdom
+SEARCH: dervishhood, -1

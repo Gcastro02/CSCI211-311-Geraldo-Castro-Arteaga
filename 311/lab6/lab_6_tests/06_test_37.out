@@ -1,0 +1,466 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: anaerobiotically
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+3: anaerobiotically
+SEARCH: meros, -1
+INSERT: shamsheer
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+3: anaerobiotically
+8: shamsheer
+SEARCH: pretenceful, -1
+INSERT: negligent
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: negligent
+3: anaerobiotically
+8: shamsheer
+INSERT: preaccustomed
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: negligent
+3: anaerobiotically
+8: shamsheer
+10: preaccustomed
+INSERT: feloid
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: negligent
+3: anaerobiotically, feloid
+8: shamsheer
+10: preaccustomed
+SEARCH: pleasantest, -1
+INSERT: noninsistent
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+3: anaerobiotically, feloid
+8: shamsheer
+10: preaccustomed
+SEARCH: escribientes, -1
+INSERT: fastus
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+3: anaerobiotically, feloid
+8: shamsheer
+9: fastus
+10: preaccustomed
+INSERT: cawney
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+3: anaerobiotically, feloid
+8: shamsheer
+9: fastus, cawney
+10: preaccustomed
+INSERT: usheen
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+3: anaerobiotically, feloid
+8: shamsheer, usheen
+9: fastus, cawney
+10: preaccustomed
+SEARCH: skeesicks, -1
+INSERT: ericeticolous
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+3: anaerobiotically, feloid
+8: shamsheer, usheen, ericeticolous
+9: fastus, cawney
+10: preaccustomed
+INSERT: nephrostomy
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+8: shamsheer, usheen, ericeticolous
+9: fastus, cawney
+10: preaccustomed
+INSERT: gondolet
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet
+8: shamsheer, usheen, ericeticolous
+9: fastus, cawney
+10: preaccustomed
+SEARCH: moorburner, -1
+INSERT: fingerstall
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet
+8: shamsheer, usheen, ericeticolous
+9: fastus, cawney
+10: preaccustomed, fingerstall
+SEARCH: choreographically, -1
+INSERT: antiredeposition
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall
+INSERT: cleared
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet, cleared
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall
+SEARCH: misosophist, -1
+INSERT: necation
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet, cleared
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: locates, -1
+INSERT: lapsed
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet, cleared
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+INSERT: fouled
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: negligent, noninsistent
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: cheirography, -1
+INSERT: loomfixer
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer
+1: nephrostomy
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: cera, -1
+INSERT: hydrotasimeter
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer
+1: nephrostomy
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+INSERT: microbalance
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer
+1: nephrostomy
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: secondrater, -1
+INSERT: termage
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: outbabble, -1
+INSERT: unstick
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+INSERT: andamenta
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance, andamenta
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: sostenente, -1
+INSERT: trucker
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance, andamenta
+6: trucker
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+INSERT: rebukers
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance, andamenta, rebukers
+6: trucker
+7: lapsed
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: carassow, -1
+INSERT: ultrahonorable
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance, andamenta, rebukers
+6: trucker
+7: lapsed, ultrahonorable
+8: shamsheer, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: centunculus, -1
+INSERT: courtless
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance, andamenta, rebukers
+6: trucker
+7: lapsed, ultrahonorable
+8: shamsheer, usheen, ericeticolous, antiredeposition, courtless
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+INSERT: ectobatic
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance, andamenta, rebukers
+6: trucker, ectobatic
+7: lapsed, ultrahonorable
+8: shamsheer, usheen, ericeticolous, antiredeposition, courtless
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: repudiates, -1
+INSERT: multinodous
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: negligent, noninsistent, loomfixer, termage
+1: nephrostomy, unstick
+2: hydrotasimeter
+3: anaerobiotically, feloid
+4: gondolet, cleared, fouled, microbalance, andamenta, rebukers
+6: trucker, ectobatic, multinodous
+7: lapsed, ultrahonorable
+8: shamsheer, usheen, ericeticolous, antiredeposition, courtless
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: mudfish, -1
+RESIZE: 3
+HASH TABLE CONTENTS
+0: loomfixer, feloid, cleared, microbalance, multinodous, lapsed, ericeticolous, antiredeposition, fastus, cawney, preaccustomed, fingerstall
+1: noninsistent, termage, nephrostomy, hydrotasimeter, anaerobiotically, fouled, ectobatic, shamsheer, courtless
+2: negligent, unstick, gondolet, andamenta, rebukers, trucker, ultrahonorable, usheen, necation
+RESIZE: 5
+HASH TABLE CONTENTS
+0: loomfixer
+1: cleared, lapsed, fastus, ectobatic, unstick
+2: microbalance, multinodous, cawney, preaccustomed, fouled, shamsheer, courtless, usheen
+3: ericeticolous, fingerstall, noninsistent, termage, hydrotasimeter
+4: feloid, antiredeposition, nephrostomy, anaerobiotically, negligent, gondolet, andamenta, rebukers, trucker, ultrahonorable, necation
+RESIZE: 11
+REMOVE: intersertal
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+REMOVE: rahul
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+REMOVE: comparatival
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+REMOVE: olfactometer
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: genitally, -1
+REMOVE: ecossaise
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+REMOVE: trauma
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: sleepily, -1
+REMOVE: oxycephaly
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+REMOVE: nondiligent
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: underminingly, -1
+REMOVE: sinecurist
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+REMOVE: drupaceous
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: loomfixer, noninsistent, termage, negligent
+1: unstick, nephrostomy
+2: hydrotasimeter
+3: feloid, anaerobiotically
+4: cleared, microbalance, fouled, gondolet, andamenta, rebukers
+6: ectobatic, multinodous, trucker
+7: lapsed, ultrahonorable
+8: shamsheer, courtless, usheen, ericeticolous, antiredeposition
+9: fastus, cawney
+10: preaccustomed, fingerstall, necation
+SEARCH: refectionary, -1

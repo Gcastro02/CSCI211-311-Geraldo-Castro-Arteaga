@@ -1,0 +1,504 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: neomedievalism
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+1: neomedievalism
+INSERT: stockinged
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+1: neomedievalism
+7: stockinged
+INSERT: pretaste
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+1: neomedievalism
+7: stockinged
+9: pretaste
+INSERT: synopses
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: neomedievalism
+5: synopses
+7: stockinged
+9: pretaste
+SEARCH: predialist, -1
+INSERT: kaliums
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+7: stockinged
+9: pretaste
+INSERT: disilicic
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+7: stockinged
+8: disilicic
+9: pretaste
+INSERT: pastorals
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals
+7: stockinged
+8: disilicic
+9: pretaste
+INSERT: divvy
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals
+7: stockinged
+8: disilicic
+9: pretaste
+10: divvy
+INSERT: bents
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals
+7: stockinged
+8: disilicic
+9: pretaste
+10: divvy, bents
+SEARCH: bargestone, -1
+INSERT: figging
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals
+7: stockinged
+8: disilicic, figging
+9: pretaste
+10: divvy, bents
+SEARCH: decahydrated, -1
+INSERT: cancerousness
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals
+7: stockinged
+8: disilicic, figging, cancerousness
+9: pretaste
+10: divvy, bents
+SEARCH: micrologue, -1
+INSERT: lucubrations
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals
+7: stockinged, lucubrations
+8: disilicic, figging, cancerousness
+9: pretaste
+10: divvy, bents
+INSERT: unbishoped
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals
+7: stockinged, lucubrations, unbishoped
+8: disilicic, figging, cancerousness
+9: pretaste
+10: divvy, bents
+INSERT: icing
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped
+8: disilicic, figging, cancerousness
+9: pretaste
+10: divvy, bents
+INSERT: lubricatory
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped
+8: disilicic, figging, cancerousness
+9: pretaste
+10: divvy, bents
+SEARCH: mollienisia, -1
+INSERT: tebu
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+4: kaliums
+5: synopses
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu
+8: disilicic, figging, cancerousness
+9: pretaste
+10: divvy, bents
+SEARCH: linchpins, -1
+INSERT: islanded
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu
+8: disilicic, figging, cancerousness
+9: pretaste
+10: divvy, bents
+SEARCH: hollos, -1
+INSERT: floaters
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu
+8: disilicic, figging, cancerousness
+9: pretaste, floaters
+10: divvy, bents
+SEARCH: loranthaceous, -1
+INSERT: governesshood
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+3: governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu
+8: disilicic, figging, cancerousness
+9: pretaste, floaters
+10: divvy, bents
+SEARCH: saltness, -1
+INSERT: stockinged
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+3: governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged
+8: disilicic, figging, cancerousness
+9: pretaste, floaters
+10: divvy, bents
+INSERT: marriable
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged
+8: disilicic, figging, cancerousness
+9: pretaste, floaters
+10: divvy, bents
+INSERT: insition
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged
+8: disilicic, figging, cancerousness, insition
+9: pretaste, floaters
+10: divvy, bents
+INSERT: garbure
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged
+8: disilicic, figging, cancerousness, insition
+9: pretaste, floaters
+10: divvy, bents
+SEARCH: unskinned, -1
+INSERT: overexpectantness
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged
+8: disilicic, figging, cancerousness, insition
+9: pretaste, floaters
+10: divvy, bents, overexpectantness
+SEARCH: bypast, -1
+INSERT: unabrogated
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged
+8: disilicic, figging, cancerousness, insition, unabrogated
+9: pretaste, floaters
+10: divvy, bents, overexpectantness
+INSERT: bewitchery
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism, bewitchery
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged
+8: disilicic, figging, cancerousness, insition, unabrogated
+9: pretaste, floaters
+10: divvy, bents, overexpectantness
+INSERT: transducers
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism, bewitchery
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged, transducers
+8: disilicic, figging, cancerousness, insition, unabrogated
+9: pretaste, floaters
+10: divvy, bents, overexpectantness
+SEARCH: staverwort, -1
+INSERT: izvozchik
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism, bewitchery
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged, transducers
+8: disilicic, figging, cancerousness, insition, unabrogated
+9: pretaste, floaters
+10: divvy, bents, overexpectantness, izvozchik
+SEARCH: cinnamein, -1
+INSERT: neutralizing
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism, bewitchery
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing
+7: stockinged, lucubrations, unbishoped, tebu, stockinged, transducers
+8: disilicic, figging, cancerousness, insition, unabrogated, neutralizing
+9: pretaste, floaters
+10: divvy, bents, overexpectantness, izvozchik
+INSERT: allethrin
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: lubricatory
+1: neomedievalism, bewitchery
+2: garbure
+3: governesshood, marriable
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, lucubrations, unbishoped, tebu, stockinged, transducers
+8: disilicic, figging, cancerousness, insition, unabrogated, neutralizing
+9: pretaste, floaters
+10: divvy, bents, overexpectantness, izvozchik
+RESIZE: 3
+HASH TABLE CONTENTS
+0: bewitchery, garbure, marriable, synopses, islanded, stockinged, stockinged, neutralizing
+1: neomedievalism, kaliums, pastorals, allethrin, transducers, cancerousness, unabrogated, pretaste, floaters, bents, overexpectantness
+2: lubricatory, governesshood, icing, lucubrations, unbishoped, tebu, disilicic, figging, insition, divvy, izvozchik
+RESIZE: 5
+HASH TABLE CONTENTS
+0: bewitchery, stockinged, stockinged, pastorals, figging, insition
+1: garbure, synopses, transducers, unabrogated, pretaste, icing, tebu
+2: marriable, islanded, floaters, divvy, izvozchik
+3: kaliums, allethrin, cancerousness, bents, lubricatory, governesshood, lucubrations, unbishoped, disilicic
+4: neutralizing, neomedievalism, overexpectantness
+RESIZE: 11
+REMOVE: nig
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+2: garbure
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+SEARCH: undefatigable, -1
+REMOVE: garbure
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+REMOVE: butchers
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+SEARCH: speciosities, -1
+REMOVE: asclepidoid
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+SEARCH: mandyas, -1
+REMOVE: coteller
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+REMOVE: pecunia
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+SEARCH: betsey, -1
+REMOVE: licheny
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+SEARCH: sportly, -1
+REMOVE: poneramoeba
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, izvozchik, bents, overexpectantness
+SEARCH: nonconfiscable, -1
+REMOVE: izvozchik
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, bents, overexpectantness
+REMOVE: diaspores
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: lubricatory
+1: bewitchery, neomedievalism
+3: marriable, governesshood
+4: kaliums
+5: synopses, islanded
+6: pastorals, icing, allethrin
+7: stockinged, stockinged, transducers, tebu, lucubrations, unbishoped
+8: figging, insition, unabrogated, cancerousness, disilicic, neutralizing
+9: pretaste, floaters
+10: divvy, bents, overexpectantness

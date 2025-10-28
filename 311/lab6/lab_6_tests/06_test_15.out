@@ -1,0 +1,147 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: croisad
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+0: croisad
+INSERT: croisad
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+0: croisad, croisad
+INSERT: heteromorpha
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: croisad, croisad
+3: heteromorpha
+SEARCH: precystic, -1
+INSERT: croisad
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad
+3: heteromorpha
+SEARCH: precystic, -1
+INSERT: donsky
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad
+1: donsky
+3: heteromorpha
+INSERT: tollent
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad
+1: donsky
+3: heteromorpha
+4: tollent
+INSERT: heteromorpha
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent
+INSERT: boardsmanship
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, boardsmanship
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent
+INSERT: moabitish
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, boardsmanship
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent, moabitish
+SEARCH: precystic, -1
+INSERT: croisad
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, boardsmanship, croisad
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent, moabitish
+RESIZE: 31
+HASH TABLE CONTENTS
+12: donsky
+14: boardsmanship
+16: heteromorpha, heteromorpha
+27: tollent, moabitish
+28: croisad, croisad, croisad, croisad
+RESIZE: 5
+HASH TABLE CONTENTS
+0: boardsmanship, croisad, croisad, croisad, croisad
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent, moabitish
+REMOVE: moabitish
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: boardsmanship, croisad, croisad, croisad, croisad
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent
+SEARCH: boardsmanship, 0
+REMOVE: moabitish
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: boardsmanship, croisad, croisad, croisad, croisad
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent
+REMOVE: moabitish
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: boardsmanship, croisad, croisad, croisad, croisad
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent
+REMOVE: boardsmanship
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, croisad
+1: donsky
+3: heteromorpha, heteromorpha
+4: tollent
+REMOVE: donsky
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, croisad
+3: heteromorpha, heteromorpha
+4: tollent
+SEARCH: moabitish, -1
+REMOVE: precystic
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, croisad
+3: heteromorpha, heteromorpha
+4: tollent
+SEARCH: donsky, -1
+REMOVE: donsky
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, croisad
+3: heteromorpha, heteromorpha
+4: tollent
+SEARCH: croisad, 0
+REMOVE: boardsmanship
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, croisad
+3: heteromorpha, heteromorpha
+4: tollent
+REMOVE: moabitish
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, croisad
+3: heteromorpha, heteromorpha
+4: tollent
+SEARCH: moabitish, -1
+REMOVE: heteromorpha
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: croisad, croisad, croisad, croisad
+3: heteromorpha
+4: tollent

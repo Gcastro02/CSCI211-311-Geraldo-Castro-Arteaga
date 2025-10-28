@@ -1,0 +1,344 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: sneb
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+5: sneb
+SEARCH: distillator, -1
+INSERT: anadems
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+5: sneb
+10: anadems
+SEARCH: anadems, 10
+INSERT: gundi
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+1: gundi
+5: sneb
+10: anadems
+INSERT: sneb
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: gundi
+5: sneb, sneb
+10: anadems
+INSERT: johannesburg
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: gundi
+5: sneb, sneb
+7: johannesburg
+10: anadems
+SEARCH: anadems, 10
+INSERT: gundi
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: gundi, gundi
+5: sneb, sneb
+7: johannesburg
+10: anadems
+INSERT: superobedient
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi
+5: sneb, sneb
+7: johannesburg
+10: anadems
+SEARCH: gundi, 1
+INSERT: gundi
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg
+10: anadems
+INSERT: johannesburg
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg, johannesburg
+10: anadems
+INSERT: distillator
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg, johannesburg
+10: anadems, distillator
+INSERT: gundi
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg, johannesburg
+10: anadems, distillator
+INSERT: sneb
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb
+7: johannesburg, johannesburg
+10: anadems, distillator
+INSERT: johannesburg
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator
+SEARCH: gundi, 1
+INSERT: distillator
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator
+INSERT: sneb
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator
+INSERT: gundi
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator
+SEARCH: distillator, 10
+INSERT: anadems
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems
+INSERT: anadems
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems
+SEARCH: distillator, 10
+INSERT: gundi
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems
+INSERT: anadems
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+INSERT: gundi
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+INSERT: johannesburg
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: superobedient, 0
+INSERT: superobedient
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: johannesburg, 7
+INSERT: superobedient
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: johannesburg, 7
+INSERT: johannesburg
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: johannesburg, 7
+INSERT: johannesburg
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: anadems, 10
+INSERT: gundi
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+INSERT: superobedient
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: sneb, 5
+INSERT: johannesburg
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: sneb, 5
+INSERT: johannesburg
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: anadems, distillator, distillator, anadems, anadems, anadems
+SEARCH: gundi, 1
+RESIZE: 59
+HASH TABLE CONTENTS
+12: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+14: superobedient, superobedient, superobedient, superobedient
+34: distillator, distillator
+44: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+45: anadems, anadems, anadems, anadems
+48: sneb, sneb, sneb, sneb
+RESIZE: 11
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+REMOVE: superobedient
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+REMOVE: sneb
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+REMOVE: gundi
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: superobedient, superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+SEARCH: gundi, 1
+REMOVE: superobedient
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+SEARCH: anadems, 10
+REMOVE: sneb
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: superobedient, superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+SEARCH: johannesburg, 7
+REMOVE: superobedient
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+REMOVE: gundi
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+REMOVE: johannesburg
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb, sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+SEARCH: sneb, 5
+REMOVE: sneb
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi
+5: sneb
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems
+SEARCH: anadems, 10
+REMOVE: sneb
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: superobedient
+1: gundi, gundi, gundi, gundi, gundi, gundi
+7: johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg, johannesburg
+10: distillator, distillator, anadems, anadems, anadems, anadems

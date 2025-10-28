@@ -1,0 +1,461 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: fem
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+3: fem
+INSERT: scientiarum
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem
+INSERT: bronchiocele
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem
+4: bronchiocele
+SEARCH: raised, -1
+INSERT: sciograph
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem
+4: bronchiocele
+9: sciograph
+SEARCH: scorpidae, -1
+INSERT: semimaturity
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem
+4: bronchiocele
+9: sciograph, semimaturity
+SEARCH: veridicous, -1
+INSERT: drimys
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem
+4: bronchiocele
+9: sciograph, semimaturity, drimys
+INSERT: unfirmness
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem
+4: bronchiocele, unfirmness
+9: sciograph, semimaturity, drimys
+SEARCH: misprising, -1
+INSERT: tezcucan
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem
+4: bronchiocele, unfirmness
+9: sciograph, semimaturity, drimys, tezcucan
+SEARCH: mezuzas, -1
+INSERT: unaneled
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: scientiarum
+3: fem, unaneled
+4: bronchiocele, unfirmness
+9: sciograph, semimaturity, drimys, tezcucan
+INSERT: implementational
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: scientiarum
+1: implementational
+3: fem, unaneled
+4: bronchiocele, unfirmness
+9: sciograph, semimaturity, drimys, tezcucan
+INSERT: pyelogram
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: scientiarum
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness
+9: sciograph, semimaturity, drimys, tezcucan
+SEARCH: dammer, -1
+INSERT: hecatic
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: scientiarum
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness
+6: hecatic
+9: sciograph, semimaturity, drimys, tezcucan
+INSERT: quickenbeam
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: scientiarum
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness
+6: hecatic
+9: sciograph, semimaturity, drimys, tezcucan
+10: quickenbeam
+SEARCH: doghouses, -1
+INSERT: cylices
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: scientiarum
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness
+6: hecatic, cylices
+9: sciograph, semimaturity, drimys, tezcucan
+10: quickenbeam
+INSERT: bhava
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: scientiarum, bhava
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness
+6: hecatic, cylices
+9: sciograph, semimaturity, drimys, tezcucan
+10: quickenbeam
+SEARCH: tezcucan, 9
+INSERT: erased
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: scientiarum, bhava
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness
+6: hecatic, cylices
+7: erased
+9: sciograph, semimaturity, drimys, tezcucan
+10: quickenbeam
+INSERT: carnassial
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness
+6: hecatic, cylices
+7: erased
+9: sciograph, semimaturity, drimys, tezcucan
+10: quickenbeam
+SEARCH: corseque, -1
+INSERT: unbartered
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices
+7: erased
+9: sciograph, semimaturity, drimys, tezcucan
+10: quickenbeam
+INSERT: chuntered
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices
+7: erased
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam
+SEARCH: calyciflorate, -1
+INSERT: scenes
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+3: fem, unaneled, pyelogram
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices
+7: erased, scenes
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam
+INSERT: polyose
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices
+7: erased, scenes
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam
+SEARCH: legitimism, -1
+INSERT: parliamentariness
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices
+7: erased, scenes
+8: parliamentariness
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam
+SEARCH: megarianism, -1
+INSERT: tabled
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+2: tabled
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices
+7: erased, scenes
+8: parliamentariness
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam
+INSERT: substant
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+2: tabled
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam
+SEARCH: semipupa, -1
+INSERT: ornamentality
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+2: tabled
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices, ornamentality
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam
+INSERT: cashiering
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+2: tabled
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices, ornamentality
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam, cashiering
+INSERT: megarianism
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+2: tabled, megarianism
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices, ornamentality
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, semimaturity, drimys, tezcucan, chuntered
+10: quickenbeam, cashiering
+SEARCH: sandshoe, -1
+INSERT: yieldy
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+2: tabled, megarianism
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices, ornamentality
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, semimaturity, drimys, tezcucan, chuntered, yieldy
+10: quickenbeam, cashiering
+INSERT: forerun
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial
+1: implementational
+2: tabled, megarianism
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices, ornamentality, forerun
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, semimaturity, drimys, tezcucan, chuntered, yieldy
+10: quickenbeam, cashiering
+INSERT: podsolization
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: scientiarum, bhava, carnassial, podsolization
+1: implementational
+2: tabled, megarianism
+3: fem, unaneled, pyelogram, polyose
+4: bronchiocele, unfirmness, unbartered
+6: hecatic, cylices, ornamentality, forerun
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, semimaturity, drimys, tezcucan, chuntered, yieldy
+10: quickenbeam, cashiering
+SEARCH: shi, -1
+RESIZE: 3
+HASH TABLE CONTENTS
+0: podsolization, implementational, unaneled, bronchiocele, unfirmness, unbartered, ornamentality, forerun, erased, substant, semimaturity, drimys, yieldy, cashiering
+1: bhava, tabled, megarianism, pyelogram, polyose, hecatic, cylices, sciograph, tezcucan, chuntered, quickenbeam
+2: scientiarum, carnassial, fem, scenes, parliamentariness
+RESIZE: 5
+HASH TABLE CONTENTS
+0: implementational, unfirmness, bhava, pyelogram, hecatic, sciograph, fem, parliamentariness
+1: unaneled, bronchiocele, ornamentality, forerun, drimys, yieldy, tezcucan
+2: semimaturity, tabled, megarianism, chuntered
+3: unbartered, erased, quickenbeam, scientiarum, scenes
+4: podsolization, substant, cashiering, polyose, cylices, carnassial
+RESIZE: 11
+REMOVE: gests
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+SEARCH: repercutient, -1
+REMOVE: wolver
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+SEARCH: pseudosuchian, -1
+REMOVE: encirclement
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+REMOVE: kitchenry
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+REMOVE: confucian
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+SEARCH: aerobacteriologist, -1
+REMOVE: garnetwork
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+SEARCH: grouthead, -1
+REMOVE: undead
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+SEARCH: menhirs, -1
+REMOVE: penmaster
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+REMOVE: copywriting
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+REMOVE: hyperinosis
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: bhava, scientiarum, podsolization, carnassial
+1: implementational
+2: tabled, megarianism
+3: pyelogram, fem, unaneled, polyose
+4: unfirmness, bronchiocele, unbartered
+6: hecatic, ornamentality, forerun, cylices
+7: erased, scenes
+8: parliamentariness, substant
+9: sciograph, drimys, yieldy, tezcucan, semimaturity, chuntered
+10: quickenbeam, cashiering
+SEARCH: estancia, -1

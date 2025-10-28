@@ -1,0 +1,83 @@
+PARAMETERIZED CONSTRUCTOR
+INSERT: hello
+GET SIZE: 5
+HASH TABLE CONTENTS
+3: hello
+INSERT: world
+GET SIZE: 5
+HASH TABLE CONTENTS
+1: world
+3: hello
+INSERT: C++
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: C++
+1: world
+3: hello
+INSERT: hashes
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: C++
+1: world, hashes
+3: hello
+INSERT: AVLTrees
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: C++
+1: world, hashes
+3: hello, AVLTrees
+INSERT: heaps
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: C++, heaps
+1: world, hashes
+3: hello, AVLTrees
+REMOVE: hashes
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: C++, heaps
+1: world
+3: hello, AVLTrees
+INSERT: hello
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: C++, heaps
+1: world
+3: hello, AVLTrees, hello
+INSERT: hello
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: C++, heaps
+1: world
+3: hello, AVLTrees, hello, hello
+REMOVE: C++
+GET SIZE: 5
+HASH TABLE CONTENTS
+0: heaps
+1: world
+3: hello, AVLTrees, hello, hello
+REMOVE: AVLTrees
+HASH TABLE CONTENTS
+0: heaps
+1: world
+3: hello, hello, hello
+REMOVE: world
+HASH TABLE CONTENTS
+0: heaps
+3: hello, hello, hello
+REMOVE: heloo
+HASH TABLE CONTENTS
+0: heaps
+3: hello, hello, hello
+REMOVE: hello
+HASH TABLE CONTENTS
+0: heaps
+3: hello, hello
+REMOVE: heaps
+HASH TABLE CONTENTS
+3: hello, hello
+REMOVE: hello
+HASH TABLE CONTENTS
+3: hello
+REMOVE: hello
+HASH TABLE CONTENTS

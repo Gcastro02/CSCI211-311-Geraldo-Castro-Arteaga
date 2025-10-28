@@ -1,0 +1,498 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: goatee
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+10: goatee
+SEARCH: cauldrife, -1
+INSERT: bacchides
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+8: bacchides
+10: goatee
+SEARCH: kisan, -1
+INSERT: telsonic
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+2: telsonic
+8: bacchides
+10: goatee
+SEARCH: coxing, -1
+INSERT: princify
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: princify
+2: telsonic
+8: bacchides
+10: goatee
+INSERT: thistlery
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: princify
+2: telsonic
+4: thistlery
+8: bacchides
+10: goatee
+INSERT: corban
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: princify, corban
+2: telsonic
+4: thistlery
+8: bacchides
+10: goatee
+INSERT: obviators
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: princify, corban
+2: telsonic
+4: thistlery
+5: obviators
+8: bacchides
+10: goatee
+INSERT: puzzlingness
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: princify, corban
+1: puzzlingness
+2: telsonic
+4: thistlery
+5: obviators
+8: bacchides
+10: goatee
+INSERT: sprangled
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: princify, corban
+1: puzzlingness
+2: telsonic
+4: thistlery, sprangled
+5: obviators
+8: bacchides
+10: goatee
+SEARCH: cuirass, -1
+INSERT: antiputrescent
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: princify, corban
+1: puzzlingness, antiputrescent
+2: telsonic
+4: thistlery, sprangled
+5: obviators
+8: bacchides
+10: goatee
+SEARCH: hardie, -1
+INSERT: sizzling
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: princify, corban
+1: puzzlingness, antiputrescent
+2: telsonic
+4: thistlery, sprangled
+5: obviators
+8: bacchides, sizzling
+10: goatee
+INSERT: zoonal
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: princify, corban
+1: puzzlingness, antiputrescent
+2: telsonic
+4: thistlery, sprangled
+5: obviators
+8: bacchides, sizzling
+10: goatee, zoonal
+SEARCH: demised, -1
+INSERT: sar
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: princify, corban
+1: puzzlingness, antiputrescent
+2: telsonic
+4: thistlery, sprangled
+5: obviators
+6: sar
+8: bacchides, sizzling
+10: goatee, zoonal
+SEARCH: stypsises, -1
+INSERT: dietary
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic
+4: thistlery, sprangled
+5: obviators
+6: sar
+8: bacchides, sizzling
+10: goatee, zoonal
+SEARCH: hemophagocytosis, -1
+INSERT: narcissan
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan
+4: thistlery, sprangled
+5: obviators
+6: sar
+8: bacchides, sizzling
+10: goatee, zoonal
+INSERT: feudalize
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan
+3: feudalize
+4: thistlery, sprangled
+5: obviators
+6: sar
+8: bacchides, sizzling
+10: goatee, zoonal
+INSERT: atrochal
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan
+3: feudalize
+4: thistlery, sprangled
+5: obviators
+6: sar
+8: bacchides, sizzling, atrochal
+10: goatee, zoonal
+SEARCH: coxing, -1
+INSERT: boras
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan
+3: feudalize
+4: thistlery, sprangled, boras
+5: obviators
+6: sar
+8: bacchides, sizzling, atrochal
+10: goatee, zoonal
+SEARCH: decametric, -1
+INSERT: russophobism
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan
+3: feudalize
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+8: bacchides, sizzling, atrochal
+10: goatee, zoonal
+INSERT: alcmene
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+8: bacchides, sizzling, atrochal
+10: goatee, zoonal
+INSERT: nondiligence
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+8: bacchides, sizzling, atrochal
+10: goatee, zoonal
+SEARCH: willfully, -1
+INSERT: coparceny
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+8: bacchides, sizzling, atrochal
+10: goatee, zoonal, coparceny
+SEARCH: clong, -1
+INSERT: anaglyptical
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+7: anaglyptical
+8: bacchides, sizzling, atrochal
+10: goatee, zoonal, coparceny
+INSERT: staider
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+7: anaglyptical
+8: bacchides, sizzling, atrochal, staider
+10: goatee, zoonal, coparceny
+INSERT: monocotyl
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent, monocotyl
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+7: anaglyptical
+8: bacchides, sizzling, atrochal, staider
+10: goatee, zoonal, coparceny
+SEARCH: coparceny, 10
+INSERT: presubstituting
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent, monocotyl, presubstituting
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+7: anaglyptical
+8: bacchides, sizzling, atrochal, staider
+10: goatee, zoonal, coparceny
+SEARCH: negus, -1
+INSERT: cardiographer
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent, monocotyl, presubstituting, cardiographer
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+7: anaglyptical
+8: bacchides, sizzling, atrochal, staider
+10: goatee, zoonal, coparceny
+SEARCH: conjecturalist, -1
+INSERT: modernize
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent, monocotyl, presubstituting, cardiographer
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+7: anaglyptical
+8: bacchides, sizzling, atrochal, staider
+9: modernize
+10: goatee, zoonal, coparceny
+INSERT: counterblow
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent, monocotyl, presubstituting, cardiographer
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar
+7: anaglyptical
+8: bacchides, sizzling, atrochal, staider, counterblow
+9: modernize
+10: goatee, zoonal, coparceny
+INSERT: erectly
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, corban, dietary
+1: puzzlingness, antiputrescent, monocotyl, presubstituting, cardiographer
+2: telsonic, narcissan, nondiligence
+3: feudalize, alcmene
+4: thistlery, sprangled, boras, russophobism
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: bacchides, sizzling, atrochal, staider, counterblow
+9: modernize
+10: goatee, zoonal, coparceny
+SEARCH: collaterality, -1
+RESIZE: 3
+HASH TABLE CONTENTS
+0: corban, dietary, antiputrescent, presubstituting, telsonic, nondiligence, russophobism, sar, bacchides, goatee
+1: princify, monocotyl, feudalize, thistlery, erectly, anaglyptical, atrochal, counterblow, modernize, zoonal, coparceny
+2: puzzlingness, cardiographer, narcissan, alcmene, sprangled, boras, obviators, sizzling, staider
+RESIZE: 5
+HASH TABLE CONTENTS
+0: antiputrescent, presubstituting, sar, princify, monocotyl, anaglyptical, modernize
+1: dietary, erectly, zoonal, alcmene, sizzling
+2: nondiligence, russophobism, bacchides, feudalize, atrochal, coparceny, sprangled, boras
+3: corban, telsonic, thistlery, counterblow, narcissan, staider
+4: goatee, puzzlingness, cardiographer, obviators
+RESIZE: 11
+REMOVE: glaires
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+SEARCH: stereophantascope, -1
+REMOVE: platycheiria
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+REMOVE: wordlike
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+REMOVE: prerheumatic
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+SEARCH: picnicky, -1
+REMOVE: narcosis
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+REMOVE: guttery
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+SEARCH: micromorph, -1
+REMOVE: deadtongue
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+SEARCH: nitrobenzene, -1
+REMOVE: fiberization
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+REMOVE: englishable
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+REMOVE: polishes
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: princify, dietary, corban
+1: antiputrescent, presubstituting, monocotyl, puzzlingness, cardiographer
+2: nondiligence, telsonic, narcissan
+3: alcmene, feudalize
+4: russophobism, sprangled, boras, thistlery
+5: obviators
+6: sar, erectly
+7: anaglyptical
+8: sizzling, bacchides, atrochal, counterblow, staider
+9: modernize
+10: zoonal, coparceny, goatee
+SEARCH: friers, -1

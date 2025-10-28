@@ -1,0 +1,320 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: dentalised
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+3: dentalised
+INSERT: dentalised
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+3: dentalised, dentalised
+INSERT: uplift
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+3: dentalised, dentalised
+5: uplift
+INSERT: uplift
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+3: dentalised, dentalised
+5: uplift, uplift
+INSERT: beaded
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: beaded
+3: dentalised, dentalised
+5: uplift, uplift
+INSERT: dentalised
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: beaded
+3: dentalised, dentalised, dentalised
+5: uplift, uplift
+SEARCH: prevalidity, -1
+INSERT: uplift
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: beaded
+3: dentalised, dentalised, dentalised
+5: uplift, uplift, uplift
+INSERT: dentalised
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: beaded
+3: dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift
+INSERT: dentalised
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: beaded
+3: dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift
+INSERT: prevalidity
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+1: beaded
+2: prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift
+SEARCH: beaded, 1
+INSERT: beaded
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+1: beaded, beaded
+2: prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift
+INSERT: uplift
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+1: beaded, beaded
+2: prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift
+INSERT: beaded
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+1: beaded, beaded, beaded
+2: prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift
+INSERT: nonbristled
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+1: beaded, beaded, beaded
+2: prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled
+5: uplift, uplift, uplift, uplift
+INSERT: retoother
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded
+2: prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled
+5: uplift, uplift, uplift, uplift
+INSERT: prevalidity
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded
+2: prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled
+5: uplift, uplift, uplift, uplift
+INSERT: nonbristled
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded
+2: prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled
+5: uplift, uplift, uplift, uplift
+INSERT: prevalidity
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled
+5: uplift, uplift, uplift, uplift
+INSERT: beaded
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled
+5: uplift, uplift, uplift, uplift
+INSERT: nonbristled
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled
+5: uplift, uplift, uplift, uplift
+SEARCH: uplift, 5
+INSERT: prevalidity
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled
+5: uplift, uplift, uplift, uplift
+SEARCH: beaded, 1
+INSERT: nonbristled
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled
+5: uplift, uplift, uplift, uplift
+INSERT: uplift
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled
+5: uplift, uplift, uplift, uplift, uplift
+INSERT: dentalised
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+INSERT: beaded
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+INSERT: beaded
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+INSERT: beaded
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+INSERT: beaded
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+INSERT: uplift
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled, dentalised
+5: uplift, uplift, uplift, uplift, uplift, uplift
+INSERT: prevalidity
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity, prevalidity
+3: dentalised, dentalised, dentalised, dentalised, dentalised, nonbristled, nonbristled, nonbristled, nonbristled, dentalised
+5: uplift, uplift, uplift, uplift, uplift, uplift
+SEARCH: retoother, 0
+RESIZE: 59
+HASH TABLE CONTENTS
+19: nonbristled, nonbristled, nonbristled, nonbristled
+36: dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+38: prevalidity, prevalidity, prevalidity, prevalidity, prevalidity
+50: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+51: retoother
+54: uplift, uplift, uplift, uplift, uplift, uplift
+RESIZE: 11
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, nonbristled, nonbristled, nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift, uplift, uplift
+REMOVE: nonbristled
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, nonbristled, nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift, uplift, uplift
+SEARCH: retoother, 0
+REMOVE: prevalidity
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, nonbristled, nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift, uplift, uplift
+REMOVE: uplift
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, nonbristled, nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+REMOVE: beaded
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, nonbristled, nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+SEARCH: nonbristled, 3
+REMOVE: nonbristled
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+SEARCH: dentalised, 3
+REMOVE: nonbristled
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift, uplift
+REMOVE: uplift
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift, uplift
+SEARCH: beaded, 1
+REMOVE: uplift
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift
+SEARCH: beaded, 1
+REMOVE: dentalised
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift
+SEARCH: prevalidity, 2
+REMOVE: beaded
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: retoother
+1: beaded, beaded, beaded, beaded, beaded, beaded
+2: prevalidity, prevalidity, prevalidity, prevalidity
+3: nonbristled, dentalised, dentalised, dentalised, dentalised, dentalised
+5: uplift, uplift, uplift

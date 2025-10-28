@@ -1,0 +1,303 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: eugenic
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+9: eugenic
+INSERT: vakils
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+3: vakils
+9: eugenic
+INSERT: cadenza
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+3: vakils
+8: cadenza
+9: eugenic
+INSERT: cadenza
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+3: vakils
+8: cadenza, cadenza
+9: eugenic
+SEARCH: cadenza, 8
+INSERT: vakils
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+3: vakils, vakils
+8: cadenza, cadenza
+9: eugenic
+INSERT: eugenic
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+3: vakils, vakils
+8: cadenza, cadenza
+9: eugenic, eugenic
+SEARCH: maddled, -1
+INSERT: vakils
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+8: cadenza, cadenza
+9: eugenic, eugenic
+SEARCH: cadenza, 8
+INSERT: eugenic
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+8: cadenza, cadenza
+9: eugenic, eugenic, eugenic
+SEARCH: eugenic, 9
+INSERT: eugenic
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+8: cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic
+INSERT: maddled
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled
+8: cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic
+INSERT: maddled
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled
+8: cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+INSERT: maddled
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled
+8: cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+INSERT: eugenic
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled
+8: cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: triquinate
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled
+8: cadenza, cadenza, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: maddled
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+INSERT: eugenic
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: cadenza
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: triquinate
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+INSERT: triquinate
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: triquinate
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: vakils
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+INSERT: triquinate
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: eugenic
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+INSERT: cadenza
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: eugenic
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: eugenic
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: triquinate
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate, cadenza, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: eugenic
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate, cadenza, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+INSERT: maddled
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate, cadenza, triquinate
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: vakils, 3
+INSERT: cadenza
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled, maddled
+8: cadenza, cadenza, triquinate, cadenza, triquinate, triquinate, triquinate, triquinate, cadenza, triquinate, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: vakils, 3
+RESIZE: 59
+HASH TABLE CONTENTS
+1: maddled, maddled, maddled, maddled, maddled
+26: vakils, vakils, vakils, vakils
+30: triquinate, triquinate, triquinate, triquinate, triquinate, triquinate
+31: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+39: cadenza, cadenza, cadenza, cadenza, cadenza
+RESIZE: 11
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza, cadenza, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+REMOVE: eugenic
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza, cadenza, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+REMOVE: maddled
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza, cadenza, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+REMOVE: cadenza
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+REMOVE: vakils
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: cadenza, 8
+REMOVE: cadenza
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+REMOVE: triquinate
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: maddled, 4
+REMOVE: cadenza
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+3: vakils, vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: vakils, 3
+REMOVE: vakils
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+3: vakils, vakils
+4: maddled, maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: vakils, 3
+REMOVE: maddled
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+3: vakils, vakils
+4: maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, triquinate, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic
+SEARCH: eugenic, 9
+REMOVE: triquinate
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+3: vakils, vakils
+4: maddled, maddled, maddled
+8: triquinate, triquinate, triquinate, triquinate, cadenza, cadenza
+9: eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic, eugenic

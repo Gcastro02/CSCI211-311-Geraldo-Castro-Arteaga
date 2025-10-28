@@ -1,0 +1,162 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: pacemaker
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+3: pacemaker
+SEARCH: corresp, -1
+INSERT: eupomatiaceae
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+3: pacemaker
+4: eupomatiaceae
+SEARCH: overfreedom, -1
+INSERT: counterrevolutionist
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: counterrevolutionist
+3: pacemaker
+4: eupomatiaceae
+SEARCH: unmarbleized, -1
+INSERT: corresp
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: counterrevolutionist
+3: pacemaker, corresp
+4: eupomatiaceae
+INSERT: alcyonaria
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: counterrevolutionist
+2: alcyonaria
+3: pacemaker, corresp
+4: eupomatiaceae
+SEARCH: teleostomate, -1
+INSERT: unmarbleized
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: counterrevolutionist
+2: alcyonaria, unmarbleized
+3: pacemaker, corresp
+4: eupomatiaceae
+SEARCH: fortepiano, -1
+INSERT: dermohumeral
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: counterrevolutionist, dermohumeral
+2: alcyonaria, unmarbleized
+3: pacemaker, corresp
+4: eupomatiaceae
+SEARCH: eupomatiaceae, 4
+INSERT: corresp
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: counterrevolutionist, dermohumeral
+2: alcyonaria, unmarbleized
+3: pacemaker, corresp, corresp
+4: eupomatiaceae
+INSERT: gibstaff
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: counterrevolutionist, dermohumeral
+2: alcyonaria, unmarbleized
+3: pacemaker, corresp, corresp
+4: eupomatiaceae, gibstaff
+SEARCH: alcyonaria, 2
+INSERT: overfreedom
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: counterrevolutionist, dermohumeral
+2: alcyonaria, unmarbleized
+3: pacemaker, corresp, corresp, overfreedom
+4: eupomatiaceae, gibstaff
+SEARCH: counterrevolutionist, 0
+RESIZE: 31
+HASH TABLE CONTENTS
+0: eupomatiaceae
+2: alcyonaria
+4: overfreedom
+5: gibstaff
+14: pacemaker
+17: counterrevolutionist, corresp, corresp
+23: unmarbleized
+26: dermohumeral
+RESIZE: 5
+HASH TABLE CONTENTS
+0: counterrevolutionist, dermohumeral
+2: alcyonaria, unmarbleized
+3: overfreedom, pacemaker, corresp, corresp
+4: eupomatiaceae, gibstaff
+REMOVE: teleostomate
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: counterrevolutionist, dermohumeral
+2: alcyonaria, unmarbleized
+3: overfreedom, pacemaker, corresp, corresp
+4: eupomatiaceae, gibstaff
+SEARCH: gibstaff, 4
+REMOVE: counterrevolutionist
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: dermohumeral
+2: alcyonaria, unmarbleized
+3: overfreedom, pacemaker, corresp, corresp
+4: eupomatiaceae, gibstaff
+REMOVE: counterrevolutionist
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: dermohumeral
+2: alcyonaria, unmarbleized
+3: overfreedom, pacemaker, corresp, corresp
+4: eupomatiaceae, gibstaff
+REMOVE: alcyonaria
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: dermohumeral
+2: unmarbleized
+3: overfreedom, pacemaker, corresp, corresp
+4: eupomatiaceae, gibstaff
+REMOVE: reenunciating
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: dermohumeral
+2: unmarbleized
+3: overfreedom, pacemaker, corresp, corresp
+4: eupomatiaceae, gibstaff
+REMOVE: pacemaker
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: dermohumeral
+2: unmarbleized
+3: overfreedom, corresp, corresp
+4: eupomatiaceae, gibstaff
+SEARCH: counterrevolutionist, -1
+REMOVE: pyrobi
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: dermohumeral
+2: unmarbleized
+3: overfreedom, corresp, corresp
+4: eupomatiaceae, gibstaff
+REMOVE: corresp
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: dermohumeral
+2: unmarbleized
+3: overfreedom, corresp
+4: eupomatiaceae, gibstaff
+SEARCH: dermohumeral, 0
+REMOVE: overfreedom
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: dermohumeral
+2: unmarbleized
+3: corresp
+4: eupomatiaceae, gibstaff
+REMOVE: dermohumeral
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+2: unmarbleized
+3: corresp
+4: eupomatiaceae, gibstaff

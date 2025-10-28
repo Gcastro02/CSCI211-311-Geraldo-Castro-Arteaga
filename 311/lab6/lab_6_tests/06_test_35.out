@@ -1,0 +1,522 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: caesaropapacy
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+2: caesaropapacy
+SEARCH: fancied, -1
+INSERT: tithing
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+2: caesaropapacy
+5: tithing
+SEARCH: historize, -1
+INSERT: fixes
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+2: caesaropapacy
+5: tithing
+8: fixes
+INSERT: generalization
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+2: caesaropapacy
+5: tithing
+6: generalization
+8: fixes
+INSERT: daymares
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+2: caesaropapacy
+5: tithing
+6: generalization, daymares
+8: fixes
+INSERT: whews
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+2: caesaropapacy
+3: whews
+5: tithing
+6: generalization, daymares
+8: fixes
+SEARCH: unscarceness, -1
+INSERT: trigraphic
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+2: caesaropapacy
+3: whews
+5: tithing
+6: generalization, daymares
+8: fixes
+9: trigraphic
+SEARCH: unfallen, -1
+INSERT: doubleyou
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+2: caesaropapacy
+3: whews
+5: tithing
+6: generalization, daymares, doubleyou
+8: fixes
+9: trigraphic
+SEARCH: appropriament, -1
+INSERT: leprosery
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: leprosery
+2: caesaropapacy
+3: whews
+5: tithing
+6: generalization, daymares, doubleyou
+8: fixes
+9: trigraphic
+INSERT: unponderously
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: leprosery
+2: caesaropapacy
+3: whews
+4: unponderously
+5: tithing
+6: generalization, daymares, doubleyou
+8: fixes
+9: trigraphic
+SEARCH: metacromial, -1
+INSERT: nonthematically
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: leprosery
+2: caesaropapacy
+3: whews
+4: unponderously
+5: tithing
+6: generalization, daymares, doubleyou
+8: fixes
+9: trigraphic
+10: nonthematically
+INSERT: tallywomen
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: leprosery
+2: caesaropapacy
+3: whews
+4: unponderously
+5: tithing
+6: generalization, daymares, doubleyou
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+SEARCH: stoep, -1
+INSERT: idion
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: leprosery
+2: caesaropapacy
+3: whews
+4: unponderously
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+SEARCH: sigmoidopexy, -1
+INSERT: pupillometry
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: leprosery
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+SEARCH: champertous, -1
+INSERT: reappraiser
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+SEARCH: gelders, -1
+INSERT: finessing
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion, finessing
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+INSERT: aspergilla
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion, finessing
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+INSERT: tapiser
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+SEARCH: draconian, -1
+INSERT: snickey
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic
+10: nonthematically, tallywomen
+INSERT: reasonings
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing
+6: generalization, daymares, doubleyou
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic, reasonings
+10: nonthematically, tallywomen
+INSERT: bintangor
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic, reasonings
+10: nonthematically, tallywomen
+SEARCH: peripheroceptor, -1
+INSERT: pharyngobranch
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic, reasonings
+10: nonthematically, tallywomen
+SEARCH: intershifting, -1
+INSERT: boweries
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+SEARCH: saccomyoidean, -1
+INSERT: gorgers
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch, gorgers
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+INSERT: abonnement
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch, gorgers, abonnement
+7: idion, finessing, tapiser
+8: fixes
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+SEARCH: khedival, -1
+INSERT: idrosis
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch, gorgers, abonnement
+7: idion, finessing, tapiser
+8: fixes, idrosis
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+INSERT: historicist
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch, gorgers, abonnement
+7: idion, finessing, tapiser, historicist
+8: fixes, idrosis
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+INSERT: libken
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: leprosery, reappraiser
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews, libken
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch, gorgers, abonnement
+7: idion, finessing, tapiser, historicist
+8: fixes, idrosis
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+SEARCH: elicitors, -1
+INSERT: irrestrictive
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: leprosery, reappraiser, irrestrictive
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews, libken
+4: unponderously, aspergilla
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch, gorgers, abonnement
+7: idion, finessing, tapiser, historicist
+8: fixes, idrosis
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+INSERT: hunchbacks
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: leprosery, reappraiser, irrestrictive
+1: snickey
+2: caesaropapacy, pupillometry
+3: whews, libken
+4: unponderously, aspergilla, hunchbacks
+5: tithing, bintangor
+6: generalization, daymares, doubleyou, pharyngobranch, gorgers, abonnement
+7: idion, finessing, tapiser, historicist
+8: fixes, idrosis
+9: trigraphic, reasonings
+10: nonthematically, tallywomen, boweries
+RESIZE: 3
+HASH TABLE CONTENTS
+0: snickey, pupillometry, libken, aspergilla, hunchbacks, gorgers, reasonings, boweries
+1: leprosery, whews, unponderously, tithing, doubleyou, idion, tapiser, idrosis, nonthematically
+2: reappraiser, irrestrictive, caesaropapacy, bintangor, generalization, daymares, pharyngobranch, abonnement, finessing, historicist, fixes, trigraphic, tallywomen
+RESIZE: 5
+HASH TABLE CONTENTS
+0: snickey, abonnement, fixes
+1: pupillometry, tapiser, reappraiser, irrestrictive
+2: libken, hunchbacks, boweries, bintangor, pharyngobranch, historicist, tallywomen
+3: reasonings, leprosery, whews, doubleyou, idion, finessing
+4: aspergilla, gorgers, unponderously, tithing, idrosis, nonthematically, caesaropapacy, generalization, daymares, trigraphic
+RESIZE: 11
+REMOVE: destrier
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+REMOVE: mortifications
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+SEARCH: impy, -1
+REMOVE: buccula
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+SEARCH: offertorial, -1
+REMOVE: physicosocial
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+REMOVE: tushed
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+REMOVE: unispiral
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+REMOVE: tripleness
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+REMOVE: hoydened
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+SEARCH: regeneratress, -1
+REMOVE: blackballer
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+REMOVE: wimblelike
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: reappraiser, irrestrictive, leprosery
+1: snickey
+2: pupillometry, caesaropapacy
+3: libken, whews
+4: hunchbacks, aspergilla, unponderously
+5: bintangor, tithing
+6: abonnement, pharyngobranch, doubleyou, gorgers, generalization, daymares
+7: tapiser, historicist, idion, finessing
+8: fixes, idrosis
+9: reasonings, trigraphic
+10: boweries, tallywomen, nonthematically
+SEARCH: focused, -1

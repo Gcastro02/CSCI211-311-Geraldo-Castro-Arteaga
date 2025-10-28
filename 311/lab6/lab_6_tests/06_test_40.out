@@ -1,0 +1,498 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: pneumonoparesis
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+8: pneumonoparesis
+SEARCH: polish, -1
+INSERT: paydays
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+8: pneumonoparesis, paydays
+INSERT: contumacious
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+8: pneumonoparesis, paydays
+10: contumacious
+INSERT: centrarchoid
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+7: centrarchoid
+8: pneumonoparesis, paydays
+10: contumacious
+INSERT: kiboshed
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+3: kiboshed
+7: centrarchoid
+8: pneumonoparesis, paydays
+10: contumacious
+INSERT: dormitary
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: dormitary
+3: kiboshed
+7: centrarchoid
+8: pneumonoparesis, paydays
+10: contumacious
+SEARCH: bequeaths, -1
+INSERT: dronish
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: dormitary
+3: kiboshed
+6: dronish
+7: centrarchoid
+8: pneumonoparesis, paydays
+10: contumacious
+SEARCH: unsubstantialness, -1
+INSERT: windowpanes
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: dormitary
+2: windowpanes
+3: kiboshed
+6: dronish
+7: centrarchoid
+8: pneumonoparesis, paydays
+10: contumacious
+INSERT: preestablish
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: dormitary
+2: windowpanes
+3: kiboshed
+6: dronish
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays
+10: contumacious
+INSERT: verminating
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+1: dormitary
+2: windowpanes
+3: kiboshed
+6: dronish
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays, verminating
+10: contumacious
+SEARCH: guarders, -1
+INSERT: pseudoofficially
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially
+2: windowpanes
+3: kiboshed
+6: dronish
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays, verminating
+10: contumacious
+INSERT: ungnaw
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially
+2: windowpanes
+3: kiboshed
+4: ungnaw
+6: dronish
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays, verminating
+10: contumacious
+SEARCH: holothurian, -1
+INSERT: sowder
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays, verminating
+10: contumacious
+INSERT: semisaline
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays, verminating
+10: contumacious
+SEARCH: uninwreathed, -1
+INSERT: durgan
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays, verminating
+9: durgan
+10: contumacious
+INSERT: preinvestment
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment
+7: centrarchoid, preestablish
+8: pneumonoparesis, paydays, verminating
+9: durgan
+10: contumacious
+INSERT: aquaplaner
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating
+9: durgan
+10: contumacious
+INSERT: alerters
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating
+9: durgan
+10: contumacious
+INSERT: nonmelodious
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious
+9: durgan
+10: contumacious
+SEARCH: anticonstitutionalism, -1
+INSERT: jugfuls
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious
+9: durgan
+10: contumacious
+INSERT: unplanned
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment, unplanned
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious
+9: durgan
+10: contumacious
+INSERT: proamateur
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment, unplanned
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious
+9: durgan, proamateur
+10: contumacious
+SEARCH: saltpond, -1
+INSERT: consignatary
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw
+6: dronish, semisaline, preinvestment, unplanned
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious
+9: durgan, proamateur, consignatary
+10: contumacious
+SEARCH: lunchers, -1
+INSERT: testators
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw, testators
+6: dronish, semisaline, preinvestment, unplanned
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious
+9: durgan, proamateur, consignatary
+10: contumacious
+SEARCH: rhizotic, -1
+INSERT: capnoides
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw, testators
+6: dronish, semisaline, preinvestment, unplanned
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious, capnoides
+9: durgan, proamateur, consignatary
+10: contumacious
+SEARCH: jat, -1
+INSERT: preadoration
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw, testators
+6: dronish, semisaline, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious, capnoides
+9: durgan, proamateur, consignatary
+10: contumacious
+SEARCH: adullam, -1
+INSERT: facadal
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw, testators
+5: facadal
+6: dronish, semisaline, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious, capnoides
+9: durgan, proamateur, consignatary
+10: contumacious
+INSERT: talipot
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed
+4: ungnaw, testators
+5: facadal
+6: dronish, semisaline, preinvestment, unplanned, preadoration, talipot
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious, capnoides
+9: durgan, proamateur, consignatary
+10: contumacious
+SEARCH: favus, -1
+INSERT: incaution
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed, incaution
+4: ungnaw, testators
+5: facadal
+6: dronish, semisaline, preinvestment, unplanned, preadoration, talipot
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious, capnoides
+9: durgan, proamateur, consignatary
+10: contumacious
+INSERT: warrener
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: dormitary, pseudoofficially, alerters
+2: windowpanes, sowder
+3: kiboshed, incaution
+4: ungnaw, testators
+5: facadal
+6: dronish, semisaline, preinvestment, unplanned, preadoration, talipot
+7: centrarchoid, preestablish, aquaplaner
+8: pneumonoparesis, paydays, verminating, nonmelodious, capnoides
+9: durgan, proamateur, consignatary
+10: contumacious, warrener
+RESIZE: 3
+HASH TABLE CONTENTS
+0: jugfuls, dormitary, pseudoofficially, incaution, dronish, semisaline, aquaplaner, verminating, nonmelodious, proamateur, warrener
+1: sowder, kiboshed, facadal, talipot, centrarchoid, preestablish, pneumonoparesis, paydays, capnoides, consignatary
+2: alerters, windowpanes, ungnaw, testators, preinvestment, unplanned, preadoration, durgan, contumacious
+RESIZE: 5
+HASH TABLE CONTENTS
+0: pseudoofficially, nonmelodious, proamateur, talipot, capnoides
+1: jugfuls, semisaline, verminating, centrarchoid, preestablish, pneumonoparesis, testators, durgan
+2: aquaplaner, sowder, consignatary
+3: dormitary, dronish, warrener, alerters, preinvestment
+4: incaution, kiboshed, facadal, paydays, windowpanes, ungnaw, unplanned, preadoration, contumacious
+RESIZE: 11
+REMOVE: reputationless
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+SEARCH: slouchiness, -1
+REMOVE: chorizontal
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+REMOVE: radiance
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+SEARCH: nonpresentational, -1
+REMOVE: reinvoice
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+SEARCH: transgressible, -1
+REMOVE: freak
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+REMOVE: sierra
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+SEARCH: distally, -1
+REMOVE: hypoiodous
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+REMOVE: revamped
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+REMOVE: affectable
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+SEARCH: unchrist, -1
+REMOVE: dialyzator
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: jugfuls
+1: pseudoofficially, dormitary, alerters
+2: sowder, windowpanes
+3: incaution, kiboshed
+4: testators, ungnaw
+5: facadal
+6: talipot, semisaline, dronish, preinvestment, unplanned, preadoration
+7: centrarchoid, preestablish, aquaplaner
+8: nonmelodious, capnoides, verminating, pneumonoparesis, paydays
+9: proamateur, durgan, consignatary
+10: warrener, contumacious
+SEARCH: ungnaw, 4
