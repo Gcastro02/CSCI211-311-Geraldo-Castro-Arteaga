@@ -1,14 +1,12 @@
 // CSCI 311
 // Lab 6 - Hash Table cpp
 // Author: Geraldo Castro
-// (Fixed by Gemini)
 
 #include <iostream>
 #include <math.h>
 #include "HashTable.h"
 
 HashTable::HashTable(){
-  // defaults as expected by driver/tests
   size = 11;
   numElements = 0;
   p = 31;
@@ -16,13 +14,14 @@ HashTable::HashTable(){
 }
 
 HashTable::HashTable(int s, int mult){
-  if (s > 0){
-    size = s;
+  if (s < 0){
+    size = 11; // Use default size if input is negative
   } else {
-    size = 11; // Use default size if input is invalid
+    size = s; // Otherwise, use the provided size (0 is allowed)
   }
   p = mult;
   numElements = 0;
+  // Initialize the table with the size
   table = std::vector<std::vector<std::string>>(size);
 }
 
@@ -86,11 +85,11 @@ void HashTable::resize(int s){
       insert(old[i][j]);
     }
   }
-  (void)oldNum;
+  (void)oldNum; 
 }
 
 int HashTable::hash(std::string s){
-  if (size <= 0) return -1; // This check is safe because insert/search/remove check first
+  if (size <= 0) return -1;
   // Implement the hash exactly as specified:
   // hash(s) = (sigma(s[0]) * p^0 + ... + sigma(s[l-1]) * p^{l-1}) mod m
   // where sigma(c) is ASCII value. Use 64-bit unsigned accumulation to
