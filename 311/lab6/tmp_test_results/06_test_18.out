@@ -1,0 +1,142 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: consolidative
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+2: consolidative
+SEARCH: spondylotherapeutics, -1
+INSERT: cilicious
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+0: cilicious
+2: consolidative
+INSERT: writing
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: cilicious
+2: consolidative, writing
+INSERT: spondylotherapeutics
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: cilicious
+2: consolidative, writing
+3: spondylotherapeutics
+SEARCH: writing, 2
+INSERT: writing
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: cilicious
+2: consolidative, writing, writing
+3: spondylotherapeutics
+SEARCH: writing, 2
+INSERT: cilicious
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: cilicious, cilicious
+2: consolidative, writing, writing
+3: spondylotherapeutics
+SEARCH: spondylotherapeutics, 3
+INSERT: ebionitic
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: cilicious, cilicious
+2: consolidative, writing, writing
+3: spondylotherapeutics, ebionitic
+INSERT: spondylotherapeutics
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: cilicious, cilicious
+2: consolidative, writing, writing
+3: spondylotherapeutics, ebionitic, spondylotherapeutics
+INSERT: writing
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: cilicious, cilicious
+2: consolidative, writing, writing, writing
+3: spondylotherapeutics, ebionitic, spondylotherapeutics
+INSERT: noninteracting
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: cilicious, cilicious, noninteracting
+2: consolidative, writing, writing, writing
+3: spondylotherapeutics, ebionitic, spondylotherapeutics
+SEARCH: sanitizer, -1
+RESIZE: 31
+HASH TABLE CONTENTS
+2: writing, writing, writing
+5: noninteracting
+13: cilicious, cilicious
+16: ebionitic
+19: consolidative
+29: spondylotherapeutics, spondylotherapeutics
+RESIZE: 5
+HASH TABLE CONTENTS
+0: noninteracting, cilicious, cilicious
+2: writing, writing, writing, consolidative
+3: ebionitic, spondylotherapeutics, spondylotherapeutics
+REMOVE: criminally
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: noninteracting, cilicious, cilicious
+2: writing, writing, writing, consolidative
+3: ebionitic, spondylotherapeutics, spondylotherapeutics
+SEARCH: criminally, -1
+REMOVE: cilicious
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing, writing, consolidative
+3: ebionitic, spondylotherapeutics, spondylotherapeutics
+SEARCH: ebionitic, 3
+REMOVE: sanitizer
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing, writing, consolidative
+3: ebionitic, spondylotherapeutics, spondylotherapeutics
+SEARCH: calypter, -1
+REMOVE: spondylotherapeutics
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing, writing, consolidative
+3: ebionitic, spondylotherapeutics
+REMOVE: sanitizer
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing, writing, consolidative
+3: ebionitic, spondylotherapeutics
+REMOVE: ebionitic
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing, writing, consolidative
+3: spondylotherapeutics
+SEARCH: criminally, -1
+REMOVE: writing
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing, consolidative
+3: spondylotherapeutics
+REMOVE: consolidative
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing
+3: spondylotherapeutics
+REMOVE: ebionitic
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: noninteracting, cilicious
+2: writing, writing
+3: spondylotherapeutics
+SEARCH: idiostatic, -1
+REMOVE: cilicious
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: noninteracting
+2: writing, writing
+3: spondylotherapeutics

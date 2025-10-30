@@ -1,0 +1,55 @@
+PARAMETERIZED CONSTRUCTOR
+INSERT: datastructures
+INSERT: hello
+INSERT: hi
+INSERT: goodbye
+INSERT: computerscience
+INSERT: turing
+INSERT: knuth
+INSERT: neumann
+INSERT: hashing
+INSERT: cryptography
+INSERT: hopper
+INSERT: lovelace
+GET SIZE: 5
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: datastructures
+1: computerscience, lovelace
+2: turing, knuth, hashing
+3: hello, goodbye
+4: hi, neumann, cryptography, hopper
+RESIZE: 23
+GET SIZE: 23
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+1: computerscience
+6: knuth
+9: datastructures, turing
+10: neumann
+11: hopper
+15: lovelace, hi
+18: goodbye, cryptography
+19: hashing
+20: hello
+RESIZE: 5
+GET SIZE: 5
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: datastructures
+1: computerscience, lovelace
+2: knuth, turing, hashing
+3: goodbye, hello
+4: neumann, hopper, hi, cryptography
+RESIZE: 13
+GET SIZE: 13
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: computerscience
+2: hi
+3: cryptography
+4: datastructures
+5: lovelace, hashing, goodbye, hopper
+7: knuth, turing
+10: neumann
+11: hello

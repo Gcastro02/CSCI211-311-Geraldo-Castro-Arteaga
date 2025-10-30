@@ -1,0 +1,493 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: overstayal
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+7: overstayal
+INSERT: megalomelia
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+3: megalomelia
+7: overstayal
+SEARCH: ambling, -1
+INSERT: simplex
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+3: megalomelia
+7: overstayal
+8: simplex
+SEARCH: beclouding, -1
+INSERT: endostosis
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+3: megalomelia
+4: endostosis
+7: overstayal
+8: simplex
+SEARCH: epinikian, -1
+INSERT: skaff
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+3: megalomelia
+4: endostosis
+7: overstayal
+8: simplex, skaff
+INSERT: phytologic
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: phytologic
+3: megalomelia
+4: endostosis
+7: overstayal
+8: simplex, skaff
+SEARCH: magnetizability, -1
+INSERT: viverrine
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+3: megalomelia
+4: endostosis
+7: overstayal
+8: simplex, skaff
+INSERT: transcurvation
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia
+4: endostosis
+7: overstayal
+8: simplex, skaff
+INSERT: unintrlined
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia
+4: endostosis
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+SEARCH: preloral, -1
+INSERT: magnetobell
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia
+4: endostosis
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+9: magnetobell
+SEARCH: magnetobell, 9
+INSERT: glycyls
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+9: magnetobell
+INSERT: incremation
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+9: magnetobell, incremation
+INSERT: stillman
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+9: magnetobell, incremation, stillman
+SEARCH: titter, -1
+INSERT: diligency
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis
+5: diligency
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+9: magnetobell, incremation, stillman
+SEARCH: ambling, -1
+INSERT: stockroom
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis, stockroom
+5: diligency
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+9: magnetobell, incremation, stillman
+INSERT: recalculations
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis, stockroom
+5: diligency
+6: unintrlined
+7: overstayal
+8: simplex, skaff
+9: magnetobell, incremation, stillman
+10: recalculations
+SEARCH: harried, -1
+INSERT: titter
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis, stockroom
+5: diligency
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman
+10: recalculations
+INSERT: brotherwort
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis, stockroom
+5: diligency, brotherwort
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman
+10: recalculations
+SEARCH: waisted, -1
+INSERT: brotherwort
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation
+3: megalomelia, glycyls
+4: endostosis, stockroom
+5: diligency, brotherwort, brotherwort
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman
+10: recalculations
+INSERT: orthoplastic
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls
+4: endostosis, stockroom
+5: diligency, brotherwort, brotherwort
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman
+10: recalculations
+INSERT: sudorific
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman
+10: recalculations
+INSERT: nonsalaried
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+SEARCH: pressmen, -1
+INSERT: mimpei
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+INSERT: bariolage
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+1: phytologic, viverrine
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+SEARCH: philoplutonic, -1
+INSERT: hemorrhages
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+SEARCH: zabaism, -1
+INSERT: dolichostylous
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls, dolichostylous
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+INSERT: semiaperiodic
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls, dolichostylous, semiaperiodic
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unintrlined
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+SEARCH: sentimentally, -1
+INSERT: unpaint
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls, dolichostylous, semiaperiodic
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unintrlined, unpaint
+7: overstayal
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+SEARCH: exarteritis, -1
+INSERT: gunboats
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls, dolichostylous, semiaperiodic
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unintrlined, unpaint
+7: overstayal, gunboats
+8: simplex, skaff, titter
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+SEARCH: trivetwise, -1
+INSERT: randomish
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: transcurvation, orthoplastic
+3: megalomelia, glycyls, dolichostylous, semiaperiodic
+4: endostosis, stockroom, sudorific
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unintrlined, unpaint
+7: overstayal, gunboats
+8: simplex, skaff, titter, randomish
+9: magnetobell, incremation, stillman, nonsalaried
+10: recalculations
+SEARCH: kooliman, -1
+RESIZE: 3
+HASH TABLE CONTENTS
+0: phytologic, viverrine, orthoplastic, semiaperiodic, diligency, brotherwort, brotherwort, mimpei, bariolage, skaff, randomish, incremation, stillman, recalculations
+1: glycyls, dolichostylous, endostosis, unpaint, overstayal, gunboats, titter, nonsalaried
+2: hemorrhages, transcurvation, megalomelia, stockroom, sudorific, unintrlined, simplex, magnetobell
+RESIZE: 5
+HASH TABLE CONTENTS
+0: phytologic, diligency, brotherwort, brotherwort, skaff, incremation, stillman, dolichostylous, endostosis, unpaint, gunboats, unintrlined, magnetobell
+1: viverrine, semiaperiodic, randomish
+2: orthoplastic, mimpei, glycyls, titter, nonsalaried, transcurvation, simplex
+3: bariolage, recalculations, sudorific
+4: overstayal, hemorrhages, megalomelia, stockroom
+RESIZE: 11
+REMOVE: puseyistical
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+REMOVE: supererogation
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+REMOVE: pudibundity
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+REMOVE: barbated
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+SEARCH: combinatorics, -1
+REMOVE: martingale
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+REMOVE: epinikian
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+REMOVE: hypericum
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+REMOVE: gastrocolic
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+SEARCH: bitartrate, -1
+REMOVE: ploughstilt
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+REMOVE: unfurls
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: phytologic, viverrine, hemorrhages
+2: orthoplastic, transcurvation
+3: dolichostylous, semiaperiodic, glycyls, megalomelia
+4: endostosis, sudorific, stockroom
+5: diligency, brotherwort, brotherwort, mimpei, bariolage
+6: unpaint, unintrlined
+7: gunboats, overstayal
+8: skaff, randomish, titter, simplex
+9: incremation, stillman, magnetobell, nonsalaried
+10: recalculations
+SEARCH: pussy, -1

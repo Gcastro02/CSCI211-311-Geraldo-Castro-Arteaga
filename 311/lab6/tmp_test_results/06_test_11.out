@@ -1,0 +1,158 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: stratic
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+1: stratic
+SEARCH: cantative, -1
+INSERT: potteries
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+1: stratic
+3: potteries
+INSERT: brustling
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+1: stratic
+3: potteries
+4: brustling
+INSERT: columbary
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: columbary
+1: stratic
+3: potteries
+4: brustling
+INSERT: nonnecessary
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: columbary
+1: stratic
+3: potteries, nonnecessary
+4: brustling
+INSERT: coelacanthini
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: columbary
+1: stratic, coelacanthini
+3: potteries, nonnecessary
+4: brustling
+SEARCH: stratic, 1
+INSERT: wilily
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: columbary
+1: stratic, coelacanthini, wilily
+3: potteries, nonnecessary
+4: brustling
+INSERT: cantative
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: stratic, coelacanthini, wilily
+3: potteries, nonnecessary
+4: brustling
+SEARCH: coelacanthini, 1
+INSERT: nonnecessary
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: stratic, coelacanthini, wilily
+3: potteries, nonnecessary, nonnecessary
+4: brustling
+SEARCH: brustling, 4
+INSERT: sialosemeiology
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: stratic, coelacanthini, wilily
+3: potteries, nonnecessary, nonnecessary
+4: brustling, sialosemeiology
+RESIZE: 31
+HASH TABLE CONTENTS
+3: columbary
+6: nonnecessary, nonnecessary, brustling
+9: wilily
+14: cantative
+18: stratic
+19: coelacanthini, sialosemeiology
+30: potteries
+RESIZE: 5
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: wilily, stratic, coelacanthini
+3: nonnecessary, nonnecessary, potteries
+4: brustling, sialosemeiology
+REMOVE: brustling
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: wilily, stratic, coelacanthini
+3: nonnecessary, nonnecessary, potteries
+4: sialosemeiology
+SEARCH: brustling, -1
+REMOVE: exemplarily
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: wilily, stratic, coelacanthini
+3: nonnecessary, nonnecessary, potteries
+4: sialosemeiology
+SEARCH: wilily, 1
+REMOVE: coelacanthini
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: wilily, stratic
+3: nonnecessary, nonnecessary, potteries
+4: sialosemeiology
+SEARCH: coelacanthini, -1
+REMOVE: brustling
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: wilily, stratic
+3: nonnecessary, nonnecessary, potteries
+4: sialosemeiology
+SEARCH: stratic, 1
+REMOVE: exemplarily
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: columbary, cantative
+1: wilily, stratic
+3: nonnecessary, nonnecessary, potteries
+4: sialosemeiology
+REMOVE: cantative
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: columbary
+1: wilily, stratic
+3: nonnecessary, nonnecessary, potteries
+4: sialosemeiology
+REMOVE: columbary
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: wilily, stratic
+3: nonnecessary, nonnecessary, potteries
+4: sialosemeiology
+SEARCH: cantative, -1
+REMOVE: nonnecessary
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: wilily, stratic
+3: nonnecessary, potteries
+4: sialosemeiology
+SEARCH: wilily, 1
+REMOVE: potteries
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: wilily, stratic
+3: nonnecessary
+4: sialosemeiology
+REMOVE: nonnecessary
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+1: wilily, stratic
+4: sialosemeiology
+SEARCH: columbary, -1

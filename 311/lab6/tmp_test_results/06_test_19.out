@@ -1,0 +1,136 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: torgot
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+1: torgot
+INSERT: undeception
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+1: torgot
+4: undeception
+INSERT: somite
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+1: torgot, somite
+4: undeception
+INSERT: torgot
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: torgot, somite, torgot
+4: undeception
+INSERT: lieblich
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: torgot, somite, torgot
+2: lieblich
+4: undeception
+INSERT: ultrasuede
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: torgot, somite, torgot
+2: lieblich
+4: undeception, ultrasuede
+SEARCH: edriophthalmic, -1
+INSERT: lieblich
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: torgot, somite, torgot
+2: lieblich, lieblich
+4: undeception, ultrasuede
+SEARCH: retecious, -1
+INSERT: diag
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: torgot, somite, torgot
+2: lieblich, lieblich, diag
+4: undeception, ultrasuede
+INSERT: torgot
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: torgot, somite, torgot, torgot
+2: lieblich, lieblich, diag
+4: undeception, ultrasuede
+SEARCH: lieblich, 2
+INSERT: somite
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+1: torgot, somite, torgot, torgot, somite
+2: lieblich, lieblich, diag
+4: undeception, ultrasuede
+RESIZE: 31
+HASH TABLE CONTENTS
+3: diag
+5: somite, somite
+7: torgot, torgot, torgot
+10: undeception
+13: ultrasuede
+16: lieblich, lieblich
+RESIZE: 5
+HASH TABLE CONTENTS
+1: somite, somite, torgot, torgot, torgot
+2: diag, lieblich, lieblich
+4: undeception, ultrasuede
+REMOVE: diag
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: somite, somite, torgot, torgot, torgot
+2: lieblich, lieblich
+4: undeception, ultrasuede
+SEARCH: edriophthalmic, -1
+REMOVE: revellers
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: somite, somite, torgot, torgot, torgot
+2: lieblich, lieblich
+4: undeception, ultrasuede
+REMOVE: somite
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: somite, torgot, torgot, torgot
+2: lieblich, lieblich
+4: undeception, ultrasuede
+SEARCH: fibriform, -1
+REMOVE: torgot
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: somite, torgot, torgot
+2: lieblich, lieblich
+4: undeception, ultrasuede
+SEARCH: specificize, -1
+REMOVE: undeception
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: somite, torgot, torgot
+2: lieblich, lieblich
+4: ultrasuede
+REMOVE: ultrasuede
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: somite, torgot, torgot
+2: lieblich, lieblich
+SEARCH: revellers, -1
+REMOVE: hydrome
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: somite, torgot, torgot
+2: lieblich, lieblich
+SEARCH: hydrome, -1
+REMOVE: ultrasuede
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: somite, torgot, torgot
+2: lieblich, lieblich
+REMOVE: fibriform
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: somite, torgot, torgot
+2: lieblich, lieblich
+SEARCH: tamarau, -1
+REMOVE: specificize
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: somite, torgot, torgot
+2: lieblich, lieblich
+SEARCH: retecious, -1

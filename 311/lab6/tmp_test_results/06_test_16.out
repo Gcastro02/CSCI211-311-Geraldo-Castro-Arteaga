@@ -1,0 +1,139 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: ensynopticity
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+4: ensynopticity
+INSERT: endomictic
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+0: endomictic
+4: ensynopticity
+SEARCH: unwearing, -1
+INSERT: demobs
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: endomictic
+4: ensynopticity, demobs
+SEARCH: unwearing, -1
+INSERT: endomictic
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+4: ensynopticity, demobs
+SEARCH: ensynopticity, 4
+INSERT: pseudoporphyritic
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+4: ensynopticity, demobs, pseudoporphyritic
+SEARCH: ensynopticity, 4
+INSERT: peytrals
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals
+4: ensynopticity, demobs, pseudoporphyritic
+SEARCH: unwearing, -1
+INSERT: unwearing
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals
+4: ensynopticity, demobs, pseudoporphyritic, unwearing
+INSERT: peytrals
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals, peytrals
+4: ensynopticity, demobs, pseudoporphyritic, unwearing
+INSERT: unwearing
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals, peytrals
+4: ensynopticity, demobs, pseudoporphyritic, unwearing, unwearing
+SEARCH: ensynopticity, 4
+INSERT: ensynopticity
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals, peytrals
+4: ensynopticity, demobs, pseudoporphyritic, unwearing, unwearing, ensynopticity
+SEARCH: demobs, 4
+RESIZE: 31
+HASH TABLE CONTENTS
+3: endomictic, endomictic
+14: peytrals, peytrals
+18: unwearing, unwearing
+20: ensynopticity, ensynopticity
+23: demobs
+26: pseudoporphyritic
+RESIZE: 5
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals, peytrals
+4: unwearing, unwearing, ensynopticity, ensynopticity, demobs, pseudoporphyritic
+REMOVE: unwearing
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals, peytrals
+4: unwearing, ensynopticity, ensynopticity, demobs, pseudoporphyritic
+SEARCH: ensynopticity, 4
+REMOVE: caning
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: endomictic, endomictic
+1: peytrals, peytrals
+4: unwearing, ensynopticity, ensynopticity, demobs, pseudoporphyritic
+REMOVE: endomictic
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: endomictic
+1: peytrals, peytrals
+4: unwearing, ensynopticity, ensynopticity, demobs, pseudoporphyritic
+SEARCH: demobs, 4
+REMOVE: endomictic
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: peytrals, peytrals
+4: unwearing, ensynopticity, ensynopticity, demobs, pseudoporphyritic
+SEARCH: unwearing, 4
+REMOVE: pseudoporphyritic
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: peytrals, peytrals
+4: unwearing, ensynopticity, ensynopticity, demobs
+SEARCH: pseudoporphyritic, -1
+REMOVE: caning
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: peytrals, peytrals
+4: unwearing, ensynopticity, ensynopticity, demobs
+SEARCH: ensynopticity, 4
+REMOVE: pseudoporphyritic
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: peytrals, peytrals
+4: unwearing, ensynopticity, ensynopticity, demobs
+SEARCH: peytrals, 1
+REMOVE: ensynopticity
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: peytrals, peytrals
+4: unwearing, ensynopticity, demobs
+SEARCH: ensynopticity, 4
+REMOVE: ensynopticity
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: peytrals, peytrals
+4: unwearing, demobs
+SEARCH: demobs, 4
+REMOVE: endomictic
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: peytrals, peytrals
+4: unwearing, demobs
+SEARCH: demobs, 4

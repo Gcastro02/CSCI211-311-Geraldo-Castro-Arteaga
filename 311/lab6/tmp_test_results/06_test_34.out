@@ -1,0 +1,515 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: pandemics
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+9: pandemics
+SEARCH: tubifexes, -1
+INSERT: apathistical
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+6: apathistical
+9: pandemics
+INSERT: uncathedraled
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+3: uncathedraled
+6: apathistical
+9: pandemics
+INSERT: inlayers
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+3: uncathedraled
+6: apathistical
+7: inlayers
+9: pandemics
+SEARCH: bourn, -1
+INSERT: accipient
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+3: uncathedraled
+6: apathistical
+7: inlayers
+9: pandemics, accipient
+SEARCH: schelling, -1
+INSERT: abstricting
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+3: uncathedraled
+6: apathistical
+7: inlayers
+9: pandemics, accipient
+10: abstricting
+INSERT: oculinidae
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: oculinidae
+3: uncathedraled
+6: apathistical
+7: inlayers
+9: pandemics, accipient
+10: abstricting
+INSERT: alkylol
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: oculinidae
+3: uncathedraled
+6: apathistical
+7: inlayers
+8: alkylol
+9: pandemics, accipient
+10: abstricting
+INSERT: metiers
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: oculinidae
+3: uncathedraled
+5: metiers
+6: apathistical
+7: inlayers
+8: alkylol
+9: pandemics, accipient
+10: abstricting
+INSERT: caliburno
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: oculinidae
+3: uncathedraled
+5: metiers
+6: apathistical
+7: inlayers
+8: alkylol, caliburno
+9: pandemics, accipient
+10: abstricting
+INSERT: hitoshi
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: oculinidae
+2: hitoshi
+3: uncathedraled
+5: metiers
+6: apathistical
+7: inlayers
+8: alkylol, caliburno
+9: pandemics, accipient
+10: abstricting
+INSERT: ecchymotic
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: oculinidae
+2: hitoshi, ecchymotic
+3: uncathedraled
+5: metiers
+6: apathistical
+7: inlayers
+8: alkylol, caliburno
+9: pandemics, accipient
+10: abstricting
+INSERT: superexcellent
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: oculinidae
+2: hitoshi, ecchymotic
+3: uncathedraled
+5: metiers
+6: apathistical
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient
+10: abstricting
+SEARCH: letitia, -1
+INSERT: repetitae
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: oculinidae
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae
+5: metiers
+6: apathistical
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient
+10: abstricting
+SEARCH: opercule, -1
+INSERT: adipopexic
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: oculinidae
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae
+5: metiers
+6: apathistical, adipopexic
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient
+10: abstricting
+SEARCH: schelling, -1
+INSERT: clacks
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae
+5: metiers
+6: apathistical, adipopexic
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient
+10: abstricting
+SEARCH: breathlessness, -1
+INSERT: spellproof
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae
+5: metiers
+6: apathistical, adipopexic
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient, spellproof
+10: abstricting
+INSERT: outlearned
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae
+5: metiers
+6: apathistical, adipopexic, outlearned
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient, spellproof
+10: abstricting
+SEARCH: zapodinae, -1
+INSERT: playless
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+5: metiers
+6: apathistical, adipopexic, outlearned
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient, spellproof
+10: abstricting
+SEARCH: turbinelloid, -1
+INSERT: marqueterie
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+5: metiers
+6: apathistical, adipopexic, outlearned
+7: inlayers
+8: alkylol, caliburno, superexcellent
+9: pandemics, accipient, spellproof
+10: abstricting, marqueterie
+SEARCH: completed, -1
+INSERT: infraocular
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+5: metiers
+6: apathistical, adipopexic, outlearned
+7: inlayers
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof
+10: abstricting, marqueterie
+INSERT: thyrisiferous
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers
+6: apathistical, adipopexic, outlearned
+7: inlayers
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof
+10: abstricting, marqueterie
+INSERT: neurohistology
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: oculinidae
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers
+6: apathistical, adipopexic, outlearned, neurohistology
+7: inlayers
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof
+10: abstricting, marqueterie
+INSERT: rhamnohexite
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: oculinidae, rhamnohexite
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers
+6: apathistical, adipopexic, outlearned, neurohistology
+7: inlayers
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof
+10: abstricting, marqueterie
+SEARCH: hypodiploid, -1
+INSERT: tubifexes
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: oculinidae, rhamnohexite
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers
+6: apathistical, adipopexic, outlearned, neurohistology
+7: inlayers
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie
+INSERT: metiers
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: oculinidae, rhamnohexite
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: apathistical, adipopexic, outlearned, neurohistology
+7: inlayers
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie
+INSERT: acromiothoracic
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: oculinidae, rhamnohexite
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: apathistical, adipopexic, outlearned, neurohistology
+7: inlayers
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+SEARCH: irrelevance, -1
+INSERT: untractarian
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: oculinidae, rhamnohexite
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: apathistical, adipopexic, outlearned, neurohistology
+7: inlayers, untractarian
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+INSERT: simulcasting
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: oculinidae, rhamnohexite
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: apathistical, adipopexic, outlearned, neurohistology, simulcasting
+7: inlayers, untractarian
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+INSERT: tipree
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: oculinidae, rhamnohexite, tipree
+1: clacks
+2: hitoshi, ecchymotic
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: apathistical, adipopexic, outlearned, neurohistology, simulcasting
+7: inlayers, untractarian
+8: alkylol, caliburno, superexcellent, infraocular
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+RESIZE: 3
+HASH TABLE CONTENTS
+0: rhamnohexite, tipree, hitoshi, thyrisiferous, adipopexic, pandemics
+1: ecchymotic, metiers, metiers, apathistical, inlayers, untractarian, superexcellent, infraocular, accipient, spellproof, tubifexes, abstricting, marqueterie, acromiothoracic
+2: oculinidae, clacks, uncathedraled, repetitae, playless, outlearned, neurohistology, simulcasting, alkylol, caliburno
+RESIZE: 5
+HASH TABLE CONTENTS
+0: rhamnohexite, thyrisiferous, adipopexic, untractarian, oculinidae, uncathedraled, outlearned
+1: ecchymotic, abstricting, simulcasting, alkylol
+2: pandemics, inlayers, superexcellent, marqueterie, clacks
+3: accipient, spellproof, acromiothoracic
+4: tipree, hitoshi, metiers, metiers, apathistical, infraocular, tubifexes, repetitae, playless, neurohistology, caliburno
+RESIZE: 11
+REMOVE: hyperchloric
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+SEARCH: accipient, 9
+REMOVE: evolutional
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+SEARCH: oculinidae, 0
+REMOVE: riverwise
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+SEARCH: aldeia, -1
+REMOVE: bourn
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+SEARCH: herbarian, -1
+REMOVE: hypodiploid
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+REMOVE: marcid
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+REMOVE: triphibian
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+SEARCH: bacteriophagia, -1
+REMOVE: uriniferous
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical, neurohistology
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+REMOVE: neurohistology
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic
+REMOVE: trachycarpous
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: rhamnohexite, oculinidae, tipree
+1: clacks
+2: ecchymotic, hitoshi
+3: uncathedraled, repetitae, playless
+4: thyrisiferous
+5: metiers, metiers
+6: adipopexic, outlearned, simulcasting, apathistical
+7: untractarian, inlayers
+8: alkylol, superexcellent, infraocular, caliburno
+9: pandemics, accipient, spellproof, tubifexes
+10: abstricting, marqueterie, acromiothoracic

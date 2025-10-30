@@ -1,0 +1,144 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: zeugite
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+2: zeugite
+INSERT: oviparity
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+2: zeugite, oviparity
+SEARCH: staves, -1
+INSERT: oviparity
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+2: zeugite, oviparity, oviparity
+INSERT: teasableness
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: teasableness
+2: zeugite, oviparity, oviparity
+SEARCH: orangite, -1
+INSERT: unnegotiated
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: teasableness
+2: zeugite, oviparity, oviparity, unnegotiated
+INSERT: herbist
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: herbist
+1: teasableness
+2: zeugite, oviparity, oviparity, unnegotiated
+SEARCH: carditises, -1
+INSERT: carditises
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: herbist
+1: teasableness
+2: zeugite, oviparity, oviparity, unnegotiated, carditises
+INSERT: carditises
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: herbist
+1: teasableness
+2: zeugite, oviparity, oviparity, unnegotiated, carditises, carditises
+SEARCH: orangite, -1
+INSERT: fellable
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: herbist
+1: teasableness
+2: zeugite, oviparity, oviparity, unnegotiated, carditises, carditises
+3: fellable
+SEARCH: staves, -1
+INSERT: fellable
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: herbist
+1: teasableness
+2: zeugite, oviparity, oviparity, unnegotiated, carditises, carditises
+3: fellable, fellable
+SEARCH: herbist, 0
+RESIZE: 31
+HASH TABLE CONTENTS
+8: herbist
+10: teasableness
+11: oviparity, oviparity
+16: unnegotiated
+18: zeugite
+26: fellable, fellable
+29: carditises, carditises
+RESIZE: 5
+HASH TABLE CONTENTS
+0: herbist
+1: teasableness
+2: oviparity, oviparity, unnegotiated, zeugite, carditises, carditises
+3: fellable, fellable
+REMOVE: carditises
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: herbist
+1: teasableness
+2: oviparity, oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+SEARCH: axonophorous, -1
+REMOVE: herbist
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+SEARCH: bawbees, -1
+REMOVE: chemicker
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+SEARCH: zeugite, 2
+REMOVE: taproom
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+SEARCH: herbist, -1
+REMOVE: egresses
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+REMOVE: oviparity
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+REMOVE: taproom
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+REMOVE: taproom
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+SEARCH: truncatella, -1
+REMOVE: egresses
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable
+REMOVE: triareal
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: teasableness
+2: oviparity, unnegotiated, zeugite, carditises
+3: fellable, fellable

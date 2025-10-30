@@ -1,0 +1,396 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: tyrannus
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+5: tyrannus
+INSERT: pulmometry
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+1: pulmometry
+5: tyrannus
+INSERT: pulmometry
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+1: pulmometry, pulmometry
+5: tyrannus
+INSERT: acceptation
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: acceptation
+1: pulmometry, pulmometry
+5: tyrannus
+SEARCH: iscariotism, -1
+INSERT: pulmometry
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: acceptation
+1: pulmometry, pulmometry, pulmometry
+5: tyrannus
+SEARCH: acceptation, 0
+INSERT: acceptation
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+5: tyrannus
+INSERT: acceptation
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+5: tyrannus
+SEARCH: pulmometry, 1
+INSERT: redisplaying
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+5: tyrannus
+7: redisplaying
+SEARCH: lapidate, -1
+INSERT: iscariotism
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism
+5: tyrannus
+7: redisplaying
+INSERT: tyrannus
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism
+5: tyrannus, tyrannus
+7: redisplaying
+SEARCH: counteract, -1
+INSERT: redisplaying
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism
+5: tyrannus, tyrannus
+7: redisplaying, redisplaying
+INSERT: counteract
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism
+5: tyrannus, tyrannus
+6: counteract
+7: redisplaying, redisplaying
+SEARCH: tyrannus, 5
+INSERT: lapidate
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism
+4: lapidate
+5: tyrannus, tyrannus
+6: counteract
+7: redisplaying, redisplaying
+SEARCH: counteract, 6
+INSERT: lapidate
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism
+4: lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract
+7: redisplaying, redisplaying
+INSERT: counteract
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism
+4: lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: iscariotism, 2
+INSERT: iscariotism
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism
+4: lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: iscariotism, 2
+INSERT: iscariotism
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract
+7: redisplaying, redisplaying
+INSERT: counteract
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: lapidate
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: pulmometry
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: iscariotism
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: acceptation
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: iscariotism
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: iscariotism
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: acceptation
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: lapidate
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: tyrannus, 5
+INSERT: lapidate
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: lapidate, 4
+INSERT: acceptation
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: pulmometry, 1
+INSERT: counteract
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract, counteract
+7: redisplaying, redisplaying
+INSERT: pulmometry
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: pulmometry, 1
+RESIZE: 59
+HASH TABLE CONTENTS
+5: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+34: acceptation, acceptation, acceptation, acceptation, acceptation, acceptation, redisplaying, redisplaying
+37: lapidate, lapidate, lapidate, lapidate, lapidate
+49: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, counteract, counteract, counteract, counteract
+50: tyrannus, tyrannus
+RESIZE: 11
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract, counteract
+7: redisplaying, redisplaying
+REMOVE: acceptation
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: redisplaying, 7
+REMOVE: iscariotism
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract, counteract
+7: redisplaying, redisplaying
+REMOVE: iscariotism
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: pulmometry, 1
+REMOVE: counteract
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying, redisplaying
+SEARCH: iscariotism, 2
+REMOVE: redisplaying
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying
+REMOVE: pulmometry
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract, counteract
+7: redisplaying
+SEARCH: iscariotism, 2
+REMOVE: counteract
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract
+7: redisplaying
+SEARCH: iscariotism, 2
+REMOVE: iscariotism
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus, tyrannus
+6: counteract, counteract
+7: redisplaying
+REMOVE: tyrannus
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate, lapidate
+5: tyrannus
+6: counteract, counteract
+7: redisplaying
+SEARCH: tyrannus, 5
+REMOVE: lapidate
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+0: acceptation, acceptation, acceptation, acceptation, acceptation
+1: pulmometry, pulmometry, pulmometry, pulmometry
+2: iscariotism, iscariotism, iscariotism
+4: lapidate, lapidate, lapidate, lapidate
+5: tyrannus
+6: counteract, counteract
+7: redisplaying

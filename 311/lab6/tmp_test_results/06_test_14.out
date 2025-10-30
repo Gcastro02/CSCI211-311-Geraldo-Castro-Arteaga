@@ -1,0 +1,155 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 5
+GET P: 2
+INSERT: mothballing
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+2: mothballing
+SEARCH: mothballing, 2
+INSERT: doryman
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+2: mothballing
+4: doryman
+INSERT: colymbidae
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+0: colymbidae
+2: mothballing
+4: doryman
+SEARCH: exogamies, -1
+INSERT: wrible
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible
+2: mothballing
+4: doryman
+SEARCH: doryman, 4
+INSERT: exogamies
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible
+2: mothballing, exogamies
+4: doryman
+SEARCH: frough, -1
+INSERT: wrible
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible
+2: mothballing, exogamies
+4: doryman
+SEARCH: wrible, 1
+INSERT: frough
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible, frough
+2: mothballing, exogamies
+4: doryman
+SEARCH: plethorically, -1
+INSERT: plethorically
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible, frough
+2: mothballing, exogamies, plethorically
+4: doryman
+SEARCH: exogamies, 2
+INSERT: mothballing
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible, frough
+2: mothballing, exogamies, plethorically, mothballing
+4: doryman
+SEARCH: exogamies, 2
+INSERT: mothballing
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible, frough
+2: mothballing, exogamies, plethorically, mothballing, mothballing
+4: doryman
+RESIZE: 31
+HASH TABLE CONTENTS
+1: wrible, wrible
+9: mothballing, mothballing, mothballing
+12: plethorically
+21: frough
+24: colymbidae
+25: doryman
+30: exogamies
+RESIZE: 5
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible, frough
+2: mothballing, mothballing, mothballing, plethorically, exogamies
+4: doryman
+REMOVE: doryman
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible, frough
+2: mothballing, mothballing, mothballing, plethorically, exogamies
+SEARCH: colymbidae, 0
+REMOVE: plethorically
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible, frough
+2: mothballing, mothballing, mothballing, exogamies
+REMOVE: frough
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible
+2: mothballing, mothballing, mothballing, exogamies
+REMOVE: primordialism
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible
+2: mothballing, mothballing, mothballing, exogamies
+REMOVE: primordialism
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible, wrible
+2: mothballing, mothballing, mothballing, exogamies
+SEARCH: colymbidae, 0
+REMOVE: wrible
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible
+2: mothballing, mothballing, mothballing, exogamies
+SEARCH: mothballing, 2
+REMOVE: doryman
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible
+2: mothballing, mothballing, mothballing, exogamies
+REMOVE: frough
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible
+2: mothballing, mothballing, mothballing, exogamies
+SEARCH: mothballing, 2
+REMOVE: plethorically
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible
+2: mothballing, mothballing, mothballing, exogamies
+SEARCH: seismological, -1
+REMOVE: seismological
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+0: colymbidae
+1: wrible
+2: mothballing, mothballing, mothballing, exogamies

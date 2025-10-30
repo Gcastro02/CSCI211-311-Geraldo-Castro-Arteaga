@@ -1,0 +1,338 @@
+PARAMETERIZED CONSTRUCTOR
+GET SIZE: 11
+GET P: 2
+INSERT: lippens
+GET NUM ELEMENTS: 1
+HASH TABLE CONTENTS
+1: lippens
+INSERT: gingellies
+GET NUM ELEMENTS: 2
+HASH TABLE CONTENTS
+1: lippens
+10: gingellies
+INSERT: araucariaceae
+GET NUM ELEMENTS: 3
+HASH TABLE CONTENTS
+1: lippens
+2: araucariaceae
+10: gingellies
+INSERT: gingellies
+GET NUM ELEMENTS: 4
+HASH TABLE CONTENTS
+1: lippens
+2: araucariaceae
+10: gingellies, gingellies
+SEARCH: thow, -1
+INSERT: lippens
+GET NUM ELEMENTS: 5
+HASH TABLE CONTENTS
+1: lippens, lippens
+2: araucariaceae
+10: gingellies, gingellies
+SEARCH: lippens, 1
+INSERT: gingellies
+GET NUM ELEMENTS: 6
+HASH TABLE CONTENTS
+1: lippens, lippens
+2: araucariaceae
+10: gingellies, gingellies, gingellies
+SEARCH: fibrocartilaginous, -1
+INSERT: fibrocartilaginous
+GET NUM ELEMENTS: 7
+HASH TABLE CONTENTS
+1: lippens, lippens
+2: araucariaceae
+3: fibrocartilaginous
+10: gingellies, gingellies, gingellies
+SEARCH: fibrocartilaginous, 3
+INSERT: mills
+GET NUM ELEMENTS: 8
+HASH TABLE CONTENTS
+1: lippens, lippens, mills
+2: araucariaceae
+3: fibrocartilaginous
+10: gingellies, gingellies, gingellies
+SEARCH: lippens, 1
+INSERT: callback
+GET NUM ELEMENTS: 9
+HASH TABLE CONTENTS
+1: lippens, lippens, mills
+2: araucariaceae
+3: fibrocartilaginous, callback
+10: gingellies, gingellies, gingellies
+SEARCH: callback, 3
+INSERT: lippens
+GET NUM ELEMENTS: 10
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae
+3: fibrocartilaginous, callback
+10: gingellies, gingellies, gingellies
+INSERT: araucariaceae
+GET NUM ELEMENTS: 11
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae, araucariaceae
+3: fibrocartilaginous, callback
+10: gingellies, gingellies, gingellies
+INSERT: callback
+GET NUM ELEMENTS: 12
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback
+10: gingellies, gingellies, gingellies
+INSERT: araucariaceae
+GET NUM ELEMENTS: 13
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback
+10: gingellies, gingellies, gingellies
+SEARCH: mills, 1
+INSERT: thow
+GET NUM ELEMENTS: 14
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies
+SEARCH: fibrocartilaginous, 3
+INSERT: araucariaceae
+GET NUM ELEMENTS: 15
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies
+INSERT: araucariaceae
+GET NUM ELEMENTS: 16
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies
+INSERT: gingellies
+GET NUM ELEMENTS: 17
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: mills, 1
+INSERT: lippens
+GET NUM ELEMENTS: 18
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+INSERT: fibrocartilaginous
+GET NUM ELEMENTS: 19
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: fibrocartilaginous, 3
+INSERT: callback
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: callback, 3
+INSERT: araucariaceae
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: thow, 4
+INSERT: mills
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+INSERT: fibrocartilaginous
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+INSERT: thow
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+INSERT: callback
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: gingellies, 10
+INSERT: callback
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+INSERT: mills
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+INSERT: araucariaceae
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: thow, 4
+INSERT: fibrocartilaginous
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous, callback, callback, fibrocartilaginous
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+INSERT: fibrocartilaginous
+GET NUM ELEMENTS: 30
+HASH TABLE CONTENTS
+1: lippens, lippens, mills, lippens, lippens, mills, mills
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, callback, callback, fibrocartilaginous, callback, fibrocartilaginous, callback, callback, fibrocartilaginous, fibrocartilaginous
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: mills, 1
+RESIZE: 59
+HASH TABLE CONTENTS
+9: thow, thow
+33: mills, mills, mills
+36: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous
+38: callback, callback, callback, callback, callback
+39: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+50: gingellies, gingellies, gingellies, gingellies
+57: lippens, lippens, lippens, lippens
+RESIZE: 11
+HASH TABLE CONTENTS
+1: mills, mills, mills, lippens, lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+REMOVE: araucariaceae
+GET NUM ELEMENTS: 29
+HASH TABLE CONTENTS
+1: mills, mills, mills, lippens, lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: callback, 3
+REMOVE: mills
+GET NUM ELEMENTS: 28
+HASH TABLE CONTENTS
+1: mills, mills, lippens, lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+REMOVE: lippens
+GET NUM ELEMENTS: 27
+HASH TABLE CONTENTS
+1: mills, mills, lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+REMOVE: mills
+GET NUM ELEMENTS: 26
+HASH TABLE CONTENTS
+1: mills, lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: araucariaceae, 2
+REMOVE: fibrocartilaginous
+GET NUM ELEMENTS: 25
+HASH TABLE CONTENTS
+1: mills, lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: thow, 4
+REMOVE: mills
+GET NUM ELEMENTS: 24
+HASH TABLE CONTENTS
+1: lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: araucariaceae, 2
+REMOVE: fibrocartilaginous
+GET NUM ELEMENTS: 23
+HASH TABLE CONTENTS
+1: lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow, thow
+10: gingellies, gingellies, gingellies, gingellies
+REMOVE: thow
+GET NUM ELEMENTS: 22
+HASH TABLE CONTENTS
+1: lippens, lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: araucariaceae, 2
+REMOVE: lippens
+GET NUM ELEMENTS: 21
+HASH TABLE CONTENTS
+1: lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+REMOVE: fibrocartilaginous
+GET NUM ELEMENTS: 20
+HASH TABLE CONTENTS
+1: lippens, lippens
+2: araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae, araucariaceae
+3: fibrocartilaginous, fibrocartilaginous, callback, callback, callback, callback, callback
+4: thow
+10: gingellies, gingellies, gingellies, gingellies
+SEARCH: araucariaceae, 2
