@@ -89,22 +89,16 @@ void HashTable::resize(int s){
 }
 
 int HashTable::hash(std::string s){
-if (size <= 0) return -1;
-// Implement the hash exactly as specified:
-// hash(s) = (sigma(s[0]) * p^0 + ... + sigma(s[l-1]) * p^{l-1}) mod m
-// where sigma(c) is ASCII value. Use 64-bit unsigned accumulation to
-// reduce wrap effects in typical implementations.
-unsigned long long h = 0ull;
-unsigned long long powp = 1ull;
-unsigned long long up = static_cast<unsigned long long>(p);
+  if (size <= 0) return -1;
+  // Implement the hash exactly as specified:
+  // hash(s) = (sigma(s[0]) * p^0 + ... + sigma(s[l-1]) * p^{l-1}) mod m
 
-for (char c : s){
-unsigned long long val = static_cast<unsigned char>(c);
-// use integer exponentiation by keeping a running powp = p^i
-h += val * powp;
-// advance powp for the next character: powp *= p
-powp *= up;
-}
+  unsigned long long up = static_cast<unsigned long long>(p);
+  unsigned int sum = 0;
+  for (unsigned int i = 0; i < s.size(); i++) {
+    sum += s[i] * pow(p, i);
+  }
 
-return static_cast<int>(h % static_cast<unsigned long long>(size));
+  sum = sum % size;
+  return sum;
 }
