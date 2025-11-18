@@ -115,7 +115,7 @@ int main() {
 			++processed;
 		}
 
-		// Runway assignment logic (match original expected behavior)
+		// Runway assignment logic
 		if (!departH.empty() && !arriveH.empty()) {
 			cout << "\tRunway A" << '\n';
 			cout << "\t\t";
