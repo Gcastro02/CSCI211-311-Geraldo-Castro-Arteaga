@@ -1,0 +1,15 @@
+MAKE GRAPH
+IS REACHABLE
+20 4 True
+14 4 True
+1 3 True
+24 20 False
+0 1 True
+9 8 True
+3 24 False
+19 14 True
+25 9 True
+13 0 True
+3 15 True
+16 24 False
+4 7 True
