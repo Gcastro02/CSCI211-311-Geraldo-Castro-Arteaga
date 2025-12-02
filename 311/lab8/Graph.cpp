@@ -1,6 +1,6 @@
 // CSCI 311 
 // Graph class cpp
-// Author:
+// Author: Geraldo Castro
 
 #include <iostream>
 #include "Graph.h"
