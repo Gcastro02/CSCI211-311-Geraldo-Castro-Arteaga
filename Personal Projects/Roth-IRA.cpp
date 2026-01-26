@@ -117,7 +117,7 @@ public:
 
 int main() {
     // Note: Use your actual API key from Alpha Vantage here
-    PortfolioManager myIRA("portfolio_log.csv", 0.25, "demo");
+    PortfolioManager myIRA("portfolio_log.csv", 0.25, "OWJMTJTHU3LCRV1F");
 
     myIRA.addToWatchlist("VOO");
     myIRA.addToWatchlist("AAPL");
