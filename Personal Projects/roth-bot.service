@@ -1,0 +1,30 @@
+[Unit]
+Description=Roth IRA ML Finance Bot
+Documentation=file:///home/pi/roth-bot/README-ML.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/roth-bot
+EnvironmentFile=/home/pi/roth-bot/config.env
+
+# Run the bot
+ExecStart=/home/pi/roth-bot/Roth-IRA-ML
+
+# Restart on failure
+Restart=on-failure
+RestartSec=300
+
+# Resource limits (for Raspberry Pi)
+MemoryLimit=500M
+CPUQuota=75%
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=roth-bot
+
+[Install]
+WantedBy=multi-user.target
