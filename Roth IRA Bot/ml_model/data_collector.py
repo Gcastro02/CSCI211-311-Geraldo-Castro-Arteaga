@@ -2,7 +2,7 @@
 """
 Data Collector for Stock ML Model
 Downloads historical OHLCV data, calculates technical indicators, 
-and prepares training/inference datasets.
+and prepares training/inference datasets using a manual watchlist.
 """
 
 import yfinance as yf
@@ -10,11 +10,35 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import os
-import json
 import pickle
-from typing import Tuple, Dict, List
+from typing import Tuple, List
 
-# Technical indicator calculations
+# --- WATCHLIST LOGIC ---
+
+def get_watchlist(file_path="../watchlist.txt") -> List[str]:
+    """
+    Reads tickers from the manual watchlist file.
+    Checks both the parent directory (standard for your structure)
+    and the current directory as a fallback.
+    """
+    # Check parent directory (if run from inside ml_model/)
+    # then check current directory (if run from project root)
+    target_path = file_path
+    if not os.path.exists(target_path):
+        target_path = "watchlist.txt"
+        
+    if not os.path.exists(target_path):
+        print(f"Warning: {file_path} not found. Using default internal list.")
+        return ['VOO', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'SPY', 'QQQ', 'IWM']
+    
+    with open(target_path, 'r') as f:
+        # Clean the input: remove whitespace/newlines and force uppercase
+        tickers = [line.strip().upper() for line in f if line.strip()]
+    
+    return tickers
+
+# --- TECHNICAL INDICATORS ---
+
 def calculate_rsi(prices: pd.Series, period: int = 14) -> pd.Series:
     """Relative Strength Index"""
     delta = prices.diff()
@@ -42,19 +66,7 @@ def calculate_bollinger_bands(prices: pd.Series, period: int = 20) -> Tuple[pd.S
     return upper_band, sma, lower_band
 
 def create_features(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Create technical and statistical features from OHLCV data.
-    
-    Features:
-    - Price momentum (% change over 5, 10, 20 days)
-    - Volume trend
-    - RSI (Relative Strength Index)
-    - MACD components
-    - Bollinger Band position
-    - Moving averages (5, 10, 20 day)
-    - High-Low range
-    - Volatility (20-day std)
-    """
+    """Create technical and statistical features from OHLCV data."""
     df = df.copy()
     
     # Returns and momentum
@@ -99,60 +111,35 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def download_historical_data(ticker: str, period: str = "5y", interval: str = "1d") -> pd.DataFrame:
-    """
-    Download historical OHLCV data from Yahoo Finance.
-    
-    Args:
-        ticker: Stock ticker symbol (e.g., "AAPL")
-        period: Data period ("1y", "2y", "5y", etc.)
-        interval: Data interval ("1d", "1wk", "1mo")
-    
-    Returns:
-        DataFrame with OHLCV data and calculated features
-    """
+    """Download historical OHLCV data and calculate features."""
     try:
         df = yf.download(ticker, period=period, interval=interval, progress=False)
         
         if df.empty:
             return None
         
-        # Flatten multi-level columns if they exist (when downloading single ticker)
+        # Flatten multi-level columns if they exist
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.droplevel(1)
         
         df = create_features(df)
         return df
     
-    except Exception as e:
+    except Exception:
         return None
 
 def create_labels(df: pd.DataFrame, lookforward: int = 5, gain_threshold: float = 0.02) -> np.ndarray:
-    """
-    Create binary labels: 1 if price rises ≥gain_threshold over next lookforward days, 0 otherwise.
-    
-    Args:
-        df: DataFrame with price data
-        lookforward: Number of days to look ahead
-        gain_threshold: Minimum gain to label as "Buy" (default 2%)
-    
-    Returns:
-        Binary labels (1 = good buy, 0 = not a good buy)
-    """
+    """Create binary labels based on future price performance."""
     close_prices = df['Close']
     if isinstance(close_prices, pd.DataFrame):
-        close_prices = close_prices.iloc[:, 0]  # Get first column if it's still a DataFrame
+        close_prices = close_prices.iloc[:, 0]
     
     future_returns = close_prices.shift(-lookforward) / close_prices - 1
     labels = (future_returns >= gain_threshold).astype(int).values
     return labels
 
-def prepare_dataset(tickers: List[str], lookforward: int = 5) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Prepare training dataset from multiple tickers.
-    
-    Returns:
-        (X, y) - features and labels
-    """
+def prepare_dataset(tickers: List[str], lookforward: int = 5) -> Tuple[np.ndarray, np.ndarray, List[str]]:
+    """Prepare training dataset from multiple tickers."""
     X_list = []
     y_list = []
     
@@ -165,36 +152,34 @@ def prepare_dataset(tickers: List[str], lookforward: int = 5) -> Tuple[np.ndarra
     ]
     
     for ticker in tickers:
-        print(f"\nProcessing {ticker}...")
+        print(f"Processing {ticker}...")
         df = download_historical_data(ticker, period="5y")
         
         if df is None or len(df) < 50:
             continue
         
-        # Drop rows with NaN values (from indicator calculation)
         df_clean = df.dropna()
         
         if len(df_clean) < 50:
             print(f"  Insufficient clean data for {ticker}")
             continue
         
-        # Extract features and labels
         X = df_clean[feature_cols].values
         y = create_labels(df_clean, lookforward=lookforward)
         
-        # Trim labels to match features (removed NaN rows)
+        # Trim labels to match features
         y = y[:len(X)]
         
         X_list.append(X)
         y_list.append(y)
-        
-        print(f"  Features shape: {X.shape}, Labels shape: {len(y)}")
     
-    # Concatenate all tickers
+    if not X_list:
+        print("Error: No data collected for any tickers.")
+        return np.array([]), np.array([]), feature_cols
+
     X_all = np.vstack(X_list)
     y_all = np.concatenate(y_list)
     
-    # Remove rows with any remaining NaN or Inf
     valid_mask = np.isfinite(X_all).all(axis=1)
     X_all = X_all[valid_mask]
     y_all = y_all[valid_mask]
@@ -207,26 +192,20 @@ def prepare_dataset(tickers: List[str], lookforward: int = 5) -> Tuple[np.ndarra
 def save_dataset(X: np.ndarray, y: np.ndarray, feature_cols: List[str], filepath: str):
     """Save dataset and metadata."""
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    
     with open(filepath, 'wb') as f:
         pickle.dump({'X': X, 'y': y, 'feature_cols': feature_cols}, f)
-    
     print(f"Saved dataset to {filepath}")
 
-def load_dataset(filepath: str) -> Tuple[np.ndarray, np.ndarray, List[str]]:
-    """Load dataset and metadata."""
-    with open(filepath, 'rb') as f:
-        data = pickle.load(f)
-    
-    return data['X'], data['y'], data['feature_cols']
+# --- EXECUTION ---
 
 if __name__ == "__main__":
-    # Example: Collect data for common ETFs and stocks
-    tickers = ['VOO', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'SPY', 'QQQ', 'IWM']
+    # Load tickers from manual watchlist file
+    tickers = get_watchlist()
+    print(f"Starting analysis for {len(tickers)} tickers from watchlist.")
     
     X, y, feature_cols = prepare_dataset(tickers, lookforward=5)
     
-    dataset_path = 'ml_model/data/training_dataset.pkl'
-    save_dataset(X, y, feature_cols, dataset_path)
-    
-    print(f"\n✓ Dataset ready for training!")
+    if X.size > 0:
+        dataset_path = 'ml_model/data/training_dataset.pkl'
+        save_dataset(X, y, feature_cols, dataset_path)
+        print(f"\n✓ Dataset ready for training!")
