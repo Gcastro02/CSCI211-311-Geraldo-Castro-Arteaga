@@ -1,0 +1,4 @@
+AAPL
+MSFT
+VOO
+TSLA

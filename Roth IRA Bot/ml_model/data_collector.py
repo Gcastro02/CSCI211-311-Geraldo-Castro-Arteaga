@@ -110,24 +110,20 @@ def download_historical_data(ticker: str, period: str = "5y", interval: str = "1
     Returns:
         DataFrame with OHLCV data and calculated features
     """
-    print(f"Downloading {period} of {interval} data for {ticker}...")
     try:
         df = yf.download(ticker, period=period, interval=interval, progress=False)
         
         if df.empty:
-            print(f"  ERROR: No data returned for {ticker}")
             return None
         
         # Flatten multi-level columns if they exist (when downloading single ticker)
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.droplevel(1)
         
-        print(f"  Downloaded {len(df)} rows")
         df = create_features(df)
         return df
     
     except Exception as e:
-        print(f"  ERROR downloading {ticker}: {e}")
         return None
 
 def create_labels(df: pd.DataFrame, lookforward: int = 5, gain_threshold: float = 0.02) -> np.ndarray:

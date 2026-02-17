@@ -22,6 +22,26 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* s) 
     return newLength;
 }
 
+std::vector<std::string> loadWatchlist(const std::string& filename) {
+    std::vector<std::string> symbols;
+    std::ifstream file(filename);
+    std::string ticker;
+
+    if (!file.is_open()) {
+        std::cerr << "Error: Could not open " << filename << ". Using default tickers." << std::endl;
+        return {"AAPL", "VOO"}; // Fallback defaults
+    }
+
+    while (file >> ticker) {
+        if (!ticker.empty()) {
+            symbols.push_back(ticker);
+        }
+    }
+
+    file.close();
+    return symbols;
+}
+
 /**
  * MLPredictor: Interface to Python ML model for stock predictions
  * Calls ml_model/predict.py as subprocess and parses JSON results
@@ -291,9 +311,9 @@ int main() {
     PortfolioManager myIRA("portfolio_log.csv", 0.25, apiKey, 0.65);
 
     // Add stocks to watchlist
-    myIRA.addToWatchlist("VOO");
-    myIRA.addToWatchlist("AAPL");
-    myIRA.addToWatchlist("MSFT");
+    std::vector<std::string> tickers = loadWatchlist("watchlist.txt");
+
+    std::cout << "Loaded" << tickers.size() << " tickers from watchlist." << std::endl;
 
     // Run market update (with ML predictions)
     myIRA.runUpdate();
