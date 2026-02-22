@@ -20,9 +20,8 @@ jobs:
           sudo apt-get install -y build-essential libcurl4-openssl-dev
 
       - name: Build ML C++ Bot
-        working-directory: Roth IRA Bot
         run: |
-          make -f Makefile-ML Roth-IRA-ML
+          make -f "Makefile-ML" Roth-IRA-ML
 
       - name: Set up Python
         uses: actions/setup-python@v5
