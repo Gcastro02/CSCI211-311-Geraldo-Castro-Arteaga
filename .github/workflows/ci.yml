@@ -19,6 +19,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y build-essential libcurl4-openssl-dev
 
+      - name: Install C++ dependencies
+        run: |
+          sudo apt-get update
+            sudo apt-get install -y build-essential libcurl4-openssl-dev nlohmann-json3-dev
+
       - name: Build ML C++ Bot
         working-directory: Roth IRA Bot
         run: |
