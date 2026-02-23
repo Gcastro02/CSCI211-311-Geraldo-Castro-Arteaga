@@ -14,12 +14,12 @@ all: $(ORIGINAL) $(ML_VERSION)
 
 # Build original version
 $(ORIGINAL): $(ORIGINAL_SRC)
-	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $< -o $@
 	@echo "✓ Built: $@"
 
 # Build ML-integrated version
 $(ML_VERSION): $(ML_SRC)
-	$(CXX) $(CXXFLAGS) $< -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $< -o $@
 	@echo "✓ Built: $@"
 
 # Run original version
