@@ -142,21 +142,21 @@ private:
             "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" +
             ticker + "&apikey=" + apiKey;
 
-    std::string command = "curl -s -L \"" + url + "\"";
+        std::string command = "curl -s -L \"" + url + "\"";
 
-    std::shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
-    if (!pipe) {
-        std::cerr << "Error: Failed to execute curl command." << std::endl;
-        return "";
-    }
+        std::shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
+        if (!pipe) {
+            std::cerr << "Error: Failed to execute curl command." << std::endl;
+            return "";
+        }
 
-    char buffer[4096];
-    std::string result;
-    while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
-        result += buffer;
-    }
+        char buffer[4096];
+        std::string result;
+        while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
+            result += buffer;
+        }
 
-    return result;
+        return result;
 }
 
 public:
@@ -301,17 +301,21 @@ int main() {
     // Configuration
     const char* apiKey = std::getenv("ALPHAVANTAGE_API_KEY");
     if (!apiKey) {
-        apiKey = "OWJMTJTHU3LCRV1F";  // Fallback to hardcoded (NOT SECURE - use env var on Pi)
+        apiKey = "OWJMTJTHU3LCRV1F";  // Fallback (use env var on Pi in production)
     }
 
     // Initialize portfolio manager with ML integration
-    // Parameters: logFile, riskThreshold, apiKey, mlConfidenceThreshold
     PortfolioManager myIRA("portfolio_log.csv", 0.25, apiKey, 0.65);
 
-    // Add stocks to watchlist
+    // Load stocks from watchlist file
     std::vector<std::string> tickers = loadWatchlist("watchlist.txt");
 
-    std::cout << "Loaded" << tickers.size() << " tickers from watchlist." << std::endl;
+    std::cout << "Loaded " << tickers.size() << " tickers from watchlist." << std::endl;
+
+    // IMPORTANT: Add tickers to PortfolioManager's internal watchlist
+    for (const auto& ticker : tickers) {
+        myIRA.addToWatchlist(ticker);
+    }
 
     // Run market update (with ML predictions)
     myIRA.runUpdate();
