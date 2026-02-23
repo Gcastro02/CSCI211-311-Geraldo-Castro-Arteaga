@@ -82,7 +82,7 @@ public:
         try {
             // Execute: python3 ml_model/predict.py TICKER
             // Use python3 directly; it should find virtualenv in PATH or use system python
-            std::string cmd = "cd ml_model && python3 predict.py " + ticker + " 2>/dev/null";
+            std::string cmd = "cd ml_model && ./venv/bin/python predict.py " + ticker + " 2>/dev/null";
             
             // Execute and capture output
             std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
