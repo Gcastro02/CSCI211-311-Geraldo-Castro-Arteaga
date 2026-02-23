@@ -1,6 +1,5 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -O2
-LDFLAGS = -lcurl
 
 # Original version (without ML)
 ORIGINAL = Roth-IRA
