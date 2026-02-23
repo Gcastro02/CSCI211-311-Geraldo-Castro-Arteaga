@@ -7,20 +7,12 @@
 #include <sstream>
 #include <thread>
 #include <chrono>
-#include <curl/curl.h>
 #include <nlohmann/json.hpp>
 #include <cstdlib>
 #include <cstdio>
 #include <memory>
 
 using json = nlohmann::json;
-
-// Callback for CURL to handle the incoming data stream
-size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* s) {
-    size_t newLength = size * nmemb;
-    s->append((char*)contents, newLength);
-    return newLength;
-}
 
 std::vector<std::string> loadWatchlist(const std::string& filename) {
     std::vector<std::string> symbols;
@@ -144,22 +136,28 @@ private:
     std::string apiKey;
     MLPredictor mlPredictor;
 
-    // Internal helper to fetch data via CURL
+    // Internal helper to fetch data
     std::string fetchData(std::string ticker) {
-        CURL* curl;
-        std::string readBuffer;
-        std::string url = "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + ticker + "&apikey=" + apiKey;
+        std::string url =
+            "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" +
+            ticker + "&apikey=" + apiKey;
 
-        curl = curl_easy_init();
-        if (curl) {
-            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
-            curl_easy_perform(curl);
-            curl_easy_cleanup(curl);
-        }
-        return readBuffer;
+    std::string command = "curl -s -L \"" + url + "\"";
+
+    std::shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
+    if (!pipe) {
+        std::cerr << "Error: Failed to execute curl command." << std::endl;
+        return "";
     }
+
+    char buffer[4096];
+    std::string result;
+    while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
+        result += buffer;
+    }
+
+    return result;
+}
 
 public:
     PortfolioManager(std::string file, double risk, std::string key, double mlThreshold = 0.65) 
