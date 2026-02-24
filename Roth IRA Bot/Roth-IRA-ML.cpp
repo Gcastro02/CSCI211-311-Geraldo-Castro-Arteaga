@@ -278,10 +278,38 @@ public:
             std::string rawData = fetchData(ticker);
             try {
                 auto data = json::parse(rawData);
-                std::string priceStr = data["Global Quote"]["05. price"];
-                double price = std::stod(priceStr);
+                // Defensive checks for AlphaVantage responses
+                if (data.contains("Note")) {
+                    std::cerr << "  ERROR fetching " << ticker << ": rate limited: "
+                            << data["Note"].get<std::string>() << std::endl;
+                    continue;
+                }
+                if (data.contains("Information")) {
+                    std::cerr << "  ERROR fetching " << ticker << ": "
+                            << data["Information"].get<std::string>() << std::endl;
+                    continue;
+                }
+                if (data.contains("Error Message")) {
+                    std::cerr << "  ERROR fetching " << ticker << ": "
+                            << data["Error Message"].get<std::string>() << std::endl;
+                    continue;
+                }
 
-                std::cout << "  Price: $" << std::fixed << std::setprecision(2) << price << std::endl;
+                if (!data.contains("Global Quote") ||
+                    !data["Global Quote"].contains("05. price") ||
+                    data["Global Quote"]["05. price"].is_null()) {
+                    std::cerr << "  ERROR fetching " << ticker
+                            << ": missing price (API response did not include Global Quote)" << std::endl;
+                    continue;
+                }
+
+                std::string priceStr = data["Global Quote"]["05. price"].get<std::string>();
+                if (priceStr.empty()) {
+                    std::cerr << "  ERROR fetching " << ticker << ": empty price" << std::endl;
+                    continue;
+                }
+
+                double price = std::stod(priceStr);
 
                 // Get ML prediction for this stock
                 double confidence = 0.0;
