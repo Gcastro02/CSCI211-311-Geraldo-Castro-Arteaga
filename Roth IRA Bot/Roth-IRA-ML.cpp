@@ -287,24 +287,28 @@ public:
                 double confidence = 0.0;
                 if (shouldBuy(ticker, confidence)) {
 
+                    // --- Portfolio + buffer setup ---
+                    const double cashBufferPct = 0.05;
+                    double minCashToKeep = state.cashUsd * cashBufferPct;
+                    double spendableCash = state.cashUsd - minCashToKeep;
+
+                    if (spendableCash <= 0.0) {
+                        std::cout << "  → NO SPENDABLE CASH (5% buffer enforced)" << std::endl;
+                        continue;
+                    }
+
+                    // Calculate current total portfolio value
                     double totalPortfolioValue = state.cashUsd;
 
-                    // Add current holdings value
+                    // Add holdings value (only this ticker for now)
                     for (const auto& [sym, sh] : state.shares) {
-                        // If we fetched this ticker price already use it,
-                        // otherwise approximate using current price
                         if (sym == ticker) {
                             totalPortfolioValue += sh * price;
                         }
                     }
 
-                    if (state.cashUsd <= 0.0) {
-                        std::cout << "  → NO CASH AVAILABLE" << std::endl;
-                        continue;
-                    }
-
-                    // Allocate proportional to confidence
-                    double allocationDollar = state.cashUsd * confidence;
+                    // Allocate proportional to confidence (from spendable only)
+                    double allocationDollar = spendableCash * confidence;
 
                     // Risk cap enforcement
                     double currentValue = state.shares[ticker] * price;
@@ -313,19 +317,36 @@ public:
 
                     double finalAllocation = std::min(allocationDollar, roomLeft);
 
+                    // Never exceed spendable cash
+                    finalAllocation = std::min(finalAllocation, spendableCash);
+
                     if (finalAllocation <= 0.0) {
-                        std::cout << "  → SKIP (risk cap reached)" << std::endl;
+                        std::cout << "  → SKIP (risk cap or buffer limit reached)" << std::endl;
                         continue;
                     }
 
                     double sharesToBuy = finalAllocation / price;
+                    double cost = sharesToBuy * price;
 
-                    std::cout << "  → BUY " << std::fixed << std::setprecision(4)
-                            << sharesToBuy << " shares @ $" << price << std::endl;
+                    // Final safety: never violate buffer due to rounding
+                    if (state.cashUsd - cost < minCashToKeep) {
+                        cost = state.cashUsd - minCashToKeep;
+                        sharesToBuy = cost / price;
+                    }
+
+                    if (sharesToBuy <= 0.0) {
+                        std::cout << "  → SKIP (buffer leaves no room)" << std::endl;
+                        continue;
+                    }
+
+                    std::cout << "  → BUY "
+                            << std::fixed << std::setprecision(4)
+                            << sharesToBuy << " shares @ $" << price
+                            << std::endl;
 
                     // Update state
                     state.shares[ticker] += sharesToBuy;
-                    state.cashUsd -= sharesToBuy * price;
+                    state.cashUsd -= cost;
 
                     logTrade(ticker, price, sharesToBuy);
                 }
