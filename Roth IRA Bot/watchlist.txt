@@ -1,4 +1,11 @@
-AAPL
-MSFT
-VOO
 TSLA
+VOO, 
+AAP, 
+MSFT, 
+GOOGL, 
+AMZN, 
+META, 
+NVDA, 
+SPY,
+QQQ,
+IWM
