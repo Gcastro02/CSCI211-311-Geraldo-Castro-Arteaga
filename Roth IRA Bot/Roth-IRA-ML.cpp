@@ -127,6 +127,43 @@ public:
     }
 };
 
+struct PortfolioState {
+    double cashUsd = 0.0;
+    std::map<std::string, double> shares; // ticker -> shares
+
+    static PortfolioState load(const std::string& path) {
+        PortfolioState st;
+        std::ifstream f(path);
+        if (!f.is_open()) {
+            // If missing, default to $0 and empty holdings
+            return st;
+        }
+        json j; f >> j;
+
+        st.cashUsd = j.value("cash_usd", 0.0);
+
+        if (j.contains("holdings") && j["holdings"].is_object()) {
+            for (auto& [k, v] : j["holdings"].items()) {
+                st.shares[k] = v.get<double>();
+            }
+        }
+        return st;
+    }
+
+    void save(const std::string& path) const {
+        json j;
+        j["cash_usd"] = cashUsd;
+        json h = json::object();
+        for (const auto& [ticker, sh] : shares) {
+            h[ticker] = sh;
+        }
+        j["holdings"] = h;
+
+        std::ofstream f(path);
+        f << std::setw(2) << j << "\n";
+    }
+};
+
 class PortfolioManager {
 private:
     std::string logFileName;
@@ -135,6 +172,9 @@ private:
     std::vector<std::string> watchlist;
     std::string apiKey;
     MLPredictor mlPredictor;
+
+    PortfolioState state;
+    std::string stateFile;
 
     // Internal helper to fetch data
     std::string fetchData(std::string ticker) {
@@ -160,9 +200,18 @@ private:
 }
 
 public:
-    PortfolioManager(std::string file, double risk, std::string key, double mlThreshold = 0.65) 
-        : logFileName(file), riskThreshold(risk), mlConfidenceThreshold(mlThreshold), apiKey(key),
-          mlPredictor("ml_model/predict.py") {}
+    PortfolioManager(std::string file, double risk, std::string key,
+                     double mlThreshold = 0.65,
+                     std::string statePath = "portfolio_state.json")
+        : logFileName(file),
+          riskThreshold(risk),
+          mlConfidenceThreshold(mlThreshold),
+          apiKey(key),
+          mlPredictor("ml_model/predict.py"),
+          stateFile(statePath)
+    {
+        state = PortfolioState::load(stateFile);
+    }
 
     void addToWatchlist(std::string ticker) {
         watchlist.push_back(ticker);
@@ -237,13 +286,48 @@ public:
                 // Get ML prediction for this stock
                 double confidence = 0.0;
                 if (shouldBuy(ticker, confidence)) {
-                    // ML approved: Calculate shares to buy
-                    int shares = calculateSharesAllocation(ticker, price);
-                    std::cout << "  → BUY " << shares << " shares @ $" << std::fixed 
-                              << std::setprecision(2) << price << std::endl;
-                    logTrade(ticker, price, shares);
-                } else {
-                    std::cout << "  → SKIP (ML rejection)" << std::endl;
+
+                    double totalPortfolioValue = state.cashUsd;
+
+                    // Add current holdings value
+                    for (const auto& [sym, sh] : state.shares) {
+                        // If we fetched this ticker price already use it,
+                        // otherwise approximate using current price
+                        if (sym == ticker) {
+                            totalPortfolioValue += sh * price;
+                        }
+                    }
+
+                    if (state.cashUsd <= 0.0) {
+                        std::cout << "  → NO CASH AVAILABLE" << std::endl;
+                        continue;
+                    }
+
+                    // Allocate proportional to confidence
+                    double allocationDollar = state.cashUsd * confidence;
+
+                    // Risk cap enforcement
+                    double currentValue = state.shares[ticker] * price;
+                    double maxAllowed = riskThreshold * totalPortfolioValue;
+                    double roomLeft = std::max(0.0, maxAllowed - currentValue);
+
+                    double finalAllocation = std::min(allocationDollar, roomLeft);
+
+                    if (finalAllocation <= 0.0) {
+                        std::cout << "  → SKIP (risk cap reached)" << std::endl;
+                        continue;
+                    }
+
+                    double sharesToBuy = finalAllocation / price;
+
+                    std::cout << "  → BUY " << std::fixed << std::setprecision(4)
+                            << sharesToBuy << " shares @ $" << price << std::endl;
+
+                    // Update state
+                    state.shares[ticker] += sharesToBuy;
+                    state.cashUsd -= sharesToBuy * price;
+
+                    logTrade(ticker, price, sharesToBuy);
                 }
 
             } catch (const std::exception& e) {
@@ -253,6 +337,13 @@ public:
             // Wait 15s to stay under free tier limit (5 requests/min)
             std::this_thread::sleep_for(std::chrono::seconds(15));
         }
+
+        state.save(stateFile);
+
+        std::cout 
+            << "\nUpdated Cash Balance: $" 
+            << std::fixed << std::setprecision(2)
+            << state.cashUsd << std::endl;
     }
 
     /**
