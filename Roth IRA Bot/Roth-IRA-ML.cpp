@@ -170,43 +170,18 @@ private:
     double riskThreshold;
     double mlConfidenceThreshold;  // Only buy if ML confidence > this
     std::vector<std::string> watchlist;
-    std::string apiKey;
     MLPredictor mlPredictor;
 
     PortfolioState state;
     std::string stateFile;
 
-    // Internal helper to fetch data
-    std::string fetchData(std::string ticker) {
-        std::string url =
-            "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" +
-            ticker + "&apikey=" + apiKey;
-
-        std::string command = "curl -s -L \"" + url + "\"";
-
-        std::shared_ptr<FILE> pipe(popen(command.c_str(), "r"), pclose);
-        if (!pipe) {
-            std::cerr << "Error: Failed to execute curl command." << std::endl;
-            return "";
-        }
-
-        char buffer[4096];
-        std::string result;
-        while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
-            result += buffer;
-        }
-
-        return result;
-}
-
 public:
-    PortfolioManager(std::string file, double risk, std::string key,
+    PortfolioManager(std::string file, double risk,
                      double mlThreshold = 0.65,
                      std::string statePath = "portfolio_state.json")
         : logFileName(file),
           riskThreshold(risk),
           mlConfidenceThreshold(mlThreshold),
-          apiKey(key),
           mlPredictor("ml_model/predict.py"),
           stateFile(statePath)
     {
@@ -217,7 +192,7 @@ public:
         watchlist.push_back(ticker);
     }
 
-    void logTrade(std::string ticker, double price, int shares) {
+    void logTrade(std::string ticker, double price, double shares) {
         std::ofstream outFile(logFileName, std::ios::app);
         if (outFile.is_open()) {
             std::time_t t = std::time(nullptr);
@@ -274,114 +249,100 @@ public:
         for (const auto& ticker : watchlist) {
             std::cout << "Processing " << ticker << "..." << std::endl;
 
-            // Fetch current price from API
-            std::string rawData = fetchData(ticker);
-            try {
-                auto data = json::parse(rawData);
-                // Defensive checks for AlphaVantage responses
-                if (data.contains("Note")) {
-                    std::cerr << "  ERROR fetching " << ticker << ": rate limited: "
-                            << data["Note"].get<std::string>() << std::endl;
-                    continue;
-                }
-                if (data.contains("Information")) {
-                    std::cerr << "  ERROR fetching " << ticker << ": "
-                            << data["Information"].get<std::string>() << std::endl;
-                    continue;
-                }
-                if (data.contains("Error Message")) {
-                    std::cerr << "  ERROR fetching " << ticker << ": "
-                            << data["Error Message"].get<std::string>() << std::endl;
-                    continue;
-                }
+            auto prediction = mlPredictor.predictForTicker(ticker);
 
-                if (!data.contains("Global Quote") ||
-                    !data["Global Quote"].contains("05. price") ||
-                    data["Global Quote"]["05. price"].is_null()) {
-                    std::cerr << "  ERROR fetching " << ticker
-                            << ": missing price (API response did not include Global Quote)" << std::endl;
-                    continue;
-                }
+            // Print ML line similar to your shouldBuy()
+            std::cout << "  [ML] " << ticker << ": buy=" << (prediction.buySignal ? "YES" : "NO")
+                    << " confidence=" << std::fixed << std::setprecision(2) << prediction.confidence;
 
-                std::string priceStr = data["Global Quote"]["05. price"].get<std::string>();
-                if (priceStr.empty()) {
-                    std::cerr << "  ERROR fetching " << ticker << ": empty price" << std::endl;
-                    continue;
-                }
-
-                double price = std::stod(priceStr);
-
-                // Get ML prediction for this stock
-                double confidence = 0.0;
-                if (shouldBuy(ticker, confidence)) {
-
-                    // --- Portfolio + buffer setup ---
-                    const double cashBufferPct = 0.05;
-                    double minCashToKeep = state.cashUsd * cashBufferPct;
-                    double spendableCash = state.cashUsd - minCashToKeep;
-
-                    if (spendableCash <= 0.0) {
-                        std::cout << "  → NO SPENDABLE CASH (5% buffer enforced)" << std::endl;
-                        continue;
-                    }
-
-                    // Calculate current total portfolio value
-                    double totalPortfolioValue = state.cashUsd;
-
-                    // Add holdings value (only this ticker for now)
-                    for (const auto& [sym, sh] : state.shares) {
-                        if (sym == ticker) {
-                            totalPortfolioValue += sh * price;
-                        }
-                    }
-
-                    // Allocate proportional to confidence (from spendable only)
-                    double allocationDollar = spendableCash * confidence;
-
-                    // Risk cap enforcement
-                    double currentValue = state.shares[ticker] * price;
-                    double maxAllowed = riskThreshold * totalPortfolioValue;
-                    double roomLeft = std::max(0.0, maxAllowed - currentValue);
-
-                    double finalAllocation = std::min(allocationDollar, roomLeft);
-
-                    // Never exceed spendable cash
-                    finalAllocation = std::min(finalAllocation, spendableCash);
-
-                    if (finalAllocation <= 0.0) {
-                        std::cout << "  → SKIP (risk cap or buffer limit reached)" << std::endl;
-                        continue;
-                    }
-
-                    double sharesToBuy = finalAllocation / price;
-                    double cost = sharesToBuy * price;
-
-                    // Final safety: never violate buffer due to rounding
-                    if (state.cashUsd - cost < minCashToKeep) {
-                        cost = state.cashUsd - minCashToKeep;
-                        sharesToBuy = cost / price;
-                    }
-
-                    if (sharesToBuy <= 0.0) {
-                        std::cout << "  → SKIP (buffer leaves no room)" << std::endl;
-                        continue;
-                    }
-
-                    std::cout << "  → BUY "
-                            << std::fixed << std::setprecision(4)
-                            << sharesToBuy << " shares @ $" << price
-                            << std::endl;
-
-                    // Update state
-                    state.shares[ticker] += sharesToBuy;
-                    state.cashUsd -= cost;
-
-                    logTrade(ticker, price, sharesToBuy);
-                }
-
-            } catch (const std::exception& e) {
-                std::cerr << "  ERROR fetching " << ticker << ": " << e.what() << std::endl;
+            if (prediction.status != "success") {
+                std::cout << " [status: " << prediction.status << "]" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                continue;
             }
+            std::cout << " ✓ OK" << std::endl;
+
+            // Make sure we have a valid price from Python
+            if (!(prediction.latestPrice > 0.0)) {
+                std::cerr << "  ERROR: missing/invalid latest_price from Python" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                continue;
+            }
+
+            double price = prediction.latestPrice;
+            double confidence = prediction.confidence;
+
+            std::cout << "  Price: $" << std::fixed << std::setprecision(2) << price << std::endl;
+
+            // Apply your buy rules (same logic as shouldBuy, but using the prediction we already have)
+            if (!prediction.buySignal) {
+                std::cout << "  → SKIP (ML recommends HOLD/SELL)" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                continue;
+            }
+
+            if (confidence < mlConfidenceThreshold) {
+                std::cout << "  → SKIP (confidence below threshold " << mlConfidenceThreshold << ")" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                continue;
+            }
+
+            // --- Portfolio + buffer setup ---
+            const double cashBufferPct = 0.05;
+            double minCashToKeep = state.cashUsd * cashBufferPct;
+            double spendableCash = state.cashUsd - minCashToKeep;
+
+            if (spendableCash <= 0.0) {
+                std::cout << "  → NO SPENDABLE CASH (5% buffer enforced)" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                continue;
+            }
+
+            // Calculate current total portfolio value (cash + this ticker holdings value)
+            double totalPortfolioValue = state.cashUsd + (state.shares[ticker] * price);
+
+            // Allocate proportional to confidence (from spendable only)
+            double allocationDollar = spendableCash * confidence;
+
+            // Risk cap enforcement
+            double currentValue = state.shares[ticker] * price;
+            double maxAllowed = riskThreshold * totalPortfolioValue;
+            double roomLeft = std::max(0.0, maxAllowed - currentValue);
+
+            double finalAllocation = std::min(allocationDollar, roomLeft);
+            finalAllocation = std::min(finalAllocation, spendableCash);
+
+            if (finalAllocation <= 0.0) {
+                std::cout << "  → SKIP (risk cap or buffer limit reached)" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                continue;
+            }
+
+            double sharesToBuy = finalAllocation / price;
+            double cost = sharesToBuy * price;
+
+            // Final safety: never violate buffer due to rounding
+            if (state.cashUsd - cost < minCashToKeep) {
+                cost = state.cashUsd - minCashToKeep;
+                sharesToBuy = cost / price;
+            }
+
+            if (sharesToBuy <= 0.0) {
+                std::cout << "  → SKIP (buffer leaves no room)" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                continue;
+            }
+
+            std::cout << "  → BUY " << std::fixed << std::setprecision(4)
+                    << sharesToBuy << " shares @ $" << price << std::endl;
+
+            state.shares[ticker] += sharesToBuy;
+            state.cashUsd -= cost;
+
+            logTrade(ticker, price, sharesToBuy);
+
+            // Short sleep so yfinance isn't hammered (much lower risk than AlphaVantage limits)
+            std::this_thread::sleep_for(std::chrono::seconds(2));
 
             // Wait 15s to stay under free tier limit (5 requests/min)
             std::this_thread::sleep_for(std::chrono::seconds(15));
@@ -438,29 +399,16 @@ public:
 };
 
 int main() {
-    // Configuration
-    const char* apiKey = std::getenv("ALPHAVANTAGE_API_KEY");
-    if (!apiKey) {
-        apiKey = "OWJMTJTHU3LCRV1F";  // Fallback (use env var on Pi in production)
-    }
+    PortfolioManager myIRA("portfolio_log.csv", 0.25, 0.65);
 
-    // Initialize portfolio manager with ML integration
-    PortfolioManager myIRA("portfolio_log.csv", 0.25, apiKey, 0.65);
-
-    // Load stocks from watchlist file
     std::vector<std::string> tickers = loadWatchlist("watchlist.txt");
-
     std::cout << "Loaded " << tickers.size() << " tickers from watchlist." << std::endl;
 
-    // IMPORTANT: Add tickers to PortfolioManager's internal watchlist
     for (const auto& ticker : tickers) {
         myIRA.addToWatchlist(ticker);
     }
 
-    // Run market update (with ML predictions)
     myIRA.runUpdate();
-
-    // Analyze risk after trades
     myIRA.performRiskAudit();
 
     return 0;

@@ -71,7 +71,9 @@ class StockPredictor:
                     'buy_signal': False,
                     'confidence': 0.0,
                     'probability': 0.0,
-                    'status': 'insufficient_data'
+                    'status': 'insufficient_data',
+                    'latest_price': None,
+                    'volatility': None
                 }
             
             # Get latest row with all features
