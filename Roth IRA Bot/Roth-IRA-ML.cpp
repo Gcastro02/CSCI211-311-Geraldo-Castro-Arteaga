@@ -177,7 +177,7 @@ private:
 
 public:
     PortfolioManager(std::string file, double risk,
-                     double mlThreshold = 0.55,
+                     double mlThreshold = 0.65,
                      std::string statePath = "portfolio_state.json")
         : logFileName(file),
           riskThreshold(risk),
