@@ -344,37 +344,59 @@ public:
     }
 
     void performRiskAudit() {
-        std::ifstream inFile(logFileName);
-        std::string line;
-        std::map<std::string, double> holdings;
-        double totalValue = 0.0;
-
-        while (std::getline(inFile, line)) {
-            std::stringstream ss(line);
-            std::string date, ticker, p, s, total;
-            std::getline(ss, date, ',');
-            std::getline(ss, ticker, ',');
-            std::getline(ss, p, ',');
-            std::getline(ss, s, ',');
-            std::getline(ss, total, ',');
-
-            if (!total.empty()) {
-                double cost = std::stod(total);
-                holdings[ticker] += cost;
-                totalValue += cost;
-            }
-        }
-
         std::cout << "\n--- Risk & Diversification Audit ---" << std::endl;
-        if (totalValue <= 0.0) {
-            std::cout << "(no trades logged yet)" << std::endl;
+
+        // If no holdings, nothing to audit
+        if (state.shares.empty()) {
+            std::cout << "(no holdings in portfolio_state.json)" << std::endl;
             return;
         }
 
-        for (auto const& [ticker, val] : holdings) {
-            double percent = val / totalValue;
-            std::cout << ticker << ": " << (percent * 100) << "%";
-            if (percent > riskThreshold) std::cout << " [!] OVER LIMIT";
+        // Pull fresh prices for each holding (uses your ML python which also returns latest_price)
+        std::map<std::string, double> prices;
+        for (const auto& [ticker, sh] : state.shares) {
+            auto pred = mlPredictor.predictForTicker(ticker);
+            if (pred.status == "success" && pred.latestPrice > 0.0) {
+                prices[ticker] = pred.latestPrice;
+            } else {
+                std::cout << ticker << ": price unavailable for audit [status: "
+                        << pred.status << "]" << std::endl;
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        // Compute total value = cash + sum(position values)
+        double holdingsValue = 0.0;
+        for (const auto& [ticker, sh] : state.shares) {
+            auto it = prices.find(ticker);
+            if (it != prices.end()) {
+                holdingsValue += sh * it->second;
+            }
+        }
+        double totalPortfolioValue = state.cashUsd + holdingsValue;
+
+        if (totalPortfolioValue <= 0.0) {
+            std::cout << "(portfolio value is zero; nothing to audit)" << std::endl;
+            return;
+        }
+
+        std::cout << "Total Portfolio Value: $" << std::fixed << std::setprecision(2)
+                << totalPortfolioValue << std::endl;
+        std::cout << "Cash: $" << std::fixed << std::setprecision(2)
+                << state.cashUsd << " ("
+                << (state.cashUsd / totalPortfolioValue * 100.0) << "%)" << std::endl;
+
+        // Print each position weight
+        for (const auto& [ticker, sh] : state.shares) {
+            auto it = prices.find(ticker);
+            if (it == prices.end()) continue;
+
+            double value = sh * it->second;
+            double pct = value / totalPortfolioValue;
+
+            std::cout << ticker << ": $" << std::fixed << std::setprecision(2) << value
+                    << " (" << (pct * 100.0) << "%)";
+            if (pct > riskThreshold) std::cout << " [!] OVER LIMIT";
             std::cout << std::endl;
         }
     }
