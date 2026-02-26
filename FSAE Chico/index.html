@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chico State Formula SAE</title>
+  <meta name="description" content="Chico State Formula SAE — Precision Motorsport Engineering" />
+
+  <!-- Fonts (Google). Swap if you want fully local. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#070709;
+      --panel:#0f0f12;
+      --panel2:#111116;
+      --text:#f2f2f4;
+      --muted:#b4b4bd;
+      --muted2:#8b8b96;
+      --line:#1b1b22;
+
+      --red:#d8453d;
+      --red2:#ff4d43;
+      --yellow:#e7c84a;
+      --white:#ffffff;
+
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+      --max: 1160px;
+
+      --h1: clamp(46px, 6vw, 92px);
+      --h2: clamp(34px, 4.2vw, 64px);
+      --h3: 28px;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 700px at 50% -200px, rgba(216,69,61,.18), transparent 65%),
+                  radial-gradient(900px 500px at 20% 10%, rgba(231,200,74,.08), transparent 60%),
+                  var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    a{color:inherit; text-decoration:none}
+    img{max-width:100%; display:block}
+
+    /* Subtle HUD lines */
+    .hud-lines::before,
+    .hud-lines::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.35;
+      background:
+        linear-gradient(to right, rgba(216,69,61,.18), transparent 35%, transparent 65%, rgba(216,69,61,.18)) 0 0/100% 100%,
+        linear-gradient(to bottom, rgba(231,200,74,.12), transparent 22%, transparent 78%, rgba(231,200,74,.12)) 0 0/100% 100%;
+      mix-blend-mode:screen;
+    }
+
+    .container{max-width:var(--max); margin:0 auto; padding:0 22px;}
+    .mono{font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .kicker{
+      letter-spacing:.45em;
+      text-transform:uppercase;
+      font-size:12px;
+      color:var(--yellow);
+    }
+
+    /* Header */
+    .header{
+      position:sticky; top:0; z-index:30;
+      backdrop-filter: blur(10px);
+      background: rgba(7,7,9,.65);
+      border-bottom:1px solid rgba(216,69,61,.25);
+    }
+    .header-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 0;
+      gap:14px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      min-width: 220px;
+    }
+    .logo-mark{
+      width:34px; height:34px; border-radius:10px;
+      display:grid; place-items:center;
+      background: linear-gradient(180deg, rgba(216,69,61,.18), rgba(231,200,74,.08));
+      border:1px solid rgba(231,200,74,.22);
+      box-shadow: 0 10px 40px rgba(0,0,0,.4);
+    }
+    .brand b{display:block; font-size:13px; line-height:1.1}
+    .brand span{display:block; font-size:11px; color:var(--muted2); margin-top:2px}
+
+    .nav{
+      display:flex; gap:28px; align-items:center;
+      font-weight:600; color:rgba(242,242,244,.9);
+    }
+    .nav a{
+      opacity:.86;
+      position:relative;
+      padding:6px 0;
+    }
+    .nav a:hover{opacity:1}
+    .nav a.active::after{
+      content:"";
+      position:absolute; left:0; right:0; bottom:-10px;
+      height:2px; background:var(--yellow);
+      box-shadow: 0 0 18px rgba(231,200,74,.35);
+    }
+
+    .header-actions{
+      display:flex; align-items:center; gap:10px;
+      min-width: 220px;
+      justify-content:flex-end;
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:700;
+      letter-spacing:.02em;
+      transition:.18s transform, .18s background, .18s border;
+      cursor:pointer;
+      user-select:none;
+      text-transform:uppercase;
+      font-size:12px;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(231,200,74,.25)}
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(216,69,61,.95), rgba(216,69,61,.75));
+      border-color: rgba(216,69,61,.35);
+      box-shadow: 0 14px 35px rgba(216,69,61,.18);
+      color: #0b0b0e;
+    }
+    .btn-primary:hover{border-color: rgba(231,200,74,.35)}
+    .iconbtn{
+      width:42px; height:42px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      display:grid; place-items:center;
+    }
+
+    /* Hero */
+    .hero{
+      position:relative;
+      padding:68px 0 46px;
+      overflow:hidden;
+    }
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(7,7,9,.88), rgba(7,7,9,.62) 55%, rgba(7,7,9,.9)),
+        url("images/hero.jpg") center/cover no-repeat;
+      filter: saturate(1.05) contrast(1.05);
+      transform: scale(1.02);
+    }
+    .hero::after{
+      content:"";
+      position:absolute; left:0; right:0; bottom:0;
+      height:1px;
+      background: linear-gradient(to right, transparent, rgba(231,200,74,.6), transparent);
+      opacity:.65;
+    }
+    .hero-inner{
+      position:relative;
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:42px;
+      align-items:end;
+      min-height: 520px;
+    }
+    .hero-copy{
+      padding:18px 0 10px;
+    }
+    .hero-title{
+      font-size: var(--h1);
+      line-height:.9;
+      font-weight:900;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      margin:14px 0 16px;
+      text-shadow: 0 18px 60px rgba(0,0,0,.55);
+    }
+    .hero-sub{
+      max-width: 48ch;
+      color: rgba(242,242,244,.84);
+      font-size: 16px;
+      line-height:1.6;
+    }
+    .hero-ctas{display:flex; gap:12px; margin-top:22px; flex-wrap:wrap}
+    .hero-right{
+      display:flex;
+      justify-content:flex-end;
+      align-items:flex-end;
+      padding-bottom: 10px;
+    }
+    .hero-panel{
+      width:min(420px, 100%);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      padding:18px 18px 16px;
+    }
+    .hero-panel .mono{color:var(--muted); font-size:12px}
+    .hero-panel h4{
+      margin:10px 0 8px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-weight:900;
+      font-size:18px;
+    }
+    .hero-panel p{margin:0; color:rgba(242,242,244,.82); line-height:1.55; font-size:14px}
+    .microline{
+      height:2px; width:54px; background: var(--yellow);
+      margin-top:14px; opacity:.85;
+      box-shadow: 0 0 18px rgba(231,200,74,.25);
+    }
+
+    /* Section */
+    section{padding:70px 0;}
+    .section-title{
+      font-size: var(--h2);
+      line-height: .92;
+      font-weight: 900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin: 0 0 18px;
+    }
+    .section-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      align-items:stretch;
+    }
+
+    /* Mission */
+    .panel{
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+    }
+    .mission-left{padding:30px}
+    .mission-left p{
+      color: rgba(242,242,244,.78);
+      line-height:1.75;
+      font-size:15px;
+      margin:0 0 16px;
+    }
+    .mission-right{
+      position:relative;
+      overflow:hidden;
+      border-radius: var(--radius);
+      min-height: 420px;
+      background:
+        linear-gradient(135deg, rgba(7,7,9,.25), rgba(7,7,9,.85)),
+        url("images/mission.jpg") center/cover no-repeat;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+    }
+    .mission-right::after{
+      content:"";
+      position:absolute; inset:16px;
+      border:1px solid rgba(231,200,74,.18);
+      border-radius: calc(var(--radius) - 10px);
+      pointer-events:none;
+    }
+
+    /* Cards */
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .card{
+      padding:24px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-1px;
+      background: radial-gradient(400px 260px at 20% 0%, rgba(216,69,61,.20), transparent 60%);
+      opacity:.55;
+      pointer-events:none;
+    }
+    .card h3{
+      position:relative;
+      margin:0 0 10px;
+      font-size: 18px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      font-weight: 900;
+      color: var(--red);
+    }
+    .card p{
+      position:relative;
+      margin:0;
+      color: rgba(242,242,244,.78);
+      line-height:1.7;
+      font-size:14px;
+    }
+    .card .microline{position:relative}
+
+    /* Logs (timeline-ish) */
+    .logs{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      margin-top: 18px;
+    }
+    .log{
+      display:grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 18px;
+      align-items:stretch;
+    }
+    .log-media{
+      border-radius: var(--radius);
+      overflow:hidden;
+      background:
+        linear-gradient(180deg, rgba(7,7,9,.15), rgba(7,7,9,.8)),
+        url("images/log1.jpg") center/cover no-repeat;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      min-height: 320px;
+      position:relative;
+    }
+    .log-media::after{
+      content:"";
+      position:absolute; inset:14px;
+      border:1px solid rgba(216,69,61,.22);
+      border-radius: calc(var(--radius) - 10px);
+      pointer-events:none;
+    }
+    .log-panel{
+      padding:26px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    .tag{
+      display:inline-flex;
+      gap:10px;
+      align-items:center;
+      font-size:12px;
+      letter-spacing:.28em;
+      text-transform:uppercase;
+      color: var(--yellow);
+    }
+    .log-panel h4{
+      margin:12px 0 10px;
+      font-size: 40px;
+      line-height: .92;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      font-weight: 900;
+    }
+    .log-panel p{
+      margin:0;
+      color: rgba(242,242,244,.78);
+      line-height:1.7;
+      font-size:14px;
+      max-width: 65ch;
+    }
+
+    /* CTA block */
+    .big-cta{
+      padding: 76px 0;
+      position:relative;
+    }
+    .big-cta .cta-box{
+      text-align:center;
+      padding: 56px 22px;
+      border-radius: var(--radius);
+      background:
+        radial-gradient(900px 400px at 50% 0%, rgba(255,255,255,.06), rgba(255,255,255,.02)),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .big-cta .cta-box::after{
+      content:"";
+      position:absolute; inset:16px;
+      border:1px solid rgba(216,69,61,.16);
+      border-radius: calc(var(--radius) - 10px);
+      pointer-events:none;
+    }
+    .big-cta h3{
+      margin:0 0 10px;
+      font-size: clamp(34px, 4vw, 56px);
+      text-transform:uppercase;
+      font-weight: 900;
+      letter-spacing:.10em;
+      line-height:.95;
+    }
+    .big-cta p{
+      margin:0 auto 22px;
+      max-width: 75ch;
+      color: rgba(242,242,244,.78);
+      line-height:1.75;
+    }
+
+    /* Gallery grid */
+    .gallery{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .g-left{
+      border-radius: var(--radius);
+      overflow:hidden;
+      border:1px solid rgba(216,69,61,.24);
+      box-shadow: var(--shadow);
+      background:
+        linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+        url("images/gallery-left.jpg") center/cover no-repeat;
+      min-height: 460px;
+      position:relative;
+    }
+    .g-left .hud{
+      position:absolute; left:14px; right:14px; bottom:10px;
+      display:flex; justify-content:space-between;
+      font-size:12px; color: rgba(242,242,244,.75);
+    }
+    .g-right{
+      display:grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 18px;
+    }
+    .g-tile{
+      border-radius: var(--radius);
+      overflow:hidden;
+      border:1px solid rgba(216,69,61,.24);
+      box-shadow: var(--shadow);
+      background:
+        linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+        url("images/gallery-1.jpg") center/cover no-repeat;
+      min-height: 220px;
+      position:relative;
+    }
+    .g-tile:nth-child(2){
+      background-image:
+        linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+        url("images/gallery-2.jpg");
+    }
+    .tile-meta{
+      position:absolute; left:12px; right:12px; bottom:10px;
+      display:flex; justify-content:space-between; gap:10px;
+      font-size:12px; color: rgba(242,242,244,.72);
+    }
+
+    /* Footer */
+    footer{
+      padding: 54px 0 36px;
+      border-top: 1px solid rgba(216,69,61,.22);
+      background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.35));
+    }
+    .footer-inner{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items:center;
+    }
+    .footer-left{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      color: rgba(242,242,244,.82);
+    }
+    .footer-left small{display:block; color: var(--muted2); margin-top:4px}
+    .footer-right{
+      display:flex;
+      justify-content:flex-end;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .social{
+      width:42px; height:42px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      display:grid; place-items:center;
+      opacity:.9;
+    }
+    .social:hover{opacity:1; border-color: rgba(231,200,74,.25)}
+    .legal{
+      margin-top: 26px;
+      display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;
+      color: rgba(242,242,244,.52);
+      font-size: 12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    /* Reveal animation */
+    .reveal{opacity:0; transform: translateY(16px); transition: .6s ease;}
+    .reveal.on{opacity:1; transform:none;}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero-inner{grid-template-columns: 1fr; min-height: unset; gap:18px}
+      .hero-right{justify-content:flex-start}
+      .section-grid{grid-template-columns: 1fr}
+      .cards{grid-template-columns: 1fr}
+      .log{grid-template-columns: 1fr}
+      .gallery{grid-template-columns: 1fr}
+      .footer-inner{grid-template-columns: 1fr}
+      .footer-right{justify-content:flex-start}
+      .nav{display:none;} /* simple mobile behavior */
+    }
+  </style>
+</head>
+
+<body class="hud-lines">
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="Chico State Formula SAE">
+        <div class="logo-mark" aria-hidden="true">
+          <!-- Simple inline icon -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M3 15h2l2-5h9l2 5h2" stroke="rgba(231,200,74,.9)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M7 10l2-3h6l2 3" stroke="rgba(216,69,61,.9)" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="7" cy="16" r="2" stroke="rgba(242,242,244,.9)" stroke-width="2"/>
+            <circle cx="17" cy="16" r="2" stroke="rgba(242,242,244,.9)" stroke-width="2"/>
+          </svg>
+        </div>
+        <div>
+          <b>SAE Formula<br/>Chico State</b>
+          <span class="mono">Precision Motorsport Engineering</span>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="#home" class="active">Home</a>
+        <a href="#portfolio">Portfolio Page</a>
+        <a href="#groups">Groups</a>
+        <a href="#events">Events</a>
+        <a href="#blog">Blog</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="iconbtn" href="#contact" aria-label="Contact">
+          <span class="mono">@</span>
+        </a>
+        <a class="btn btn-primary" href="#join">Join Team</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main id="home" class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy reveal">
+        <div class="kicker mono">PRECISION MOTORSPORT ENGINEERING</div>
+        <div class="hero-title">SAE FORMULA CHICO<br/>STATE</div>
+        <div class="hero-sub mono">
+          Exploring the peak of automotive technology through rigorous design and
+          international endurance competition.
+        </div>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#join">JOIN THE TEAM</a>
+          <a class="btn" href="#portfolio">VEHICLE SPECS</a>
+        </div>
+      </div>
+
+      <div class="hero-right reveal">
+        <div class="hero-panel">
+          <div class="mono">[ SYSTEM STATUS : ACTIVE ]</div>
+          <h4>Current Prototype</h4>
+          <p class="mono">
+            Carbon-composite integration, tuned powertrain, and iterative aero development.
+            Built to compete at the highest technical echelon in Formula SAE.
+          </p>
+          <div class="microline"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mission -->
+  <section id="portfolio">
+    <div class="container">
+      <div class="section-grid">
+        <div class="panel mission-left reveal">
+          <div class="section-title">MISSION<br/>OBJECTIVE</div>
+          <p class="mono">
+            Chico State Formula SAE is a high-performance collegiate engineering organization
+            dedicated to technical excellence and competitive racing. We provide a modular platform
+            for students to gain hands-on experience in automotive design, simulation, and fabrication,
+            bridging the gap between theoretical physics and real-world motorsport application.
+          </p>
+          <p class="mono">
+            Our mission is to engineer 1.0G capable racing machines while forging the next generation
+            of professional automotive innovators. Through SAE International competitions, we test the
+            limits of our engineering DNA on the world’s most demanding circuits.
+          </p>
+          <div class="microline"></div>
+        </div>
+
+        <div class="mission-right reveal" aria-label="Mission image panel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Engineering Focus -->
+  <section id="groups">
+    <div class="container">
+      <div class="section-title reveal">ENGINEERING &<br/>DESIGN FOCUS</div>
+
+      <div class="cards">
+        <div class="card reveal">
+          <h3 class="mono">AERODYNAMICS</h3>
+          <p class="mono">
+            Utilizing advanced CFD to engineer high-downforce packages, including front/rear wings
+            and underbody diffusers designed for maximum grip.
+          </p>
+          <div class="microline"></div>
+        </div>
+
+        <div class="card reveal">
+          <h3 class="mono">POWERTRAIN</h3>
+          <p class="mono">
+            Optimizing performance through custom fuel maps, intake plenum design, and specialized
+            exhaust systems tuned for rapid acceleration and reliability.
+          </p>
+          <div class="microline"></div>
+        </div>
+
+        <div class="card reveal">
+          <h3 class="mono">VEHICLE DYNAMICS</h3>
+          <p class="mono">
+            Designing chassis architecture and suspension kinematics. Focusing on tire data acquisition
+            and damper tuning to ensure optimal contact patch performance.
+          </p>
+          <div class="microline"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Competition Logs -->
+  <section id="events">
+    <div class="container">
+      <div class="section-title reveal">COMPETITION LOGS</div>
+
+      <div class="logs">
+        <div class="log">
+          <div class="log-media reveal" style="background-image:
+            linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+            url('images/log1.jpg');">
+          </div>
+          <div class="log-panel reveal">
+            <div class="tag mono">[ EST. 2018 ]</div>
+            <h4>THE GENESIS<br/>PHASE</h4>
+            <p class="mono">
+              The journey began with a vision of peak engineering. Chico State established its presence
+              in the SAE Formula arena by developing a prototype chassis prioritizing structural integrity
+              and driver ergonomics over raw power—laying the groundwork for every future generation.
+            </p>
+          </div>
+        </div>
+
+        <div class="log">
+          <div class="log-panel reveal">
+            <div class="tag mono">[ EPOCH 2021 ]</div>
+            <h4>AERO<br/>DYNAMICS</h4>
+            <p class="mono">
+              Transitioning into the 2021 season, focus shifted to aerodynamic efficiency. CFD-driven
+              downforce gains unlocked higher lateral acceleration and improved competitiveness.
+            </p>
+          </div>
+          <div class="log-media reveal" style="background-image:
+            linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+            url('images/log2.jpg');">
+          </div>
+        </div>
+
+        <div class="log">
+          <div class="log-media reveal" style="background-image:
+            linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+            url('images/log3.jpg');">
+          </div>
+          <div class="log-panel reveal">
+            <div class="tag mono">[ CURRENT OPERATIVE ]</div>
+            <h4>PEAK<br/>PERFORMANCE</h4>
+            <p class="mono">
+              Today, Chico State Formula SAE represents the pinnacle of collegiate automotive engineering.
+              Our current prototype features carbon-composite integration and a custom-tuned powertrain that
+              has secured top-tier finishes. We remain dedicated to relentless performance and hands-on growth.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Big CTA -->
+  <section id="join" class="big-cta">
+    <div class="container">
+      <div class="cta-box reveal">
+        <div class="section-title" style="margin:0 0 12px;">FUEL THE FUTURE OF<br/>MOTORSPORT ENGINEERING</div>
+        <p class="mono">
+          Join a legacy of technical excellence. Whether you're a student designer ready to innovate
+          or a partner looking to support the next generation of engineers—your journey starts here.
+        </p>
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <a class="btn btn-primary" href="#contact">PARTNER WITH US</a>
+          <a class="btn" href="#blog">READ THE BLOG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery / “spec” style grid -->
+  <section id="blog">
+    <div class="container">
+      <div class="section-title reveal">LAB / BUILD / TRACK</div>
+
+      <div class="gallery">
+        <div class="g-left reveal">
+          <div class="hud mono">
+            <span>X: 124.51  //  Y: 39.72</span>
+            <span>UNIT_TYPE: FSC_001</span>
+          </div>
+        </div>
+
+        <div class="g-right">
+          <div class="g-tile reveal" style="background-image:
+            linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+            url('images/gallery-1.jpg');">
+            <div class="tile-meta mono">
+              <span>SPEC: V4-R_HP_26</span>
+              <span>TEMP_NOM: 88.2C</span>
+            </div>
+          </div>
+
+          <div class="g-tile reveal" style="background-image:
+            linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
+            url('images/gallery-2.jpg');">
+            <div class="tile-meta mono">
+              <span>LOC: SHOP_ALPHA_01</span>
+              <span>TEAM_STATUS: ACTIVE</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <div class="logo-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M3 15h2l2-5h9l2 5h2" stroke="rgba(231,200,74,.9)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M7 10l2-3h6l2 3" stroke="rgba(216,69,61,.9)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="7" cy="16" r="2" stroke="rgba(242,242,244,.9)" stroke-width="2"/>
+              <circle cx="17" cy="16" r="2" stroke="rgba(242,242,244,.9)" stroke-width="2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="mono" style="letter-spacing:.22em; text-transform:uppercase; color:rgba(231,200,74,.9); font-size:12px;">
+              [ COMMUNICATIONS_PORTAL ]
+            </div>
+            <div style="margin-top:6px; font-weight:800;">California State University, Chico</div>
+            <small class="mono">formula@csuchico.edu</small>
+          </div>
+        </div>
+
+        <div class="footer-right">
+          <!-- Swap hrefs with real links -->
+          <a class="social" href="#" aria-label="Facebook"><span class="mono">f</span></a>
+          <a class="social" href="#" aria-label="Instagram"><span class="mono">ig</span></a>
+          <a class="social" href="#" aria-label="YouTube"><span class="mono">yt</span></a>
+          <a class="social" href="#" aria-label="X"><span class="mono">x</span></a>
+          <a class="social" href="#" aria-label="LinkedIn"><span class="mono">in</span></a>
+          <a class="social" href="#" aria-label="TikTok"><span class="mono">tt</span></a>
+        </div>
+      </div>
+
+      <div class="legal mono">
+        <span>© <span id="year"></span> // CHICO STATE FORMULA SAE // SYSTEM_STATUS: ACTIVE</span>
+        <span>INTERFACE_v1.0.0</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Simple nav active state based on scroll
+    const navLinks = Array.from(document.querySelectorAll(".nav a"));
+    const sections = navLinks.map(a => document.querySelector(a.getAttribute("href"))).filter(Boolean);
+
+    const setActive = () => {
+      const y = window.scrollY + 120;
+      let idx = 0;
+      for (let i = 0; i < sections.length; i++){
+        if (sections[i].offsetTop <= y) idx = i;
+      }
+      navLinks.forEach(a => a.classList.remove("active"));
+      if (navLinks[idx]) navLinks[idx].classList.add("active");
+    };
+    window.addEventListener("scroll", setActive, {passive:true});
+    setActive();
+
+    // Reveal on scroll
+    const revealEls = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add("on");
+      });
+    }, {threshold: 0.12});
+    revealEls.forEach(el => io.observe(el));
+  </script>
+</body>
+</html>
