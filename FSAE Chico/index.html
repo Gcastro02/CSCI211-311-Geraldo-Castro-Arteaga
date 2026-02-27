@@ -263,23 +263,23 @@
       font-size:15px;
       margin:0 0 16px;
     }
+    .mission-grid{
+      grid-template-columns: 1fr;
+    }
     .mission-right{
       position:relative;
       overflow:hidden;
       border-radius: var(--radius);
-      min-height: 420px;
+      min-height: clamp(520px, 68vh, 760px);
       background:
-        linear-gradient(135deg, rgba(7,7,9,.25), rgba(7,7,9,.85)),
-        url("images/mission.jpg") center/cover no-repeat;
+        linear-gradient(135deg, rgba(7,7,9,.1), rgba(7,7,9,.3)),
+        url("images/mission.jpg") center/100% auto no-repeat;
+      background-color:#0a0a0d;
       border:1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
     }
     .mission-right::after{
-      content:"";
-      position:absolute; inset:16px;
-      border:1px solid rgba(231,200,74,.18);
-      border-radius: calc(var(--radius) - 10px);
-      pointer-events:none;
+      display:none;
     }
 
     /* Cards */
@@ -626,7 +626,7 @@
   <!-- Mission -->
   <section id="portfolio">
     <div class="container">
-      <div class="section-grid">
+      <div class="section-grid mission-grid">
         <div class="panel mission-left reveal">
           <div class="section-title">MISSION<br/>OBJECTIVE</div>
           <p class="mono">
