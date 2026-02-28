@@ -340,7 +340,7 @@
       border-radius: var(--radius);
       overflow:hidden;
       background:
-        linear-gradient(180deg, rgba(7,7,9,.15), rgba(7,7,9,.8)),
+        linear-gradient(180deg, rgba(7,7,9,.8), rgba(7,7,9,.15)),
         url("images/log1.jpg") center/cover no-repeat;
       border:1px solid rgba(255,255,255,.08);
       box-shadow: var(--shadow);
@@ -348,11 +348,7 @@
       position:relative;
     }
     .log-media::after{
-      content:"";
-      position:absolute; inset:14px;
-      border:1px solid rgba(216,69,61,.22);
-      border-radius: calc(var(--radius) - 10px);
-      pointer-events:none;
+      display:none;
     }
     .log-panel{
       padding:26px;
@@ -780,10 +776,7 @@
           </div>
           <div class="log-media reveal" style="background-image:
             linear-gradient(180deg, rgba(7,7,9,.1), rgba(7,7,9,.85)),
-            url('images/log4.jpg');
-            background-position: center, center;
-            background-size: auto, 100% auto;
-            background-repeat: no-repeat, no-repeat;">
+            url('images/log4.jpg');">
           </div>
         </div>
       </div>
