@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Partner With Us | Chico State Formula SAE</title>
+  <meta name="description" content="Partner with Chico State Formula SAE to support student engineering and motorsport innovation." />
+  <link rel="icon" type="image/jpeg" href="images/institutional-wildcat.jpg" />
+  <link rel="shortcut icon" href="images/institutional-wildcat.jpg" />
+  <link rel="apple-touch-icon" href="images/institutional-wildcat.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#070709;
+      --panel:#0f0f12;
+      --text:#f2f2f4;
+      --muted:#b4b4bd;
+      --red:#d8453d;
+      --yellow:#e7c84a;
+      --line:#1b1b22;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+      --max: 980px;
+      --h1: clamp(34px, 5vw, 62px);
+      --h2: clamp(24px, 3vw, 36px);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1000px 600px at 50% -220px, rgba(216,69,61,.18), transparent 65%), var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+    .container{max-width:var(--max); margin:0 auto; padding:0 22px;}
+    .mono{font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    .header{
+      border-bottom:1px solid rgba(216,69,61,.25);
+      background: rgba(7,7,9,.85);
+    }
+    .header-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:16px 0;
+    }
+    .brand{display:flex; align-items:center; gap:10px}
+    .logo-mark{width:44px; height:44px; border-radius:12px; overflow:hidden}
+    .logo-mark img{width:100%; height:100%; object-fit:cover}
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:11px 15px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:700;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(216,69,61,.95), rgba(216,69,61,.75));
+      color:#0b0b0e;
+      border-color: rgba(216,69,61,.35);
+    }
+
+    main{padding:56px 0 72px}
+    .hero{
+      padding:28px;
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+    }
+    h1{
+      margin:0 0 12px;
+      font-size: var(--h1);
+      line-height:.92;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      font-weight:900;
+    }
+    .lead{margin:0; color:rgba(242,242,244,.8); line-height:1.7; max-width:70ch}
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:16px;
+      margin-top:22px;
+    }
+    .card{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      padding:18px;
+      box-shadow: var(--shadow);
+    }
+    h2{margin:0 0 8px; font-size: var(--h2); letter-spacing:.06em; text-transform:uppercase}
+    .price{
+      margin:0 0 10px;
+      color:var(--yellow);
+      font-weight:800;
+      font-size:18px;
+    }
+    .card ul{
+      margin:0;
+      padding-left:20px;
+      color:rgba(242,242,244,.78);
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .contact{
+      margin-top:20px;
+      padding:20px;
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+    }
+    .contact p{margin:0 0 14px; color:rgba(242,242,244,.8)}
+
+    /* Partner Logo Carousel */
+    .partners-showcase{
+      margin:28px 0;
+      padding:24px 0;
+      border-top:1px solid rgba(255,255,255,.08);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      overflow:hidden;
+      position:relative;
+    }
+    .partners-showcase h3{
+      margin:0 0 16px;
+      text-align:center;
+      font-size:18px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--yellow);
+      font-weight:900;
+    }
+    .logo-track{
+      display:flex;
+      gap:40px;
+      animation: scroll 20s linear infinite;
+    }
+    .logo-item{
+      flex-shrink:0;
+      width:140px;
+      height:80px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:12px;
+      padding:12px;
+    }
+    .logo-item img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      filter:grayscale(100%) brightness(1.2);
+      opacity:.8;
+      transition:.3s;
+    }
+    .logo-item img[src*="partner5"],
+    .logo-item img[src*="partner9"]{
+      max-width:140%;
+      max-height:140%;
+      transform:scale(1.4);
+    }
+    .logo-item:hover img{
+      filter:grayscale(0%) brightness(1);
+      opacity:1;
+    }
+    @keyframes scroll{
+      0%{transform:translateX(0)}
+      100%{transform:translateX(calc(-140px * 10 - 40px * 10))}
+    }
+
+    @media (max-width: 900px){
+      .grid{grid-template-columns:1fr}
+      .logo-item{width:120px; height:70px}
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Back to home">
+        <div class="logo-mark" aria-hidden="true">
+          <img src="images/institutional-wildcat.jpg" alt="School logo">
+        </div>
+        <div>
+          <div><b>SAE Formula Chico State</b></div>
+          <div class="mono" style="font-size:11px; color:#8b8b96; margin-top:2px;">Partner Relations</div>
+        </div>
+      </a>
+      <a class="btn" href="index.html">Back to Home</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="hero">
+        <h1>Partner With Us</h1>
+        <p class="lead mono">Support Chico State Formula SAE through sponsorship, materials, machining support, mentoring, or technical collaboration. Your partnership helps students build, test, and compete with professionally engineered race vehicles.</p>
+
+        <div class="grid">
+          <article class="card">
+            <h2>Tier 1</h2>
+            <p class="price mono">Package Price: $999+</p>
+            <ul class="mono">
+              <li>Year-long commitment</li>
+              <li>10x10 vinyl on vehicle with priority placement</li>
+              <li>Social media coverage and business cards</li>
+              <li>Merch with sponsor logo</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h2>Tier 2</h2>
+            <p class="price mono">Package Price: $499</p>
+            <ul class="mono">
+              <li>Social media post and promotional content</li>
+              <li>6x8 vinyl sponsor</li>
+              <li>Merch with sponsor logo</li>
+              <li>Included in business cards and portfolios</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h2>Tier 3</h2>
+            <p class="price mono">Package Price: $299</p>
+            <ul class="mono">
+              <li>Social media post</li>
+              <li>3x4 vinyl on vehicle</li>
+              <li>Local event coverage</li>
+              <li>Local newspaper appearance</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="partners-showcase">
+          <h3 class="mono">Current Partners</h3>
+          <div class="logo-track">
+            <!-- First set of 10 partners -->
+            <div class="logo-item"><img src="images/partners/partner1.png" alt="Partner 1"></div>
+            <div class="logo-item"><img src="images/partners/partner2.png" alt="Partner 2"></div>
+            <div class="logo-item"><img src="images/partners/partner3.png" alt="Partner 3"></div>
+            <div class="logo-item"><img src="images/partners/partner4.png" alt="Partner 4"></div>
+            <div class="logo-item"><img src="images/partners/partner5.png" alt="Partner 5"></div>
+            <div class="logo-item"><img src="images/partners/partner6.png" alt="Partner 6"></div>
+            <div class="logo-item"><img src="images/partners/partner7.png" alt="Partner 7"></div>
+            <div class="logo-item"><img src="images/partners/partner8.jpg" alt="Partner 8"></div>
+            <div class="logo-item"><img src="images/partners/partner9.png" alt="Partner 9"></div>
+            <div class="logo-item"><img src="images/partners/partner10.png" alt="Partner 10"></div>
+            <!-- Duplicate set for seamless infinite scroll -->
+            <div class="logo-item"><img src="images/partners/partner1.png" alt="Partner 1"></div>
+            <div class="logo-item"><img src="images/partners/partner2.png" alt="Partner 2"></div>
+            <div class="logo-item"><img src="images/partners/partner3.png" alt="Partner 3"></div>
+            <div class="logo-item"><img src="images/partners/partner4.png" alt="Partner 4"></div>
+            <div class="logo-item"><img src="images/partners/partner5.png" alt="Partner 5"></div>
+            <div class="logo-item"><img src="images/partners/partner6.png" alt="Partner 6"></div>
+            <div class="logo-item"><img src="images/partners/partner7.png" alt="Partner 7"></div>
+            <div class="logo-item"><img src="images/partners/partner8.jpg" alt="Partner 8"></div>
+            <div class="logo-item"><img src="images/partners/partner9.png" alt="Partner 9"></div>
+            <div class="logo-item"><img src="images/partners/partner10.png" alt="Partner 10"></div>
+          </div>
+        </div>
+
+        <section class="contact" style="border:1px solid rgba(216,69,61,.25); background: linear-gradient(180deg, rgba(216,69,61,.08), rgba(216,69,61,.04));">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+            <div>
+              <h2 style="margin-top:0; color:var(--yellow);">Partnership Information Package</h2>
+              <p class="mono" style="margin:0; color:rgba(242,242,244,.8);">Download our comprehensive sponsorship package with detailed benefits, technical specifications, and partnership opportunities.</p>
+            </div>
+            <a class="btn btn-primary" href="images/Elegant Package Flyer.pdf" download>Download Package</a>
+          </div>
+        </section>
+
+        <section class="contact" style="margin-top:16px;">
+          <p class="mono">For partnership inquiries, replace this with your preferred contact email or form link.</p>
+          <a class="btn btn-primary" href="mailto:formula@csuchico.edu">Contact Partnerships</a>
+        </section>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
