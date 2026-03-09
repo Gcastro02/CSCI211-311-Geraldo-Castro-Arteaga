@@ -129,6 +129,34 @@
     }
     .contact p{margin:0 0 14px; color:rgba(242,242,244,.8)}
 
+    .form-meta{
+      margin:0 0 14px;
+      color:rgba(242,242,244,.74);
+      line-height:1.6;
+      font-size:13px;
+    }
+    .form-meta strong{color:var(--yellow)}
+
+    .form-embed-wrap{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      overflow:hidden;
+      background:#0b0b0e;
+    }
+    .form-embed{
+      width:100%;
+      min-height:950px;
+      border:0;
+      display:block;
+      background:#0b0b0e;
+    }
+    .form-actions{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
     /* Partner Logo Carousel */
     .partners-showcase{
       margin:28px 0;
@@ -190,6 +218,7 @@
     @media (max-width: 900px){
       .grid{grid-template-columns:1fr}
       .logo-item{width:120px; height:70px}
+      .form-embed{min-height:1120px}
     }
   </style>
 </head>
@@ -287,8 +316,28 @@
         </section>
 
         <section class="contact" style="margin-top:16px;">
-          <p class="mono">For partnership inquiries or any additional information, contact us below.</p>
-          <a class="btn btn-primary" href="mailto:aquinonessalazar@csuchico.edu">Contact Partnerships</a>
+          <h2 style="margin-top:0; color:var(--yellow);">Contact Partnerships</h2>
+          <p class="mono">Submit your inquiry below and our team will follow up.</p>
+          <p class="mono form-meta">
+            <strong>Inquiry types:</strong> General Question, Partnership Inquiry, Sponsorship, Media, Student Outreach.<br>
+            After you click Submit, confirmation appears directly inside the form.
+          </p>
+
+          <div class="form-embed-wrap" role="region" aria-label="Partnership inquiry form">
+            <!-- Replace the src and href below with your published Google Form URL and embed URL -->
+            <iframe
+              class="form-embed"
+              title="FSAE Partnership Inquiry Form"
+              src="https://docs.google.com/forms/d/e/1FAIpQLSeHiFn9I6VhxkUKf-h_sLtd8KZq7DxC_7xBoL0DBN-SUp_02A/viewform?embedded=true"
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+            >Loading…</iframe>
+          </div>
+
+          <div class="form-actions">
+            <a class="btn" href="https://docs.google.com/forms/d/e/1FAIpQLSeHiFn9I6VhxkUKf-h_sLtd8KZq7DxC_7xBoL0DBN-SUp_02A/viewform" target="_blank" rel="noopener noreferrer">Open Form in New Tab</a>
+            <a class="btn btn-primary" href="mailto:aquinonessalazar@csuchico.edu">Email Partnerships</a>
+          </div>
         </section>
       </section>
     </div>

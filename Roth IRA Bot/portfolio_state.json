@@ -1,0 +1,13 @@
+{  
+    "cash": 10000.0,
+    "stocks": {
+        "AAPL": {
+        "quantity": 10,
+        "average_price": 150.0
+        },
+        "GOOGL": {
+        "quantity": 5,
+        "average_price": 2500.0
+        }
+    }
+}
