@@ -87,8 +87,12 @@ public:
         }
 
         try {
-            // Execute: python3 ml_model/predict.py TICKER
-            std::string cmd = "cd ml_model && ./venv/bin/python predict.py " + ticker + " 2>/dev/null";
+            const char* pythonBinEnv = std::getenv("PYTHON_BIN");
+            std::string pythonCmd = (pythonBinEnv && *pythonBinEnv)
+                ? std::string("\"") + pythonBinEnv + "\""
+                : "python3";
+
+            std::string cmd = "cd ml_model && " + pythonCmd + " predict.py " + ticker + " 2>&1";
 
             // Execute and capture output
             std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
@@ -109,8 +113,18 @@ public:
                 return result;
             }
 
-            // Parse JSON result
-            auto predictions = json::parse(output);
+            json predictions;
+            try {
+                predictions = json::parse(output);
+            } catch (const std::exception&) {
+                std::replace(output.begin(), output.end(), '\n', ' ');
+                std::replace(output.begin(), output.end(), '\r', ' ');
+                if (output.size() > 120) {
+                    output = output.substr(0, 117) + "...";
+                }
+                result.status = std::string("subprocess_error: ") + output;
+                return result;
+            }
 
             result.ticker = predictions.value("ticker", ticker);
             result.buySignal = predictions.value("buy_signal", false);

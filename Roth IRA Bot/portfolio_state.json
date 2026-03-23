@@ -1,13 +1,9 @@
-{  
-    "cash": 10000.0,
-    "stocks": {
-        "AAPL": {
-        "quantity": 10,
-        "average_price": 150.0
-        },
-        "GOOGL": {
-        "quantity": 5,
-        "average_price": 2500.0
-        }
-    }
+{
+  "cash_usd": 108.14999999999999,
+  "holdings": {
+    "FRO": 5.0,
+    "LMT": 1.0,
+    "META": 0.05468335229427379,
+    "NAT": 20.0
+  }
 }
