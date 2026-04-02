@@ -3,13 +3,58 @@ from sqlalchemy.orm import Session
 
 from app.database import SessionLocal, engine, Base
 from app.models import JobModel, ProfileModel
-from app.schemas import JobCreate, JobResponse, ProfileCreate
+from app.schemas import JobCreate, JobResponse, ProfileCreate, TailorRequest, TailorResponse
 
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Internship Copilot API")
 
+def extract_matched_skills(job_description: str, skills: list[str]) -> list[str]:
+    job_text = job_description.lower()
+    matched = []
+
+    for skill in skills:
+        if skill.lower() in job_text:
+            matched.append(skill)
+
+    return matched
+
+
+def generate_tailored_bullets(name: str, matched_skills: list[str], job_description: str) -> list[str]:
+    bullets = []
+
+    if matched_skills:
+        bullets.append(
+            f"Applied {', '.join(matched_skills[:3])} in hands-on technical projects involving software development and system design."
+        )
+
+    if "python" in job_description.lower():
+        bullets.append(
+            "Developed Python-based tools and backend functionality for automation, data handling, and workflow improvement."
+        )
+
+    if "linux" in job_description.lower() or "embedded" in job_description.lower():
+        bullets.append(
+            "Worked in Linux-based development environments and explored low-level system and embedded programming concepts."
+        )
+
+    if "git" in job_description.lower():
+        bullets.append(
+            "Used Git and GitHub for version control, project organization, and collaborative development practices."
+        )
+
+    if len(bullets) < 3:
+        bullets.append(
+            "Built technical projects that required debugging, iterative development, and translating requirements into working software."
+        )
+
+    if len(bullets) < 3:
+        bullets.append(
+            "Strengthened software engineering fundamentals through project-based experience with APIs, databases, and structured application design."
+        )
+
+    return bullets[:3]
 
 def get_db():
     db = SessionLocal()
@@ -108,3 +153,23 @@ def get_jobs(db: Session = Depends(get_db)):
 def ranked_jobs(db: Session = Depends(get_db)):
     jobs = db.query(JobModel).order_by(JobModel.score.desc()).all()
     return jobs
+
+@app.post("/tailor-resume", response_model=TailorResponse)
+def tailor_resume(data: TailorRequest, db: Session = Depends(get_db)):
+    profile = db.query(ProfileModel).first()
+
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    skills_list = profile.skills.split(",") if profile.skills else []
+    matched_skills = extract_matched_skills(data.job_description, skills_list)
+    tailored_bullets = generate_tailored_bullets(
+        profile.name,
+        matched_skills,
+        data.job_description
+    )
+
+    return {
+        "matched_skills": matched_skills,
+        "tailored_bullets": tailored_bullets
+    }

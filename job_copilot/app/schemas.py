@@ -28,3 +28,10 @@ class ProfileResponse(BaseModel):
     name: str
     resume_text: str
     skills: List[str]
+
+class TailoredRequest(BaseModel):
+    job_description: str
+
+class TailoredResponse(BaseModel):
+    matched_skills: List [str]
+    tailored_bullets: List[str]
