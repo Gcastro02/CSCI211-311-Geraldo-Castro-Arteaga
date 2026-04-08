@@ -2,27 +2,26 @@
 <html>
 <head>
     <title>Internship Copilot</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
+    <h1>Internship Copilot</h1>
 
-<h1>Internship Copilot</h1>
+    <h2>Profile</h2>
+    <textarea id="resume" placeholder="Paste your resume here"></textarea>
+    <button onclick="saveProfile()">Save Profile</button>
 
-<h2>Profile</h2>
-<textarea id="resume" placeholder="Paste your resume here"></textarea>
-<button onclick="saveProfile()">Save Profile</button>
+    <h2>Job Description</h2>
+    <textarea id="job" placeholder="Paste job description here"></textarea>
 
-<h2>Job Description</h2>
-<textarea id="job" placeholder="Paste job description here"></textarea>
+    <br><br>
 
-<br><br>
+    <button onclick="generateBullets()">Generate Resume Bullets</button>
+    <button onclick="generateCoverLetter()">Generate Cover Letter</button>
 
-<button onclick="generateBullets()">Generate Resume Bullets</button>
-<button onclick="generateCoverLetter()">Generate Cover Letter</button>
+    <h2>Results</h2>
+    <pre id="output"></pre>
 
-<h2>Results</h2>
-<pre id="output"></pre>
-
-<script src="app.js"></script>
+    <script src="/static/app.js"></script>
 </body>
 </html>

@@ -104,11 +104,6 @@ def score_match(job_description: str, resume_text: str) -> int:
     return len(job_words.intersection(resume_words))
 
 
-@app.get("/")
-def home():
-    return {"message": "Internship Copilot API with SQLite is running"}
-
-
 @app.post("/profile")
 def set_profile(profile: ProfileCreate, db: Session = Depends(get_db)):
     existing_profile = db.query(ProfileModel).first()
