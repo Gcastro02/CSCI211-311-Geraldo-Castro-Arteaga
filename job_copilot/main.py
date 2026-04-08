@@ -17,10 +17,13 @@ from app.schemas import (
     AICoverLetterResponse,
 )
 from app.ai_client import client
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Internship Copilot API")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 def generate_cover_letter(name: str, role: str, company: str, skills: list[str]) -> str:
     skills_str = ", ".join(skills[:4]) if skills else "software development"
@@ -301,3 +304,7 @@ Requirements:
     )
 
     return {"cover_letter": response.output_text.strip()}
+
+@app.get("/")
+def serve_home():
+    return FileResponse("static/index.html")
