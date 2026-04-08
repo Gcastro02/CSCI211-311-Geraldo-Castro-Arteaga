@@ -3,12 +3,31 @@ from sqlalchemy.orm import Session
 
 from app.database import SessionLocal, engine, Base
 from app.models import JobModel, ProfileModel
-from app.schemas import JobCreate, JobResponse, ProfileCreate, TailorRequest, TailorResponse
+from app.schemas import JobCreate, JobResponse, ProfileCreate, TailorRequest, TailorResponse, CoverLetterRequest, CoverLetterResponse, ProfileResponse
 
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Internship Copilot API")
+
+def generate_cover_letter(name: str, role: str, company: str, skills: list[str]) -> str:
+    skills_str = ", ".join(skills[:4]) if skills else "software development"
+
+    letter = f"""
+Dear {company} Hiring Team,
+
+I am excited to apply for the {role} position at {company}. As a computer engineering student, I have developed a strong foundation in {skills_str}, along with hands-on experience building technical projects involving backend systems and application development.
+
+Through my projects, I have worked with tools like Python, Git, and Linux to design and implement functional systems. I enjoy solving problems that require both technical depth and creativity, and I am particularly interested in opportunities where I can contribute to real-world engineering challenges.
+
+I am especially interested in {company} because of its focus on innovation and engineering excellence. I would welcome the opportunity to contribute and continue developing my skills in a professional environment.
+
+Thank you for your time and consideration.
+
+Sincerely,  
+{name}
+"""
+    return letter.strip()
 
 def extract_matched_skills(job_description: str, skills: list[str]) -> list[str]:
     job_text = job_description.lower()
@@ -173,3 +192,21 @@ def tailor_resume(data: TailorRequest, db: Session = Depends(get_db)):
         "matched_skills": matched_skills,
         "tailored_bullets": tailored_bullets
     }
+
+@app.post("/generate-cover-letter", response_model=CoverLetterResponse)
+def create_cover_letter(data: CoverLetterRequest, db: Session = Depends(get_db)):
+    profile = db.query(ProfileModel).first()
+
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    skills_list = profile.skills.split(",") if profile.skills else []
+
+    letter = generate_cover_letter(
+        profile.name,
+        data.role,
+        data.company,
+        skills_list
+    )
+
+    return {"cover_letter": letter}

@@ -29,9 +29,20 @@ class ProfileResponse(BaseModel):
     resume_text: str
     skills: List[str]
 
-class TailoredRequest(BaseModel):
+
+class TailorRequest(BaseModel):
     job_description: str
 
-class TailoredResponse(BaseModel):
-    matched_skills: List [str]
+
+class TailorResponse(BaseModel):
+    matched_skills: List[str]
     tailored_bullets: List[str]
+
+class CoverLetterRequest(BaseModel):
+    job_description: str
+    company: str
+    role: str
+
+
+class CoverLetterResponse(BaseModel):
+    cover_letter: str
