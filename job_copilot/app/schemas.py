@@ -38,6 +38,7 @@ class TailorResponse(BaseModel):
     matched_skills: List[str]
     tailored_bullets: List[str]
 
+
 class CoverLetterRequest(BaseModel):
     job_description: str
     company: str
@@ -45,4 +46,22 @@ class CoverLetterRequest(BaseModel):
 
 
 class CoverLetterResponse(BaseModel):
+    cover_letter: str
+
+
+class AITailorRequest(BaseModel):
+    job_description: str
+
+
+class AITailorResponse(BaseModel):
+    tailored_bullets: List[str]
+
+
+class AICoverLetterRequest(BaseModel):
+    job_description: str
+    company: str
+    role: str
+
+
+class AICoverLetterResponse(BaseModel):
     cover_letter: str

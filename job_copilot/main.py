@@ -3,8 +3,20 @@ from sqlalchemy.orm import Session
 
 from app.database import SessionLocal, engine, Base
 from app.models import JobModel, ProfileModel
-from app.schemas import JobCreate, JobResponse, ProfileCreate, TailorRequest, TailorResponse, CoverLetterRequest, CoverLetterResponse, ProfileResponse
-
+from app.schemas import (
+    JobCreate,
+    JobResponse,
+    ProfileCreate,
+    TailorRequest,
+    TailorResponse,
+    CoverLetterRequest,
+    CoverLetterResponse,
+    AITailorRequest,
+    AITailorResponse,
+    AICoverLetterRequest,
+    AICoverLetterResponse,
+)
+from app.ai_client import client
 
 Base.metadata.create_all(bind=engine)
 
@@ -210,3 +222,82 @@ def create_cover_letter(data: CoverLetterRequest, db: Session = Depends(get_db))
     )
 
     return {"cover_letter": letter}
+
+@app.post("/ai-tailor-resume", response_model=AITailorResponse)
+def ai_tailor_resume(data: AITailorRequest, db: Session = Depends(get_db)):
+    profile = db.query(ProfileModel).first()
+
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    prompt = f"""
+You are helping a computer engineering student tailor their resume.
+
+Student name: {profile.name}
+Resume text:
+{profile.resume_text}
+
+Skills:
+{profile.skills}
+
+Job description:
+{data.job_description}
+
+Task:
+Write exactly 3 strong, concise, resume bullet points tailored to this job.
+Requirements:
+- Each bullet should sound realistic for a student
+- Use action verbs
+- Do not invent companies or experiences
+- Focus on transferable technical skills
+Return only the 3 bullet points, one per line, with no extra text.
+"""
+
+    response = client.responses.create(
+        model="gpt-5.4-mini",
+        input=prompt,
+    )
+
+    text = response.output_text.strip()
+    bullets = [line.lstrip("-• ").strip() for line in text.splitlines() if line.strip()]
+
+    return {"tailored_bullets": bullets[:3]}
+
+
+@app.post("/ai-generate-cover-letter", response_model=AICoverLetterResponse)
+def ai_generate_cover_letter(data: AICoverLetterRequest, db: Session = Depends(get_db)):
+    profile = db.query(ProfileModel).first()
+
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    prompt = f"""
+You are helping a computer engineering student write a tailored cover letter.
+
+Student name: {profile.name}
+Resume text:
+{profile.resume_text}
+
+Skills:
+{profile.skills}
+
+Company: {data.company}
+Role: {data.role}
+Job description:
+{data.job_description}
+
+Write a professional, student-appropriate cover letter.
+Requirements:
+- 250 words max
+- Sound specific and tailored
+- Do not invent experiences
+- Highlight relevant technical skills from the resume
+- Return only the cover letter text
+"""
+
+    response = client.responses.create(
+        model="gpt-5.4-mini",
+        input=prompt,
+    )
+
+    return {"cover_letter": response.output_text.strip()}
