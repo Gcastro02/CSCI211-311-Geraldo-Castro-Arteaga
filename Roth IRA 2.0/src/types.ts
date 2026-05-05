@@ -60,4 +60,5 @@ export interface UserSettings {
   dateFormat: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
   investmentHorizon: 'LONG_TERM' | 'SHORT_TERM' | 'BOTH';
   preferredNewsSources: string[];
+  themeMode: 'LIGHT' | 'DARK';
 }

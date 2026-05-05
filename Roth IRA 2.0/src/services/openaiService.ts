@@ -186,8 +186,11 @@ const extractJson = <T>(content: string): T => {
 };
 
 const chatJson = async <T>(prompt: string): Promise<T> => {
-  if (!OPENAI_API_KEY) {
-    throw new Error("Missing VITE_OPENAI_API_KEY. Add it to your .env file.");
+  const trimmedKey = OPENAI_API_KEY.trim();
+  const hasPlaceholderKey = trimmedKey === "MY_OPENAI_API_KEY" || trimmedKey === "YOUR_OPENAI_API_KEY";
+
+  if (!trimmedKey || hasPlaceholderKey) {
+    throw new Error("Missing OpenAI API key. Set VITE_OPENAI_API_KEY in .env and restart the app.");
   }
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {

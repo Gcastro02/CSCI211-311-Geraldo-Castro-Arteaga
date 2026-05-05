@@ -1,1 +1,57 @@
 @import "tailwindcss";
+
+html,
+body,
+#root {
+	min-height: 100%;
+}
+
+html.dark body {
+	background-color: #020617;
+	color: #e2e8f0;
+}
+
+html.dark .bg-slate-50 {
+	background-color: #0b1220 !important;
+}
+
+html.dark .bg-white {
+	background-color: #111827 !important;
+}
+
+html.dark .bg-white\/95 {
+	background-color: rgba(17, 24, 39, 0.95) !important;
+}
+
+html.dark .text-slate-900 {
+	color: #f3f4f6 !important;
+}
+
+html.dark .text-slate-800 {
+	color: #e5e7eb !important;
+}
+
+html.dark .text-slate-700 {
+	color: #d1d5db !important;
+}
+
+html.dark .text-slate-600 {
+	color: #9ca3af !important;
+}
+
+html.dark .text-slate-500,
+html.dark .text-slate-400 {
+	color: #94a3b8 !important;
+}
+
+html.dark .border-slate-100,
+html.dark .border-slate-200,
+html.dark .border-slate-300 {
+	border-color: #334155 !important;
+}
+
+html.dark .shadow-slate-200\/50,
+html.dark .shadow-slate-200,
+html.dark .shadow-slate-100 {
+	--tw-shadow-color: rgba(0, 0, 0, 0.45) !important;
+}

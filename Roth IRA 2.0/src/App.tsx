@@ -21,6 +21,8 @@ import {
   Search,
   Info,
   Settings,
+  Moon,
+  Sun,
   Globe,
   Calendar,
   Clock,
@@ -69,6 +71,28 @@ const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
 const TREND_UP_COLOR = '#16a34a';
 const TREND_DOWN_COLOR = '#dc2626';
 type ChartMode = 'LINE' | 'CANDLES' | 'BOTH';
+
+const defaultSettings: UserSettings = {
+  currency: 'USD',
+  dateFormat: 'MM/DD/YYYY',
+  investmentHorizon: 'LONG_TERM',
+  preferredNewsSources: [],
+  themeMode: 'LIGHT',
+};
+
+const normalizeSettings = (raw: unknown): UserSettings => {
+  if (!raw || typeof raw !== 'object') return defaultSettings;
+
+  const candidate = raw as Partial<UserSettings>;
+  return {
+    ...defaultSettings,
+    ...candidate,
+    preferredNewsSources: Array.isArray(candidate.preferredNewsSources)
+      ? candidate.preferredNewsSources
+      : [],
+    themeMode: candidate.themeMode === 'DARK' ? 'DARK' : 'LIGHT',
+  };
+};
 
 const renderCandleWick = (props: any) => {
   const { x, y, width, height, payload } = props;
@@ -127,6 +151,9 @@ function ExpandableText({
 }
 
 export default function App() {
+  const aiApiKey = (import.meta.env.VITE_OPENAI_API_KEY || '').trim();
+  const isAiConfigured = aiApiKey.length > 0 && aiApiKey !== 'MY_OPENAI_API_KEY' && aiApiKey !== 'YOUR_OPENAI_API_KEY';
+
   const [portfolio, setPortfolio] = useState<PortfolioData>(() => {
     const saved = localStorage.getItem('roth_ira_portfolio');
     return saved ? JSON.parse(saved) : { cashBalance: 0, holdings: [] };
@@ -150,12 +177,12 @@ export default function App() {
   });
   const [settings, setSettings] = useState<UserSettings>(() => {
     const saved = localStorage.getItem('roth_ira_settings');
-    return saved ? JSON.parse(saved) : {
-      currency: 'USD',
-      dateFormat: 'MM/DD/YYYY',
-      investmentHorizon: 'LONG_TERM',
-      preferredNewsSources: []
-    };
+    if (!saved) return defaultSettings;
+    try {
+      return normalizeSettings(JSON.parse(saved));
+    } catch {
+      return defaultSettings;
+    }
   });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
@@ -213,6 +240,11 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('roth_ira_settings', JSON.stringify(settings));
   }, [settings]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('dark', settings.themeMode === 'DARK');
+  }, [settings.themeMode]);
 
   useEffect(() => {
     localStorage.setItem('roth_ira_chart_mode', JSON.stringify(chartMode));
@@ -303,6 +335,7 @@ export default function App() {
       setGeneralNews(data);
     } catch (error) {
       console.error("Failed to fetch general news", error);
+      addNotification(getErrorMessage(error, 'Failed to fetch general news.'), 'info');
     } finally {
       setLoadingGeneralNews(false);
     }
@@ -373,6 +406,18 @@ export default function App() {
       setNotifications(prev => prev.filter(n => n.id !== id));
     }, 5000);
   };
+
+  const getErrorMessage = (error: unknown, fallback: string) => {
+    if (error instanceof Error && error.message) return error.message;
+    if (typeof error === 'string' && error.trim()) return error;
+    return fallback;
+  };
+
+  useEffect(() => {
+    if (!isAiConfigured) {
+      addNotification('AI features are disabled. Set VITE_OPENAI_API_KEY in .env and restart the app.', 'info');
+    }
+  }, [isAiConfigured]);
 
   const checkWatchlistAlerts = async () => {
     setIsCheckingAlerts(true);
@@ -575,6 +620,7 @@ export default function App() {
         setNews(prev => ({ ...prev, [symbol]: stockNews }));
       } catch (error) {
         console.error(`Failed to fetch news for ${symbol}`, error);
+        addNotification(getErrorMessage(error, `Failed to fetch news for ${symbol}.`), 'info');
       } finally {
         setLoadingNews(prev => ({ ...prev, [symbol]: false }));
       }
@@ -612,6 +658,7 @@ export default function App() {
       setAnalyses(prev => ({ ...prev, [symbol]: analysis }));
     } catch (error) {
       console.error("Failed to analyze watchlist stock", error);
+      addNotification(getErrorMessage(error, `Failed to analyze ${symbol}.`), 'info');
     }
   };
 
@@ -636,6 +683,7 @@ export default function App() {
       setAnalyses(prev => ({ ...prev, ...analysisMap }));
     } catch (error) {
       console.error("Analysis failed", error);
+      addNotification(getErrorMessage(error, 'Portfolio analysis failed.'), 'info');
     } finally {
       setIsAnalyzing(false);
     }
@@ -648,6 +696,7 @@ export default function App() {
       setSuggestions(data);
     } catch (error) {
       console.error("Failed to get suggestions", error);
+      addNotification(getErrorMessage(error, 'Failed to get market suggestions.'), 'info');
     } finally {
       setIsSuggesting(false);
     }
@@ -667,7 +716,7 @@ export default function App() {
   ].filter(d => d.value > 0);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans transition-colors duration-200">
       {/* Notifications Container */}
       <div className="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
         <AnimatePresence>
@@ -1618,351 +1667,328 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-1 xl:grid-cols-[320px_minmax(0,1fr)] gap-8"
+              className="grid grid-cols-1 xl:grid-cols-[280px_minmax(0,1fr)] gap-6"
             >
-              <aside className="bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 p-6 shadow-2xl shadow-slate-200/10">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">Tracked Symbols</h3>
+              {/* Left Sidebar - Tracked Symbols (Google Finance style watchlist sidebar) */}
+              <aside className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hidden xl:flex flex-col h-[calc(100vh-120px)] sticky top-6">
+                <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-4">
+                  <h3 className="text-sm font-bold text-slate-800">Your Lists</h3>
                   <button
                     onClick={() => updateAllPrices(true)}
-                    className="p-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                     title="Refresh Prices"
                   >
                     <RefreshCw className={cn('w-4 h-4', isUpdatingPrices && 'animate-spin')} />
                   </button>
                 </div>
 
-                <div className="space-y-3 max-h-[620px] overflow-y-auto pr-1">
+                <div className="space-y-1 overflow-y-auto flex-1 pr-2">
                   {trackedSymbols.length > 0 ? trackedSymbols.map(symbol => (
                     <button
                       key={`detailed-list-${symbol}`}
                       onClick={() => setDetailedSymbol(symbol)}
                       className={cn(
-                        'w-full text-left p-4 rounded-2xl border transition-all',
+                        'w-full flex justify-between items-center px-3 py-3 rounded-xl transition-all',
                         detailedSymbol === symbol
-                          ? 'bg-slate-800 border-slate-600'
-                          : 'bg-slate-900/70 border-slate-800 hover:border-slate-700'
+                          ? 'bg-blue-50 text-blue-700 font-bold'
+                          : 'bg-transparent text-slate-600 hover:bg-slate-50'
                       )}
                     >
-                      <p className="font-bold text-slate-100">{symbol}</p>
-                      <p className="text-xs text-slate-400 mt-1">
-                        {currentPrices[symbol] ? formatCurrency(currentPrices[symbol]) : 'No live price'}
-                      </p>
+                      <span className="font-semibold">{symbol}</span>
+                      <span className="text-sm font-medium">
+                        {currentPrices[symbol] ? formatCurrency(currentPrices[symbol]) : '--'}
+                      </span>
                     </button>
                   )) : (
-                    <div className="text-xs text-slate-400 p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <div className="text-xs text-slate-400 p-3 rounded-xl bg-slate-50 border border-slate-100">
                       Add holdings or watchlist symbols to populate this list.
                     </div>
                   )}
                 </div>
               </aside>
 
-              <section className="bg-slate-950 text-slate-100 rounded-3xl border border-slate-800 p-6">
-                <div className="flex flex-col gap-6">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    {[
-                      { label: 'S&P 500', data: marketSnapshot['S&P 500'] },
-                      { label: 'Nasdaq', data: marketSnapshot.Nasdaq },
-                      { label: 'Dow', data: marketSnapshot.Dow },
-                    ].map((item) => (
-                      <div key={item.label} className="rounded-2xl border border-slate-800 bg-slate-900/90 px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-[0.28em] text-slate-500">{item.label}</p>
-                        <div className="mt-2 flex items-end justify-between gap-3">
-                          <span className="text-lg font-semibold text-slate-100">
-                            {item.data?.value ? formatCurrency(item.data.value) : '--'}
+              {/* Main Detailed Section - Google Finance Layout */}
+              <section className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm flex flex-col">
+                {(() => {
+                  const analysis = analyses[detailedSymbol];
+                  const hasHistory = detailedHistory.length > 1;
+                  const first = hasHistory ? (detailedHistory[0].close ?? detailedHistory[0].price) : 0;
+                  const lastRow = detailedHistory[detailedHistory.length - 1];
+                  const last = hasHistory ? (lastRow.close ?? lastRow.price) : 0;
+                  const diff = last - first;
+                  const pct = first > 0 ? (diff / first) * 100 : 0;
+                  const liveOrLast = detailedCurrentPrice ?? (last > 0 ? last : 0);
+                  const open = lastRow?.open ?? lastRow?.price ?? 0;
+                  const high = lastRow?.high ?? lastRow?.price ?? 0;
+                  const low = lastRow?.low ?? lastRow?.price ?? 0;
+                  const mode = chartMode[detailedSymbol] || 'BOTH';
+
+                  const rows = hasHistory ? toCandleRows(detailedHistory) : [];
+                  const trendColor = getTrendColor(rows);
+
+                  return (
+                    <>
+                      {/* 1. Header (Symbol & Price) */}
+                      <div className="mb-8">
+                        <div className="flex justify-between items-start">
+                          <h2 className="text-3xl font-bold text-slate-900 tracking-tight">{detailedSymbol}</h2>
+                          <div className="flex gap-2 relative">
+                            <input
+                              type="text"
+                              value={detailedSymbol}
+                              onChange={(e) => setDetailedSymbol(e.target.value.trim().toUpperCase())}
+                              placeholder="Search symbol"
+                              className="w-40 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                          </div>
+                        </div>
+                        
+                        <div className="mt-6 flex flex-wrap items-end gap-3">
+                          <span className="text-5xl font-medium text-slate-900 tracking-tight">
+                            {liveOrLast > 0 ? formatCurrency(liveOrLast) : '--'}
                           </span>
                           <span className={cn(
-                            'text-xs font-bold',
-                            (item.data?.change ?? 0) >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                            'text-xl font-medium mb-1',
+                            diff >= 0 ? 'text-emerald-600' : 'text-rose-600'
                           )}>
-                            {item.data
-                              ? `${item.data.change >= 0 ? '+' : ''}${item.data.change.toFixed(2)} (${item.data.changePercent >= 0 ? '+' : ''}${item.data.changePercent.toFixed(2)}%)`
-                              : '--'}
+                            {hasHistory ? `${diff >= 0 ? '+' : ''}${formatCurrency(diff).replace('$', '')} (${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%)` : '--'}
                           </span>
+                          <span className="text-sm text-slate-500 mb-2 ml-1 font-medium">Past {detailedRange}</span>
                         </div>
                       </div>
-                    ))}
-                  </div>
 
-                  <div className="grid gap-3 md:grid-cols-3">
-                    {[
-                      { label: 'Symbol', value: detailedSymbol },
-                      { label: 'Range', value: detailedRange },
-                      { label: 'Tracked', value: trackedSymbols.length.toString() },
-                    ].map((item) => (
-                      <div key={item.label} className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3">
-                        <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">{item.label}</p>
-                        <p className="mt-2 text-sm font-semibold text-slate-100">{item.value}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-                    <div>
-                      <p className="text-sm uppercase tracking-[0.28em] text-slate-500">Detailed Stock View</p>
-                      <h3 className="text-3xl font-bold mt-2">{detailedSymbol}</h3>
-                      {(() => {
-                        const hasHistory = detailedHistory.length > 1;
-                        const first = hasHistory ? (detailedHistory[0].close ?? detailedHistory[0].price) : 0;
-                        const lastRow = detailedHistory[detailedHistory.length - 1];
-                        const last = hasHistory ? (lastRow.close ?? lastRow.price) : 0;
-                        const diff = last - first;
-                        const pct = first > 0 ? (diff / first) * 100 : 0;
-                        const liveOrLast = detailedCurrentPrice ?? (last > 0 ? last : 0);
-                        const open = lastRow?.open ?? lastRow?.price ?? 0;
-                        const high = lastRow?.high ?? lastRow?.price ?? 0;
-                        const low = lastRow?.low ?? lastRow?.price ?? 0;
-
-                        return (
-                          <div className="mt-4 grid gap-4 sm:grid-cols-[auto_auto] sm:items-end">
-                            <div className="flex flex-wrap items-end gap-4">
-                              <span className="text-5xl font-bold tracking-tight">{liveOrLast > 0 ? formatCurrency(liveOrLast) : '--'}</span>
-                              <span className={cn(
-                                'text-xl font-bold pb-1',
-                                diff >= 0 ? 'text-emerald-400' : 'text-rose-400'
-                              )}>
-                                {hasHistory ? `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} (${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%)` : '--'}
-                              </span>
-                            </div>
-                            <div className="flex flex-wrap gap-2 text-xs text-slate-300">
-                              <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800">Open {formatCurrency(open)}</span>
-                              <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800">High {formatCurrency(high)}</span>
-                              <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800">Low {formatCurrency(low)}</span>
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 md:justify-end">
-                      <input
-                        type="text"
-                        value={detailedSymbol}
-                        onChange={(e) => setDetailedSymbol(e.target.value.trim().toUpperCase())}
-                        placeholder="Ticker"
-                        className="w-36 bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                      <button
-                        onClick={() => toggleNews(detailedSymbol, false)}
-                        className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-900 border border-slate-700 hover:border-slate-500"
-                      >
-                        {expandedNews[detailedSymbol] ? 'Hide News' : 'Show News'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2 border-y border-slate-800 py-4">
-                    {(['LINE', 'CANDLES', 'BOTH'] as ChartMode[]).map(mode => (
-                      <button
-                        key={`detailed-mode-${mode}`}
-                        onClick={() => setChartMode(prev => ({ ...prev, [detailedSymbol]: mode }))}
-                        className={cn(
-                          'px-3.5 py-2 rounded-xl text-xs font-bold transition-all',
-                          (chartMode[detailedSymbol] || 'BOTH') === mode
-                            ? 'bg-white text-slate-900'
-                            : 'bg-slate-900 border border-slate-700 text-slate-300 hover:text-white'
-                        )}
-                      >
-                        {mode === 'LINE' ? 'Line' : mode === 'CANDLES' ? 'Candles' : 'Line + Candles'}
-                      </button>
-                    ))}
-
-                    <div className="h-4 w-px bg-slate-700 mx-1" />
-
-                    {['1D', '5D', '1M', '6M', '1Y', '5Y', 'MAX'].map(range => (
-                      <button
-                        key={`detailed-range-${range}`}
-                        onClick={() => setDetailedRange(range)}
-                        className={cn(
-                          'px-3.5 py-2 rounded-xl text-xs font-bold transition-all',
-                          detailedRange === range
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-slate-900 border border-slate-700 text-slate-300 hover:text-white'
-                        )}
-                      >
-                        {range}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-2 border-b border-slate-800 pb-1">
-                    {[
-                      { id: 'overview', label: 'Overview' },
-                      { id: 'news', label: 'News' },
-                      { id: 'financials', label: 'Financials' },
-                    ].map((tab) => (
-                      <button
-                        key={`detailed-panel-${tab.id}`}
-                        onClick={() => setDetailedPanel(tab.id as 'overview' | 'news' | 'financials')}
-                        className={cn(
-                          'px-4 py-2 text-sm font-semibold border-b-2 transition-colors',
-                          detailedPanel === tab.id
-                            ? 'border-blue-400 text-white'
-                            : 'border-transparent text-slate-500 hover:text-slate-200'
-                        )}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {detailedPanel === 'overview' && (
-                    <>
-                      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                        {[
-                          { label: 'Selected Price', value: detailedCurrentPrice },
-                          { label: 'Range Change', value: detailedHistory.length > 1 ? ((detailedHistory[detailedHistory.length - 1].close ?? detailedHistory[detailedHistory.length - 1].price) - (detailedHistory[0].close ?? detailedHistory[0].price)) : null },
-                          { label: 'Data Points', value: detailedHistory.length },
-                          { label: 'View Mode', value: (chartMode[detailedSymbol] || 'BOTH') === 'LINE' ? 'Line' : (chartMode[detailedSymbol] || 'CANDLES') === 'CANDLES' ? 'Candles' : 'Line + Candles' },
-                        ].map((item) => (
-                          <div key={item.label} className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4">
-                            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">{item.label}</p>
-                            <p className="mt-2 text-lg font-semibold text-slate-100">
-                              {typeof item.value === 'number'
-                                ? item.value === detailedHistory.length
-                                  ? item.value
-                                  : formatCurrency(item.value)
-                                : item.value ?? '--'}
-                            </p>
-                          </div>
-                        ))}
+                      {/* 2. Chart Controls */}
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 border-b border-slate-100 pb-4">
+                        <div className="flex flex-wrap gap-1">
+                          {['1D', '5D', '1M', '6M', '1Y', '5Y', 'MAX'].map(range => (
+                            <button
+                              key={`range-${range}`}
+                              onClick={() => setDetailedRange(range)}
+                              className={cn(
+                                'px-4 py-1.5 rounded-full text-sm font-medium transition-all',
+                                detailedRange === range 
+                                  ? 'bg-blue-50 text-blue-700' 
+                                  : 'text-slate-600 hover:bg-slate-100'
+                              )}
+                            >
+                              {range}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex gap-1 bg-slate-50 p-1 rounded-xl border border-slate-200">
+                          {(['LINE', 'CANDLES', 'BOTH'] as ChartMode[]).map(m => (
+                            <button
+                              key={`mode-${m}`}
+                              onClick={() => setChartMode(prev => ({ ...prev, [detailedSymbol]: m }))}
+                              className={cn(
+                                'px-3 py-1 rounded-lg text-xs font-bold transition-all',
+                                mode === m ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-500 hover:text-slate-700'
+                              )}
+                            >
+                              {m === 'LINE' ? 'Line' : m === 'CANDLES' ? 'Candle' : 'Both'}
+                            </button>
+                          ))}
+                        </div>
                       </div>
 
-                      <div className="h-[540px] bg-slate-900 rounded-3xl border border-slate-800 p-6 relative shadow-inner shadow-black/20">
+                      {/* 3. The Chart */}
+                      <div className="h-[400px] w-full relative mb-12">
                         {isLoadingDetailed ? (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <RefreshCw className="w-7 h-7 text-blue-400 animate-spin" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+                            <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
                           </div>
-                        ) : detailedHistory.length > 0 ? (
-                          (() => {
-                            const rows = toCandleRows(detailedHistory);
-                            const trendColor = getTrendColor(rows);
-                            const mode = chartMode[detailedSymbol] || 'BOTH';
-                            const isIntraday = detailedRange === '1D';
+                        ) : hasHistory ? (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <ComposedChart data={rows} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
+                              <defs>
+                                <linearGradient id={`lightLineGradient-${detailedSymbol}`} x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor={trendColor} stopOpacity={0.15} />
+                                  <stop offset="95%" stopColor={trendColor} stopOpacity={0.0} />
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                              <XAxis
+                                dataKey="date"
+                                tick={{ fontSize: 11, fill: '#64748b' }}
+                                tickLine={false}
+                                axisLine={false}
+                                minTickGap={40}
+                                tickFormatter={(value) => formatChartAxisLabel(String(value), detailedRange)}
+                              />
+                              {/* Google Finance typically puts the Y axis on the right side */}
+                              <YAxis 
+                                tick={{ fontSize: 11, fill: '#64748b' }} 
+                                tickLine={false} 
+                                axisLine={false} 
+                                domain={['auto', 'auto']} 
+                                width={60}
+                                orientation="right"
+                                tickFormatter={(val) => `$${val}`}
+                              />
+                              <RechartsTooltip
+                                contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', fontSize: '12px', background: '#ffffff', color: '#0f172a' }}
+                                labelFormatter={(label) => formatChartAxisLabel(String(label), detailedRange)}
+                                formatter={(value, name) => {
+                                  const numeric = typeof value === 'number' ? value : Number(value) || 0;
+                                  return [formatCurrency(numeric), name === 'price' ? 'Close' : name];
+                                }}
+                              />
 
-                            return (
-                              <ResponsiveContainer width="100%" height="100%" id="detailed-stock-chart">
-                                <ComposedChart data={rows} margin={{ top: 12, right: 8, left: 8, bottom: 4 }}>
-                                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1f2937" />
-                                  <XAxis
-                                    dataKey="date"
-                                    tick={{ fontSize: 11, fill: '#94a3b8' }}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    minTickGap={32}
-                                    tickFormatter={(value) => formatChartAxisLabel(String(value), detailedRange)}
-                                  />
-                                  <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} tickLine={false} axisLine={false} domain={['auto', 'auto']} width={64} />
-                                  <RechartsTooltip
-                                    contentStyle={{ borderRadius: '10px', border: '1px solid #334155', boxShadow: '0 6px 18px rgba(0,0,0,0.45)', fontSize: '11px', background: '#0f172a', color: '#e2e8f0' }}
-                                    labelFormatter={(label) => formatChartAxisLabel(String(label), detailedRange)}
-                                    formatter={(value, name) => {
-                                      const numeric = typeof value === 'number' ? value : Number(value) || 0;
-                                      const mappedName = name === 'price' ? 'Close' : name;
-                                      return [formatCurrency(numeric), mappedName];
-                                    }}
-                                  />
+                              {mode !== 'LINE' && (
+                                <>
+                                  <Bar dataKey="wickBase" stackId="wicks" fill="transparent" barSize={2} />
+                                  <Bar dataKey="wickHeight" stackId="wicks" fill="transparent" barSize={2} shape={renderCandleWick} />
+                                  <Bar dataKey="candleBase" stackId="candles" fill="transparent" barSize={6} />
+                                  <Bar dataKey="candleBody" stackId="candles" barSize={6}>
+                                    {rows.map((row) => (
+                                      <Cell key={`candle-${detailedSymbol}-${row.date}`} fill={row.isUp ? TREND_UP_COLOR : TREND_DOWN_COLOR} />
+                                    ))}
+                                  </Bar>
+                                </>
+                              )}
 
-                                  {mode !== 'LINE' && (
-                                    <>
-                                      <Bar dataKey="wickBase" stackId="wicks" fill="transparent" barSize={2} />
-                                      <Bar dataKey="wickHeight" stackId="wicks" fill="transparent" barSize={2} shape={renderCandleWick} />
-                                      <Bar dataKey="candleBase" stackId="candles" fill="transparent" barSize={7} />
-                                      <Bar dataKey="candleBody" stackId="candles" barSize={7}>
-                                        {rows.map((row) => (
-                                          <Cell key={`detailed-candle-${detailedSymbol}-${row.date}`} fill={row.isUp ? TREND_UP_COLOR : TREND_DOWN_COLOR} />
-                                        ))}
-                                      </Bar>
-                                    </>
-                                  )}
-
-                                  {mode !== 'CANDLES' && (
-                                    <Line
-                                      type="monotone"
-                                      dataKey="price"
-                                      stroke={trendColor}
-                                      strokeWidth={2.2}
-                                      dot={false}
-                                      animationDuration={1000}
-                                    />
-                                  )}
-                                </ComposedChart>
-                              </ResponsiveContainer>
-                            );
-                          })()
+                              {mode !== 'CANDLES' && (
+                                <Area
+                                  type="monotone"
+                                  dataKey="price"
+                                  stroke={trendColor}
+                                  strokeWidth={2}
+                                  fill={`url(#lightLineGradient-${detailedSymbol})`}
+                                  dot={false}
+                                  animationDuration={800}
+                                />
+                              )}
+                            </ComposedChart>
+                          </ResponsiveContainer>
                         ) : (
-                          <div className="h-full flex items-center justify-center text-slate-400 text-sm">
+                          <div className="h-full flex items-center justify-center text-slate-400 text-sm italic">
                             No historical data found for this symbol.
                           </div>
                         )}
                       </div>
-                    </>
-                  )}
 
-                  {detailedPanel === 'news' && (
-                    <div className="mt-6">
-                      {loadingNews[detailedSymbol] ? (
-                        <div className="text-sm text-slate-400">Loading latest news...</div>
-                      ) : news[detailedSymbol]?.length ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {news[detailedSymbol].slice(0, 6).map((item, nIdx) => (
-                            <a
-                              key={`detailed-news-${nIdx}`}
-                              href={item.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="block p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-600"
-                            >
-                              <p className="text-sm font-semibold text-slate-100">{item.title}</p>
-                              <p className="text-xs text-slate-400 mt-1">{item.source}</p>
-                            </a>
+                      {/* 4. Key Stats Grid */}
+                      <div className="mb-12">
+                        <h3 className="text-xl font-medium text-slate-900 mb-6">Key stats</h3>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-6">
+                          {[
+                            { label: 'Previous close', value: formatCurrency(first) },
+                            { label: 'Day range', value: `${formatCurrency(low)} - ${formatCurrency(high)}` },
+                            { label: 'Open', value: formatCurrency(open) },
+                            { label: 'Market cap', value: analysis?.metrics?.marketCap || '--' },
+                            { label: 'P/E ratio', value: analysis?.metrics?.peRatio || '--' },
+                            { label: 'Div yield', value: analysis?.metrics?.dividendYield || '--' },
+                            { label: 'AI Verdict', value: analysis?.recommendation || '--' },
+                            { label: 'Risk Level', value: analysis?.riskLevel || '--' },
+                          ].map((stat, i) => (
+                            <div key={i} className="flex flex-col border-t border-slate-100 pt-3">
+                              <span className="text-sm text-slate-500 mb-1">{stat.label}</span>
+                              <span className="text-base font-medium text-slate-900">{stat.value}</span>
+                            </div>
                           ))}
                         </div>
-                      ) : (
-                        <div className="text-sm text-slate-400">No recent news available for {detailedSymbol}.</div>
-                      )}
-                    </div>
-                  )}
+                      </div>
 
-                  {detailedPanel === 'financials' && (
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                      {(() => {
-                        const analysis = analyses[detailedSymbol];
-                        const latest = detailedHistory[detailedHistory.length - 1];
-                        const first = detailedHistory.length > 1 ? (detailedHistory[0].close ?? detailedHistory[0].price) : 0;
-                        const last = latest?.close ?? latest?.price ?? 0;
-                        const diff = last - first;
-                        const pct = first > 0 ? (diff / first) * 100 : 0;
+                      {/* 5. Additional Tabs (News / AI Insights) */}
+                      <div>
+                        <div className="flex gap-6 border-b border-slate-200 mb-6">
+                          <button
+                            onClick={() => setDetailedPanel('overview')}
+                            className={cn('pb-3 text-sm font-medium transition-all border-b-2', detailedPanel === 'overview' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-900')}
+                          >
+                            AI Analysis
+                          </button>
+                          <button
+                            onClick={() => {
+                              setDetailedPanel('news');
+                              if (!news[detailedSymbol]) toggleNews(detailedSymbol);
+                            }}
+                            className={cn('pb-3 text-sm font-medium transition-all border-b-2', detailedPanel === 'news' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-900')}
+                          >
+                            Latest News
+                          </button>
+                        </div>
 
-                        const items = [
-                          { label: 'Current Price', value: detailedCurrentPrice ? formatCurrency(detailedCurrentPrice) : '--' },
-                          { label: 'Range Change', value: detailedHistory.length > 1 ? `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} (${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%)` : '--' },
-                          { label: 'Open', value: latest?.open ? formatCurrency(latest.open) : '--' },
-                          { label: 'High', value: latest?.high ? formatCurrency(latest.high) : '--' },
-                          { label: 'Low', value: latest?.low ? formatCurrency(latest.low) : '--' },
-                          { label: 'Close', value: last > 0 ? formatCurrency(last) : '--' },
-                          { label: 'Recommendation', value: analysis?.recommendation || '--' },
-                          { label: 'Risk', value: analysis?.riskLevel || '--' },
-                          { label: 'Key Factors', value: analysis?.keyFactors?.length ? analysis.keyFactors.slice(0, 3).join(' • ') : '--' },
-                        ];
+                        <div className="min-h-[200px]">
+                          {detailedPanel === 'overview' && (
+                            <div className="space-y-6">
+                              {analysis ? (
+                                <>
+                                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                                    <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                                      <Sparkles className="w-5 h-5 text-blue-600" /> AI Thesis
+                                    </h4>
+                                    <p className="text-sm text-slate-600 leading-relaxed">{analysis.reasoning}</p>
+                                    
+                                    {analysis.projectedGrowth && (
+                                      <div className="mt-4 pt-4 border-t border-slate-200">
+                                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Projected Growth</p>
+                                        <p className="text-sm text-slate-700">{analysis.projectedGrowth}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  {analysis.keyFactors?.length ? (
+                                    <div>
+                                      <h4 className="font-bold text-slate-900 mb-3 text-sm">Key Factors</h4>
+                                      <div className="flex flex-wrap gap-2">
+                                        {analysis.keyFactors.map((factor, i) => (
+                                          <span key={i} className="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-full">
+                                            {factor}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  ) : null}
+                                </>
+                              ) : (
+                                <div className="text-center py-10">
+                                  <p className="text-slate-500 text-sm">No AI analysis available for this asset. Make sure it's in your portfolio or watchlist to trigger an analysis.</p>
+                                </div>
+                              )}
+                            </div>
+                          )}
 
-                        return items.map((item) => (
-                          <div key={item.label} className="rounded-2xl border border-slate-800 bg-slate-900 px-4 py-4">
-                            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500">{item.label}</p>
-                            <p className="mt-2 text-sm font-semibold text-slate-100 leading-relaxed">{item.value}</p>
-                          </div>
-                        ));
-                      })()}
-                    </div>
-                  )}
-
-                  {detailedPanel === 'overview' && (
-                    <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-400">
-                      <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800">Tip: switch to Candles for OHLC detail</span>
-                      <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800">Selected range drives the chart and summary</span>
-                    </div>
-                  )}
-                </div>
+                          {detailedPanel === 'news' && (
+                            <div>
+                              {loadingNews[detailedSymbol] ? (
+                                <div className="flex justify-center py-10">
+                                  <RefreshCw className="w-6 h-6 text-slate-300 animate-spin" />
+                                </div>
+                              ) : news[detailedSymbol]?.length ? (
+                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                  {news[detailedSymbol].map((item, nIdx) => (
+                                    <a
+                                      key={`detailed-news-${nIdx}`}
+                                      href={item.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="block p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all group"
+                                    >
+                                      <div className="flex justify-between items-start mb-2">
+                                        <span className="text-xs font-bold text-slate-500">{item.source}</span>
+                                        <span className="text-xs text-slate-400">{formatDate(item.date)}</span>
+                                      </div>
+                                      <h4 className="text-base font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                                        {item.title}
+                                      </h4>
+                                      <p className="text-sm text-slate-500 line-clamp-2">{item.snippet}</p>
+                                    </a>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-sm text-slate-500 text-center py-10">
+                                  No recent news found.
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </section>
             </motion.div>
           )}
@@ -2087,6 +2113,40 @@ export default function App() {
                         <option value="CAD">CAD - Canadian Dollar</option>
                         <option value="AUD">AUD - Australian Dollar</option>
                       </select>
+                    </div>
+                  </div>
+
+                  {/* Theme Mode */}
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-slate-100 rounded-2xl text-slate-700">
+                      {settings.themeMode === 'DARK' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 mb-1">Theme</h4>
+                      <p className="text-sm text-slate-500 mb-4">Switch between light and dark mode.</p>
+                      <div className="flex gap-2">
+                        {[
+                          { id: 'LIGHT', label: 'Light', icon: Sun },
+                          { id: 'DARK', label: 'Dark', icon: Moon },
+                        ].map(option => {
+                          const Icon = option.icon;
+                          return (
+                            <button
+                              key={option.id}
+                              onClick={() => setSettings(prev => ({ ...prev, themeMode: option.id as 'LIGHT' | 'DARK' }))}
+                              className={cn(
+                                'px-4 py-2 rounded-xl text-sm font-medium border transition-all inline-flex items-center gap-2',
+                                settings.themeMode === option.id
+                                  ? 'bg-slate-900 text-white border-slate-900'
+                                  : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                              )}
+                            >
+                              <Icon className="w-4 h-4" />
+                              {option.label}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
 
