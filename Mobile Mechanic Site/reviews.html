@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FB Mobile Mechanics - Reviews</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="images/f59dec5a-856e-4a5a-a60d-da7e3ec65535.png" alt="FB Mobile Mechanics Logo"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="reviews.html" style="color: var(--purple);">Reviews</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-section">
+            <h2 class="section-title">Client <span>Reviews</span></h2>
+            
+            <div class="reviews-container">
+                <div class="review-box">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"Incredible service! They showed up exactly on time and fixed my brakes in under an hour while I worked from home."</p>
+                    <h4 style="margin-top: 15px; color: var(--titanium-light);">- John D.</h4>
+                </div>
+                <div class="review-box">
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p>"Super transparent about pricing and showed me exactly what was wrong with my alternator. Highly recommend."</p>
+                    <h4 style="margin-top: 15px; color: var(--titanium-light);">- Sarah M.</h4>
+                </div>
+            </div>
+
+            <div class="review-form-container">
+                <h3 style="text-align: center; margin-bottom: 20px;">Leave a Review</h3>
+                <form class="review-form">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="text" placeholder="Vehicle Make/Model" required>
+                    <select required>
+                        <option value="" disabled selected>Select Rating (1-5)</option>
+                        <option value="5">5 Stars - Excellent</option>
+                        <option value="4">4 Stars - Very Good</option>
+                        <option value="3">3 Stars - Average</option>
+                        <option value="2">2 Stars - Poor</option>
+                        <option value="1">1 Star - Terrible</option>
+                    </select>
+                    <textarea rows="4" placeholder="Describe your experience..." required></textarea>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Submit Review</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Reviews API URL — update if running elsewhere
+        const API_URL = 'http://localhost:5000/api/reviews';
+
+        function renderReview(container, r) {
+            const box = document.createElement('div');
+            box.className = 'review-box';
+            const stars = document.createElement('div');
+            stars.className = 'stars';
+            for (let i=0;i<r.rating;i++) stars.innerHTML += '<i class="fas fa-star"></i>';
+            for (let i=r.rating;i<5;i++) stars.innerHTML += '<i class="far fa-star"></i>';
+
+            const p = document.createElement('p');
+            p.textContent = r.text;
+            const h4 = document.createElement('h4');
+            h4.style.marginTop = '15px';
+            h4.style.color = 'var(--titanium-light)';
+            const vehicleText = r.vehicle ? ` (${r.vehicle})` : '';
+            h4.textContent = `- ${r.name}${vehicleText}`;
+
+            box.appendChild(stars);
+            box.appendChild(p);
+            box.appendChild(h4);
+            container.appendChild(box);
+        }
+
+        (function(){
+            const form = document.querySelector('.review-form');
+            const container = document.querySelector('.reviews-container');
+            if (!form || !container) return;
+
+            // Fetch existing reviews from API
+            fetch(API_URL).then(r=>r.json()).then(list=>{
+                container.innerHTML = ''; // clear sample entries
+                list.forEach(item => renderReview(container, item));
+            }).catch(()=>{
+                // leave sample entries if API unavailable
+                console.warn('Could not fetch reviews from API');
+            });
+
+            form.addEventListener('submit', function(e){
+                e.preventDefault();
+                const name = form.querySelector('input[placeholder="Your Name"]').value.trim();
+                const vehicle = form.querySelector('input[placeholder="Vehicle Make/Model"]').value.trim();
+                const rating = parseInt(form.querySelector('select').value, 10);
+                const text = form.querySelector('textarea').value.trim();
+                if (!name || !rating || !text) {
+                    alert('Please complete name, rating, and review text.');
+                    return;
+                }
+
+                const payload = { name, vehicle, rating, text };
+
+                fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(res => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                }).then(created => {
+                    // prepend created review
+                    const first = container.firstChild;
+                    const box = document.createElement('div');
+                    box.className = 'review-box';
+                    const stars = document.createElement('div');
+                    stars.className = 'stars';
+                    for (let i=0;i<created.rating;i++) stars.innerHTML += '<i class="fas fa-star"></i>';
+                    for (let i=created.rating;i<5;i++) stars.innerHTML += '<i class="far fa-star"></i>';
+                    const p = document.createElement('p'); p.textContent = created.text;
+                    const h4 = document.createElement('h4'); h4.style.marginTop = '15px'; h4.style.color = 'var(--titanium-light)';
+                    h4.textContent = `- ${created.name} (${created.vehicle})`;
+                    box.appendChild(stars); box.appendChild(p); box.appendChild(h4);
+                    container.insertBefore(box, first);
+                    form.reset();
+                    alert('Thank you — your review was submitted.');
+                }).catch(err => {
+                    console.error(err);
+                    alert('Could not submit review to server. It will be added locally.');
+                    // fallback to local append
+                    renderReview(container, payload);
+                    form.reset();
+                });
+            });
+        })();
+    </script>
+
+    <footer>
+        <p>© 2026 FB Mobile Mechanics. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
