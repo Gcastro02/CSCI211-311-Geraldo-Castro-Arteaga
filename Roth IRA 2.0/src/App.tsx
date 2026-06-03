@@ -151,17 +151,22 @@ function ExpandableText({
 }
 
 export default function App() {
-  const aiApiKey = (import.meta.env.VITE_OPENAI_API_KEY || '').trim();
-  const isAiConfigured = aiApiKey.length > 0 && aiApiKey !== 'MY_OPENAI_API_KEY' && aiApiKey !== 'YOUR_OPENAI_API_KEY';
-
   const [portfolio, setPortfolio] = useState<PortfolioData>(() => {
-    const saved = localStorage.getItem('roth_ira_portfolio');
-    return saved ? JSON.parse(saved) : { cashBalance: 0, holdings: [] };
+    try {
+      const saved = localStorage.getItem('roth_ira_portfolio');
+      return saved ? JSON.parse(saved) : { cashBalance: 0, holdings: [] };
+    } catch {
+      return { cashBalance: 0, holdings: [] };
+    }
   });
 
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>(() => {
-    const saved = localStorage.getItem('roth_ira_watchlist');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('roth_ira_watchlist');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
   });
 
   const [analyses, setAnalyses] = useState<Record<string, StockAnalysis>>({});
@@ -413,11 +418,6 @@ export default function App() {
     return fallback;
   };
 
-  useEffect(() => {
-    if (!isAiConfigured) {
-      addNotification('AI features are disabled. Set VITE_OPENAI_API_KEY in .env and restart the app.', 'info');
-    }
-  }, [isAiConfigured]);
 
   const checkWatchlistAlerts = async () => {
     setIsCheckingAlerts(true);
@@ -630,6 +630,10 @@ export default function App() {
   const handleAddHolding = () => {
     const normalizedSymbol = newHolding.symbol.trim().toUpperCase();
     if (!normalizedSymbol || newHolding.shares <= 0) return;
+    if (portfolio.holdings.some(h => h.symbol === normalizedSymbol)) {
+      addNotification(`${normalizedSymbol} is already in your portfolio. Remove it first to update.`, 'info');
+      return;
+    }
     setPortfolio(prev => ({
       ...prev,
       holdings: [...prev.holdings, { ...newHolding, symbol: normalizedSymbol }]
@@ -1052,6 +1056,7 @@ export default function App() {
                         <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Price</th>
                         <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Current Price</th>
                         <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Total Value</th>
+                        <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Gain / Loss</th>
                         <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">AI Advice</th>
                         <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Actions</th>
                       </tr>
@@ -1074,6 +1079,20 @@ export default function App() {
                           </td>
                           <td className="px-6 py-4 font-bold text-slate-900">
                             {formatCurrency(holding.shares * (currentPrices[holding.symbol] || holding.averagePrice))}
+                          </td>
+                          <td className="px-6 py-4">
+                            {currentPrices[holding.symbol] ? (() => {
+                              const gain = (currentPrices[holding.symbol] - holding.averagePrice) * holding.shares;
+                              const pct = holding.averagePrice > 0 ? ((currentPrices[holding.symbol] - holding.averagePrice) / holding.averagePrice) * 100 : 0;
+                              const isUp = gain >= 0;
+                              return (
+                                <div className={cn("flex items-center gap-1", isUp ? "text-emerald-600" : "text-rose-600")}>
+                                  {isUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                                  <span className="font-bold text-sm">{formatCurrency(Math.abs(gain))}</span>
+                                  <span className="text-xs">({pct.toFixed(2)}%)</span>
+                                </div>
+                              );
+                            })() : <span className="text-slate-400 text-sm">—</span>}
                           </td>
                           <td className="px-6 py-4">
                             {analyses[holding.symbol] ? (

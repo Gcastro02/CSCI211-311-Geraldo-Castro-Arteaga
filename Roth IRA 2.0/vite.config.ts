@@ -17,6 +17,10 @@ export default defineConfig(({mode}) => {
       // Do not modify; file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
       proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+        },
         '/stooq-api': {
           target: 'https://stooq.com',
           changeOrigin: true,

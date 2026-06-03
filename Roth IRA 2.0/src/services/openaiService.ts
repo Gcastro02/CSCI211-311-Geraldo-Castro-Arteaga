@@ -1,7 +1,5 @@
 import { StockAnalysis, MarketSuggestion, StockHolding, NewsItem, UserSettings, PriceData } from "../types";
 
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
-const OPENAI_MODEL = import.meta.env.VITE_OPENAI_MODEL || "gpt-4.1-mini";
 
 const SYSTEM_PROMPT =
   "You are a financial analysis assistant for a Roth IRA planning app. Return valid JSON only and no markdown.";
@@ -93,7 +91,7 @@ const getYahooRangeAndInterval = (range: string): { range: string; interval: str
     case "1D":
       return { range: "1d", interval: "1h" };
     case "5D":
-      return { range: "1mo", interval: "1d" };
+      return { range: "5d", interval: "1h" };
     case "1M":
       return { range: "1mo", interval: "1d" };
     case "6M":
@@ -186,21 +184,10 @@ const extractJson = <T>(content: string): T => {
 };
 
 const chatJson = async <T>(prompt: string): Promise<T> => {
-  const trimmedKey = OPENAI_API_KEY.trim();
-  const hasPlaceholderKey = trimmedKey === "MY_OPENAI_API_KEY" || trimmedKey === "YOUR_OPENAI_API_KEY";
-
-  if (!trimmedKey || hasPlaceholderKey) {
-    throw new Error("Missing OpenAI API key. Set VITE_OPENAI_API_KEY in .env and restart the app.");
-  }
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("/api/openai", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: OPENAI_MODEL,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
