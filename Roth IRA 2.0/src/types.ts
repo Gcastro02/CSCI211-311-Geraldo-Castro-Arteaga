@@ -61,4 +61,10 @@ export interface UserSettings {
   investmentHorizon: 'LONG_TERM' | 'SHORT_TERM' | 'BOTH';
   preferredNewsSources: string[];
   themeMode: 'LIGHT' | 'DARK';
+  age50OrOlder: boolean;
+}
+
+export interface ContributionRecord {
+  year: number;
+  contributed: number;
 }

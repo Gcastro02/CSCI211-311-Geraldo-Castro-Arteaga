@@ -48,15 +48,16 @@ import {
   CartesianGrid
 } from 'recharts';
 import { cn } from './lib/utils';
-import { 
-  PortfolioData, 
-  StockHolding, 
-  WatchlistItem, 
-  StockAnalysis, 
+import {
+  PortfolioData,
+  StockHolding,
+  WatchlistItem,
+  StockAnalysis,
   MarketSuggestion,
   NewsItem,
   UserSettings,
-  PriceData
+  PriceData,
+  ContributionRecord
 } from './types';
 import { 
   analyzePortfolio, 
@@ -78,6 +79,7 @@ const defaultSettings: UserSettings = {
   investmentHorizon: 'LONG_TERM',
   preferredNewsSources: [],
   themeMode: 'LIGHT',
+  age50OrOlder: false,
 };
 
 const normalizeSettings = (raw: unknown): UserSettings => {
@@ -91,6 +93,7 @@ const normalizeSettings = (raw: unknown): UserSettings => {
       ? candidate.preferredNewsSources
       : [],
     themeMode: candidate.themeMode === 'DARK' ? 'DARK' : 'LIGHT',
+    age50OrOlder: candidate.age50OrOlder === true,
   };
 };
 
@@ -189,6 +192,19 @@ export default function App() {
       return defaultSettings;
     }
   });
+  const [contribution, setContribution] = useState<ContributionRecord>(() => {
+    try {
+      const saved = localStorage.getItem('roth_ira_contribution');
+      const parsed = saved ? JSON.parse(saved) : null;
+      const currentYear = new Date().getFullYear();
+      if (parsed && parsed.year === currentYear) return parsed;
+      return { year: currentYear, contributed: 0 };
+    } catch {
+      return { year: new Date().getFullYear(), contributed: 0 };
+    }
+  });
+  const [contributionInput, setContributionInput] = useState('');
+
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [loadingNews, setLoadingNews] = useState<Record<string, boolean>>({});
@@ -245,6 +261,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('roth_ira_settings', JSON.stringify(settings));
   }, [settings]);
+
+  useEffect(() => {
+    localStorage.setItem('roth_ira_contribution', JSON.stringify(contribution));
+  }, [contribution]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -634,18 +654,31 @@ export default function App() {
       addNotification(`${normalizedSymbol} is already in your portfolio. Remove it first to update.`, 'info');
       return;
     }
-    setPortfolio(prev => ({
-      ...prev,
-      holdings: [...prev.holdings, { ...newHolding, symbol: normalizedSymbol }]
-    }));
+    const cost = newHolding.shares * newHolding.averagePrice;
+    setPortfolio(prev => {
+      const newCash = prev.cashBalance - cost;
+      if (newCash < 0) {
+        addNotification(`Heads up: purchase cost (${formatCurrency(cost)}) exceeds available cash. Balance set to $0.`, 'info');
+      }
+      return {
+        ...prev,
+        cashBalance: Math.max(newCash, 0),
+        holdings: [...prev.holdings, { ...newHolding, symbol: normalizedSymbol }],
+      };
+    });
     setNewHolding({ symbol: '', shares: 0, averagePrice: 0 });
   };
 
   const handleRemoveHolding = (index: number) => {
-    setPortfolio(prev => ({
-      ...prev,
-      holdings: prev.holdings.filter((_, i) => i !== index)
-    }));
+    setPortfolio(prev => {
+      const holding = prev.holdings[index];
+      const saleValue = holding.shares * (currentPrices[holding.symbol] || holding.averagePrice);
+      return {
+        ...prev,
+        cashBalance: prev.cashBalance + saleValue,
+        holdings: prev.holdings.filter((_, i) => i !== index),
+      };
+    });
   };
 
   const handleAddWatchlist = async () => {
@@ -925,6 +958,71 @@ export default function App() {
                   </div>
                 </div>
               </div>
+
+              {/* Contribution Tracker */}
+              {(() => {
+                const limit = settings.age50OrOlder ? 8000 : 7000;
+                const pct = Math.min((contribution.contributed / limit) * 100, 100);
+                const remaining = Math.max(limit - contribution.contributed, 0);
+                const isOver = contribution.contributed > limit;
+                return (
+                  <div className="lg:col-span-3 bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg flex items-center gap-2">
+                          <Wallet className="w-5 h-5 text-emerald-600" />
+                          {contribution.year} Roth IRA Contributions
+                        </h3>
+                        <p className="text-xs text-slate-400 mt-0.5">Annual limit: {formatCurrency(limit)}{settings.age50OrOlder ? ' (age 50+ catch-up)' : ''}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-slate-900">{formatCurrency(contribution.contributed)}</p>
+                        <p className={cn("text-xs font-bold", isOver ? "text-rose-600" : "text-slate-400")}>
+                          {isOver ? `Over limit by ${formatCurrency(contribution.contributed - limit)}` : `${formatCurrency(remaining)} remaining`}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-slate-100 rounded-full h-3 mb-4 overflow-hidden">
+                      <div
+                        className={cn("h-3 rounded-full transition-all duration-500", isOver ? "bg-rose-500" : pct >= 80 ? "bg-amber-500" : "bg-emerald-500")}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+
+                    <div className="flex gap-3">
+                      <input
+                        type="number"
+                        value={contributionInput}
+                        onChange={e => setContributionInput(e.target.value)}
+                        placeholder="Add contribution amount..."
+                        className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      />
+                      <button
+                        onClick={() => {
+                          const amount = parseFloat(contributionInput);
+                          if (!amount || amount <= 0) return;
+                          setContribution(prev => ({ ...prev, contributed: prev.contributed + amount }));
+                          setContributionInput('');
+                          addNotification(`Added ${formatCurrency(amount)} to ${contribution.year} contributions.`, 'success');
+                        }}
+                        className="bg-emerald-600 text-white font-bold px-4 py-2 rounded-xl hover:bg-emerald-700 transition-colors text-sm"
+                      >
+                        Add
+                      </button>
+                      <button
+                        onClick={() => {
+                          setContribution(prev => ({ ...prev, contributed: 0 }));
+                          addNotification('Contribution total reset to $0.', 'info');
+                        }}
+                        className="bg-slate-100 text-slate-500 font-bold px-4 py-2 rounded-xl hover:bg-slate-200 transition-colors text-sm"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* General Market News Widget */}
               <div className="lg:col-span-3 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 mt-6 md:mt-0">
@@ -2221,6 +2319,36 @@ export default function App() {
                             )}
                           >
                             {horizon.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Contribution Limit */}
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-600">
+                      <Wallet className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 mb-1">Contribution Limit</h4>
+                      <p className="text-sm text-slate-500 mb-4">IRS allows a higher catch-up limit if you're 50 or older.</p>
+                      <div className="flex gap-2">
+                        {[
+                          { id: false, label: 'Under 50 — $7,000 limit' },
+                          { id: true,  label: 'Age 50+ — $8,000 limit' },
+                        ].map(option => (
+                          <button
+                            key={String(option.id)}
+                            onClick={() => setSettings(prev => ({ ...prev, age50OrOlder: option.id }))}
+                            className={cn(
+                              'px-4 py-2 rounded-xl text-sm font-medium border transition-all',
+                              settings.age50OrOlder === option.id
+                                ? 'bg-slate-900 text-white border-slate-900'
+                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
+                            )}
+                          >
+                            {option.label}
                           </button>
                         ))}
                       </div>
