@@ -1,3 +1,15 @@
+/**
+ * Stock Trader Bot
+ *
+ * A paper-trading bot: it reads a watchlist, asks a Python ML model whether each
+ * symbol looks like a buy, sizes positions against a risk budget, applies exit
+ * rules to what it already holds, and records the result to a local log. It does
+ * not connect to a broker and never places a real order.
+ *
+ *   ./trader              run and update portfolio_state.json
+ *   ./trader --dry-run    evaluate and print, writing nothing
+ */
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -12,7 +24,7 @@
 #include <cstdio>
 #include <memory>
 #include <ctime>
-#include <algorithm> // std::min, std::max
+#include <algorithm>
 
 using json = nlohmann::json;
 
@@ -23,7 +35,7 @@ std::vector<std::string> loadWatchlist(const std::string& filename) {
 
     if (!file.is_open()) {
         std::cerr << "Error: Could not open " << filename << ". Using default tickers." << std::endl;
-        return {"AAPL", "VOO"}; // Fallback defaults
+        return {"AAPL", "VOO"};
     }
 
     while (file >> ticker) {
@@ -37,8 +49,8 @@ std::vector<std::string> loadWatchlist(const std::string& filename) {
 }
 
 /**
- * MLPredictor: Interface to Python ML model for stock predictions
- * Calls ml_model/predict.py as subprocess and parses JSON results
+ * MLPredictor: Interface to the Python ML model for stock predictions.
+ * Calls ml_model/predict.py as a subprocess and parses the JSON result.
  */
 class MLPredictor {
 private:
@@ -63,11 +75,12 @@ public:
               latestPrice(0.0),
               volatility(0.0),
               status("model_not_ready") {}
+
+        bool ok() const { return status == "success" && latestPrice > 0.0; }
     };
 
     MLPredictor(std::string scriptPath = "ml_model/predict.py")
         : mlScriptPath(scriptPath), modelReady(false) {
-        // Check if model files exist
         std::ifstream modelFile("ml_model/models/stock_classifier.pkl");
         modelReady = modelFile.good();
         if (!modelReady) {
@@ -75,9 +88,6 @@ public:
         }
     }
 
-    /**
-     * Execute Python inference script and parse result
-     */
     Prediction predictForTicker(const std::string& ticker) {
         Prediction result;
         result.ticker = ticker;
@@ -94,14 +104,12 @@ public:
 
             std::string cmd = "cd ml_model && " + pythonCmd + " predict.py " + ticker + " 2>&1";
 
-            // Execute and capture output
             std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
             if (!pipe) {
                 result.status = "execution_failed";
                 return result;
             }
 
-            // Read Python subprocess output
             char buffer[256];
             std::string output;
             while (fgets(buffer, sizeof(buffer), pipe.get()) != nullptr) {
@@ -131,7 +139,6 @@ public:
             result.confidence = predictions.value("confidence", 0.0);
             result.probability = predictions.value("probability", 0.0);
             result.status = predictions.value("status", "unknown");
-
             result.latestPrice = predictions.value("latest_price", 0.0);
             result.volatility = predictions.value("volatility", 0.0);
 
@@ -148,25 +155,60 @@ public:
     }
 };
 
+/**
+ * One open position.
+ *
+ * avgCost is the weighted average paid per share. It is 0 when unknown, which
+ * happens for positions carried over from the earlier state format that stored
+ * only a share count. Exit rules that need a cost basis are skipped for those
+ * rather than computed against a fake zero.
+ */
+struct Position {
+    double shares = 0.0;
+    double avgCost = 0.0;
+
+    bool hasCostBasis() const { return avgCost > 0.0; }
+};
+
 struct PortfolioState {
     double cashUsd = 0.0;
-    std::map<std::string, double> shares; // ticker -> shares
+    std::map<std::string, Position> positions;
 
+    /**
+     * Reads both the current format, {"shares": n, "avg_cost": n}, and the
+     * earlier one that stored a bare share count per ticker.
+     */
     static PortfolioState load(const std::string& path) {
         PortfolioState st;
         std::ifstream f(path);
         if (!f.is_open()) {
-            // If missing, default to $0 and empty holdings
             return st;
         }
+
         json j;
-        f >> j;
+        try {
+            f >> j;
+        } catch (const std::exception& e) {
+            std::cerr << "Error: could not parse " << path << " (" << e.what() << "). Starting empty." << std::endl;
+            return st;
+        }
 
         st.cashUsd = j.value("cash_usd", 0.0);
 
         if (j.contains("holdings") && j["holdings"].is_object()) {
-            for (auto& [k, v] : j["holdings"].items()) {
-                st.shares[k] = v.get<double>();
+            for (auto& [ticker, value] : j["holdings"].items()) {
+                Position p;
+                if (value.is_object()) {
+                    p.shares = value.value("shares", 0.0);
+                    p.avgCost = value.value("avg_cost", 0.0);
+                } else if (value.is_number()) {
+                    // Legacy: share count only, so the cost basis is unknown.
+                    p.shares = value.get<double>();
+                    p.avgCost = 0.0;
+                }
+                if (p.shares > 0.0) {
+                    st.positions[ticker] = p;
+                }
             }
         }
         return st;
@@ -175,36 +217,66 @@ struct PortfolioState {
     void save(const std::string& path) const {
         json j;
         j["cash_usd"] = cashUsd;
-        json h = json::object();
-        for (const auto& [ticker, sh] : shares) {
-            h[ticker] = sh;
+
+        json holdings = json::object();
+        for (const auto& [ticker, position] : positions) {
+            if (position.shares <= 0.0) continue;
+            holdings[ticker] = {
+                {"shares", position.shares},
+                {"avg_cost", position.avgCost},
+            };
         }
-        j["holdings"] = h;
+        j["holdings"] = holdings;
 
         std::ofstream f(path);
         f << std::setw(2) << j << "\n";
     }
 };
 
+/** Why the bot decided to close or trim a position. */
+struct SellDecision {
+    bool sell = false;
+    double shares = 0.0;
+    std::string reason;
+};
+
 class PortfolioManager {
 private:
     std::string logFileName;
     double riskThreshold;
-    double mlConfidenceThreshold; // Only buy if ML confidence > this
+    double mlConfidenceThreshold;
+    double stopLossPct;
+    double takeProfitPct;
+    bool mlSellEnabled;
+    double mlSellConfidence;
+    bool dryRun;
+
     std::vector<std::string> watchlist;
     MLPredictor mlPredictor;
 
     PortfolioState state;
     std::string stateFile;
 
+    std::map<std::string, MLPredictor::Prediction> predictionCache;
+
 public:
     PortfolioManager(std::string file,
                      double risk,
-                     double mlThreshold = 0.55,
+                     double mlThreshold,
+                     double stopLoss,
+                     double takeProfit,
+                     bool sellOnMlSignal,
+                     double sellConfidence,
+                     bool dry,
                      std::string statePath = "portfolio_state.json")
         : logFileName(file),
           riskThreshold(risk),
           mlConfidenceThreshold(mlThreshold),
+          stopLossPct(stopLoss),
+          takeProfitPct(takeProfit),
+          mlSellEnabled(sellOnMlSignal),
+          mlSellConfidence(sellConfidence),
+          dryRun(dry),
           mlPredictor("ml_model/predict.py"),
           stateFile(statePath) {
         state = PortfolioState::load(stateFile);
@@ -214,205 +286,325 @@ public:
         watchlist.push_back(ticker);
     }
 
-    void logTrade(std::string ticker, double price, double shares) {
+    /**
+     * Append a trade to the CSV log.
+     *
+     * Columns are date,ticker,price,shares,total,side. `side` was added last so
+     * that rows written before the bot could sell still parse — a row with only
+     * five fields is a buy.
+     */
+    void logTrade(const std::string& ticker, double price, double shares, const std::string& side) {
+        if (dryRun) return;
+
         std::ofstream outFile(logFileName, std::ios::app);
         if (outFile.is_open()) {
             std::time_t t = std::time(nullptr);
             char ts[20];
             std::strftime(ts, sizeof(ts), "%Y-%m-%d", std::localtime(&t));
 
-            outFile << ts << "," << ticker << "," << price << "," << shares << "," << (price * shares) << "\n";
+            // Explicit precision: the default would round fractional shares and
+            // could emit scientific notation, neither of which round-trips.
+            outFile << std::fixed;
+            outFile << ts << "," << ticker
+                    << "," << std::setprecision(4) << price
+                    << "," << std::setprecision(8) << shares
+                    << "," << std::setprecision(2) << (price * shares)
+                    << "," << side << "\n";
             outFile.close();
         }
     }
 
-    /**
-     * Main trading loop: Fetch prices, get ML predictions, execute trades
-     */
-    void runUpdate() {
-        std::cout << "--- Starting Market Update with ML Stock Selection ---" << std::endl;
-        std::cout << "ML Model Ready: " << (mlPredictor.isReady() ? "YES" : "NO") << std::endl;
-        std::cout << "ML Confidence Threshold: " << std::fixed << std::setprecision(2) << mlConfidenceThreshold << std::endl;
-        std::cout << std::endl;
+    /** Fetch a prediction once per ticker per run. */
+    const MLPredictor::Prediction& prediction(const std::string& ticker) {
+        auto it = predictionCache.find(ticker);
+        if (it != predictionCache.end()) {
+            return it->second;
+        }
 
-        // Cache prices we’ve seen this run so portfolio value can include multiple holdings
-        std::map<std::string, double> priceCache;
+        auto result = mlPredictor.predictForTicker(ticker);
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        return predictionCache.emplace(ticker, result).first->second;
+    }
+
+    /** Portfolio value using whatever prices this run has seen. */
+    double totalPortfolioValue() const {
+        double total = state.cashUsd;
+        for (const auto& [ticker, position] : state.positions) {
+            auto it = predictionCache.find(ticker);
+            if (it != predictionCache.end() && it->second.ok()) {
+                total += position.shares * it->second.latestPrice;
+            } else {
+                // No live price this run: fall back to cost so an unpriced
+                // position does not silently vanish from the risk denominator.
+                total += position.shares * position.avgCost;
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Exit rules, in order of precedence.
+     *
+     * Stop-loss runs first because capping a loss matters more than realizing a
+     * gain. Both need a cost basis; positions carried over without one are left
+     * alone rather than evaluated against a meaningless 0.
+     */
+    SellDecision evaluateSell(const std::string& ticker,
+                              const Position& position,
+                              const MLPredictor::Prediction& pred) const {
+        SellDecision decision;
+
+        if (!pred.ok() || position.shares <= 0.0) {
+            return decision;
+        }
+
+        if (position.hasCostBasis()) {
+            const double returnPct = (pred.latestPrice - position.avgCost) / position.avgCost;
+
+            if (stopLossPct > 0.0 && returnPct <= -stopLossPct) {
+                decision.sell = true;
+                decision.shares = position.shares;
+                std::ostringstream reason;
+                reason << "stop loss (" << std::fixed << std::setprecision(1)
+                       << (returnPct * 100.0) << "% vs -" << (stopLossPct * 100.0) << "% limit)";
+                decision.reason = reason.str();
+                return decision;
+            }
+
+            if (takeProfitPct > 0.0 && returnPct >= takeProfitPct) {
+                decision.sell = true;
+                decision.shares = position.shares;
+                std::ostringstream reason;
+                reason << "take profit (+" << std::fixed << std::setprecision(1)
+                       << (returnPct * 100.0) << "% vs +" << (takeProfitPct * 100.0) << "% target)";
+                decision.reason = reason.str();
+                return decision;
+            }
+        }
+
+        // Off by default. The classifier scores F1 0.42 / ROC-AUC 0.657 on its
+        // own test split, which is thin evidence on which to close a position.
+        if (mlSellEnabled && !pred.buySignal && pred.confidence >= mlSellConfidence) {
+            decision.sell = true;
+            decision.shares = position.shares;
+            std::ostringstream reason;
+            reason << "model exit signal (confidence " << std::fixed << std::setprecision(2)
+                   << pred.confidence << ")";
+            decision.reason = reason.str();
+        }
+
+        return decision;
+    }
+
+    /** Close or trim positions whose exit rules have triggered. */
+    void runExits() {
+        std::cout << "--- Exit Rules ---" << std::endl;
+
+        if (state.positions.empty()) {
+            std::cout << "(no open positions)" << std::endl;
+            std::cout << std::endl;
+            return;
+        }
+
+        std::vector<std::string> closed;
+
+        for (auto& [ticker, position] : state.positions) {
+            const auto& pred = prediction(ticker);
+
+            if (!pred.ok()) {
+                std::cout << "  " << ticker << ": no price this run [status: " << pred.status << "]" << std::endl;
+                continue;
+            }
+
+            if (!position.hasCostBasis()) {
+                std::cout << "  " << ticker << ": holding, cost basis unknown (exit rules skipped)" << std::endl;
+                continue;
+            }
+
+            const double returnPct = (pred.latestPrice - position.avgCost) / position.avgCost;
+            const SellDecision decision = evaluateSell(ticker, position, pred);
+
+            std::cout << "  " << ticker << ": " << std::fixed << std::setprecision(2)
+                      << pred.latestPrice << " vs cost " << position.avgCost
+                      << " (" << std::showpos << std::setprecision(1) << (returnPct * 100.0) << "%"
+                      << std::noshowpos << ")";
+
+            if (!decision.sell) {
+                std::cout << " -> hold" << std::endl;
+                continue;
+            }
+
+            const double proceeds = decision.shares * pred.latestPrice;
+            const double realized = decision.shares * (pred.latestPrice - position.avgCost);
+
+            std::cout << " -> SELL " << std::setprecision(6) << decision.shares
+                      << " shares, " << decision.reason << std::endl;
+            std::cout << "      proceeds $" << std::setprecision(2) << proceeds
+                      << ", realized " << std::showpos << realized << std::noshowpos << std::endl;
+
+            state.cashUsd += proceeds;
+            position.shares -= decision.shares;
+
+            logTrade(ticker, pred.latestPrice, decision.shares, "SELL");
+
+            if (position.shares <= 1e-9) {
+                closed.push_back(ticker);
+            }
+        }
+
+        for (const auto& ticker : closed) {
+            state.positions.erase(ticker);
+        }
+
+        std::cout << std::endl;
+    }
+
+    /** Evaluate the watchlist and open or add to positions. */
+    void runEntries() {
+        std::cout << "--- Entry Rules ---" << std::endl;
 
         for (const auto& ticker : watchlist) {
-            std::cout << "Processing " << ticker << "..." << std::endl;
+            const auto& pred = prediction(ticker);
 
-            auto prediction = mlPredictor.predictForTicker(ticker);
+            std::cout << "  " << ticker << ": buy=" << (pred.buySignal ? "YES" : "NO")
+                      << " confidence=" << std::fixed << std::setprecision(2) << pred.confidence;
 
-            // Print ML line
-            std::cout << "  [ML] " << ticker << ": buy=" << (prediction.buySignal ? "YES" : "NO")
-                      << " confidence=" << std::fixed << std::setprecision(2) << prediction.confidence;
-
-            if (prediction.status != "success") {
-                std::cout << " [status: " << prediction.status << "]" << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
-                continue;
-            }
-            std::cout << " ✓ OK" << std::endl;
-
-            // Make sure we have a valid price from Python
-            if (!(prediction.latestPrice > 0.0)) {
-                std::cerr << "  ERROR: missing/invalid latest_price from Python" << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+            if (pred.status != "success") {
+                std::cout << " [status: " << pred.status << "]" << std::endl;
                 continue;
             }
 
-            double price = prediction.latestPrice;
-            double confidence = prediction.confidence;
-
-            // Update cache
-            priceCache[ticker] = price;
-
-            std::cout << "  Price: $" << std::fixed << std::setprecision(2) << price << std::endl;
-
-            // Buy rules
-            if (!prediction.buySignal) {
-                std::cout << "  → SKIP (ML recommends HOLD/SELL)" << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+            if (!(pred.latestPrice > 0.0)) {
+                std::cout << " -> SKIP (no valid price)" << std::endl;
                 continue;
             }
 
-            if (confidence < mlConfidenceThreshold) {
-                std::cout << "  → SKIP (confidence below threshold " << mlConfidenceThreshold << ")" << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+            const double price = pred.latestPrice;
+            std::cout << " price=$" << price;
+
+            if (!pred.buySignal) {
+                std::cout << " -> SKIP (model does not signal a buy)" << std::endl;
                 continue;
             }
 
-            // --- Portfolio + buffer setup ---
+            if (pred.confidence < mlConfidenceThreshold) {
+                std::cout << " -> SKIP (below confidence threshold " << mlConfidenceThreshold << ")" << std::endl;
+                continue;
+            }
+
+            // Keep a slice of cash unspent so the bot is never fully invested.
             const double cashBufferPct = 0.05;
-            double minCashToKeep = state.cashUsd * cashBufferPct;
-            double spendableCash = state.cashUsd - minCashToKeep;
+            const double minCashToKeep = state.cashUsd * cashBufferPct;
+            const double spendableCash = state.cashUsd - minCashToKeep;
 
             if (spendableCash <= 0.0) {
-                std::cout << "  → NO SPENDABLE CASH (5% buffer enforced)" << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::cout << " -> SKIP (no spendable cash, 5% buffer enforced)" << std::endl;
                 continue;
             }
 
-            // Calculate current total portfolio value (cash + all holdings we have prices for this run)
-            double totalPortfolioValue = state.cashUsd;
-            for (const auto& [tkr, sh] : state.shares) {
-                auto it = priceCache.find(tkr);
-                if (it != priceCache.end()) {
-                    totalPortfolioValue += sh * it->second;
-                }
-            }
-            // Include current ticker value if it wasn't already in shares map
-            totalPortfolioValue += state.shares[ticker] * price;
+            const double portfolioValue = totalPortfolioValue();
+            Position& position = state.positions[ticker];
 
-            // Allocate proportional to confidence (from spendable only)
-            double allocationDollar = spendableCash * confidence;
+            const double currentValue = position.shares * price;
+            const double maxAllowed = riskThreshold * portfolioValue;
+            const double roomLeft = std::max(0.0, maxAllowed - currentValue);
 
-            // Risk cap enforcement (cap position to riskThreshold of total portfolio)
-            double currentValue = state.shares[ticker] * price;
-            double maxAllowed = riskThreshold * totalPortfolioValue;
-            double roomLeft = std::max(0.0, maxAllowed - currentValue);
+            // Conviction sizes the buy; the risk cap and the buffer bound it.
+            double allocation = std::min({spendableCash * pred.confidence, roomLeft, spendableCash});
 
-            double finalAllocation = std::min(allocationDollar, roomLeft);
-            finalAllocation = std::min(finalAllocation, spendableCash);
-
-            if (finalAllocation <= 0.0) {
-                std::cout << "  → SKIP (risk cap or buffer limit reached)" << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+            if (allocation <= 0.0) {
+                std::cout << " -> SKIP (risk cap or buffer reached)" << std::endl;
                 continue;
             }
 
-            double sharesToBuy = finalAllocation / price;
+            double sharesToBuy = allocation / price;
             double cost = sharesToBuy * price;
 
-            // Final safety: never violate buffer due to rounding
             if (state.cashUsd - cost < minCashToKeep) {
                 cost = state.cashUsd - minCashToKeep;
                 sharesToBuy = (cost > 0.0) ? (cost / price) : 0.0;
             }
 
             if (sharesToBuy <= 0.0) {
-                std::cout << "  → SKIP (buffer leaves no room)" << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::cout << " -> SKIP (buffer leaves no room)" << std::endl;
                 continue;
             }
 
-            std::cout << "  → BUY " << std::fixed << std::setprecision(6)
-                      << sharesToBuy << " shares @ $" << std::setprecision(2) << price
-                      << " (cost $" << std::setprecision(2) << cost << ")"
-                      << std::endl;
+            std::cout << " -> BUY " << std::setprecision(6) << sharesToBuy
+                      << " shares @ $" << std::setprecision(2) << price
+                      << " (cost $" << cost << ")" << std::endl;
 
-            state.shares[ticker] += sharesToBuy;
+            const double totalShares = position.shares + sharesToBuy;
+
+            if (position.shares > 0.0 && !position.hasCostBasis()) {
+                // Part of this position was carried over without a cost basis.
+                // Averaging the known price against an unknown one treated as
+                // zero would invent a basis far below what was actually paid,
+                // and the exit rules would then read a fictitious gain and sell.
+                // Leave it unknown until a human fills it in.
+                std::cout << "      (cost basis still unknown for " << ticker
+                          << "; set avg_cost in portfolio_state.json to enable exit rules)" << std::endl;
+                position.avgCost = 0.0;
+            } else {
+                position.avgCost = (position.shares * position.avgCost + sharesToBuy * price) / totalShares;
+            }
+
+            position.shares = totalShares;
             state.cashUsd -= cost;
 
-            logTrade(ticker, price, sharesToBuy);
-
-            // Slow down calls
-            std::this_thread::sleep_for(std::chrono::seconds(15));
+            logTrade(ticker, price, sharesToBuy, "BUY");
         }
 
-        state.save(stateFile);
-
-        std::cout << "\nUpdated Cash Balance: $"
-                  << std::fixed << std::setprecision(2)
-                  << state.cashUsd << std::endl;
+        std::cout << std::endl;
     }
 
     void performRiskAudit() {
-        std::cout << "\n--- Risk & Diversification Audit ---" << std::endl;
+        std::cout << "--- Risk & Diversification Audit ---" << std::endl;
 
-        // If no holdings, nothing to audit
-        if (state.shares.empty()) {
-            std::cout << "(no holdings in portfolio_state.json)" << std::endl;
+        if (state.positions.empty()) {
+            std::cout << "(no open positions)" << std::endl;
             return;
         }
 
-        // Pull fresh prices for each holding (uses your ML python which also returns latest_price)
-        std::map<std::string, double> prices;
-        for (const auto& [ticker, sh] : state.shares) {
-            auto pred = mlPredictor.predictForTicker(ticker);
-            if (pred.status == "success" && pred.latestPrice > 0.0) {
-                prices[ticker] = pred.latestPrice;
-            } else {
-                std::cout << ticker << ": price unavailable for audit [status: "
-                        << pred.status << "]" << std::endl;
-            }
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-
-        // Compute total value = cash + sum(position values)
-        double holdingsValue = 0.0;
-        for (const auto& [ticker, sh] : state.shares) {
-            auto it = prices.find(ticker);
-            if (it != prices.end()) {
-                holdingsValue += sh * it->second;
-            }
-        }
-        double totalPortfolioValue = state.cashUsd + holdingsValue;
-
-        if (totalPortfolioValue <= 0.0) {
+        const double portfolioValue = totalPortfolioValue();
+        if (portfolioValue <= 0.0) {
             std::cout << "(portfolio value is zero; nothing to audit)" << std::endl;
             return;
         }
 
         std::cout << "Total Portfolio Value: $" << std::fixed << std::setprecision(2)
-                << totalPortfolioValue << std::endl;
-        std::cout << "Cash: $" << std::fixed << std::setprecision(2)
-                << state.cashUsd << " ("
-                << (state.cashUsd / totalPortfolioValue * 100.0) << "%)" << std::endl;
+                  << portfolioValue << std::endl;
+        std::cout << "Cash: $" << state.cashUsd << " ("
+                  << (state.cashUsd / portfolioValue * 100.0) << "%)" << std::endl;
 
-        // Print each position weight
-        for (const auto& [ticker, sh] : state.shares) {
-            auto it = prices.find(ticker);
-            if (it == prices.end()) continue;
+        for (const auto& [ticker, position] : state.positions) {
+            auto it = predictionCache.find(ticker);
+            const bool priced = it != predictionCache.end() && it->second.ok();
+            const double price = priced ? it->second.latestPrice : position.avgCost;
 
-            double value = sh * it->second;
-            double pct = value / totalPortfolioValue;
+            if (price <= 0.0) {
+                std::cout << ticker << ": no price or cost available" << std::endl;
+                continue;
+            }
 
-            std::cout << ticker << ": $" << std::fixed << std::setprecision(2) << value
-                    << " (" << (pct * 100.0) << "%)";
-            if (pct > riskThreshold) std::cout << " [!] OVER LIMIT";
+            const double value = position.shares * price;
+            const double weight = value / portfolioValue;
+
+            std::cout << ticker << ": $" << value << " (" << (weight * 100.0) << "%)";
+            if (!priced) std::cout << " [at cost]";
+            if (weight > riskThreshold) std::cout << " [!] OVER LIMIT";
             std::cout << std::endl;
         }
+    }
+
+    void persist() {
+        if (dryRun) {
+            std::cout << "\n[dry run] portfolio_state.json was not modified." << std::endl;
+            return;
+        }
+        state.save(stateFile);
+        std::cout << "\nUpdated Cash Balance: $" << std::fixed << std::setprecision(2)
+                  << state.cashUsd << std::endl;
     }
 };
 
@@ -427,22 +619,64 @@ static double readEnvDouble(const char* name, double fallback) {
     return fallback;
 }
 
-int main() {
-    // Defaults
-    double risk = readEnvDouble("RISK_THRESHOLD", 0.25);
-    double mlThresh = readEnvDouble("ML_CONFIDENCE_THRESHOLD", 0.55);
+static bool readEnvBool(const char* name, bool fallback) {
+    const char* v = std::getenv(name);
+    if (!v || !*v) return fallback;
+    std::string value(v);
+    std::transform(value.begin(), value.end(), value.begin(), ::tolower);
+    return value == "1" || value == "true" || value == "yes" || value == "on";
+}
 
-    PortfolioManager myIRA("portfolio_log.csv", risk, mlThresh);
-
-    std::vector<std::string> tickers = loadWatchlist("watchlist.txt");
-    std::cout << "Loaded " << tickers.size() << " tickers from watchlist." << std::endl;
-
-    for (const auto& ticker : tickers) {
-        myIRA.addToWatchlist(ticker);
+int main(int argc, char** argv) {
+    bool dryRun = false;
+    for (int i = 1; i < argc; ++i) {
+        std::string arg(argv[i]);
+        if (arg == "--dry-run" || arg == "-n") {
+            dryRun = true;
+        } else if (arg == "--help" || arg == "-h") {
+            std::cout << "Usage: trader [--dry-run]\n\n"
+                      << "  --dry-run, -n   Evaluate and print without writing state or the trade log\n"
+                      << "  --help,    -h   Show this message\n\n"
+                      << "Configuration is read from the environment; see config.env.example.\n";
+            return 0;
+        } else {
+            std::cerr << "Unknown argument: " << arg << " (try --help)" << std::endl;
+            return 1;
+        }
     }
 
-    myIRA.runUpdate();
-    myIRA.performRiskAudit();
+    dryRun = dryRun || readEnvBool("DRY_RUN", false);
+
+    const double risk = readEnvDouble("RISK_THRESHOLD", 0.25);
+    const double mlThreshold = readEnvDouble("ML_CONFIDENCE_THRESHOLD", 0.55);
+    const double stopLoss = readEnvDouble("STOP_LOSS_PCT", 0.15);
+    const double takeProfit = readEnvDouble("TAKE_PROFIT_PCT", 0.30);
+    const bool mlSell = readEnvBool("ML_SELL_ENABLED", false);
+    const double mlSellConfidence = readEnvDouble("ML_SELL_CONFIDENCE", 0.70);
+
+    PortfolioManager bot("portfolio_log.csv", risk, mlThreshold, stopLoss, takeProfit,
+                         mlSell, mlSellConfidence, dryRun);
+
+    std::vector<std::string> tickers = loadWatchlist("watchlist.txt");
+
+    std::cout << "=== Stock Trader Bot ===" << std::endl;
+    if (dryRun) std::cout << "DRY RUN - no state or log will be written" << std::endl;
+    std::cout << "Watchlist: " << tickers.size() << " tickers" << std::endl;
+    std::cout << "Entry confidence >= " << std::fixed << std::setprecision(2) << mlThreshold
+              << " | Max position " << (risk * 100.0) << "%" << std::endl;
+    std::cout << "Stop loss -" << (stopLoss * 100.0) << "% | Take profit +" << (takeProfit * 100.0) << "%"
+              << " | Model exits " << (mlSell ? "on" : "off") << std::endl;
+    std::cout << std::endl;
+
+    for (const auto& ticker : tickers) {
+        bot.addToWatchlist(ticker);
+    }
+
+    // Exits before entries, so cash freed by a sale is available to redeploy.
+    bot.runExits();
+    bot.runEntries();
+    bot.performRiskAudit();
+    bot.persist();
 
     return 0;
 }

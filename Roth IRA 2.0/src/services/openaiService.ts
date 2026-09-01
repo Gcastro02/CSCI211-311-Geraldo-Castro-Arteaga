@@ -1,46 +1,47 @@
 import { StockAnalysis, MarketSuggestion, StockHolding, NewsItem, UserSettings, PriceData } from "../types";
+import { TechnicalSnapshot, computeIndicators, describeTechnicals } from "../lib/indicators";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
 const OPENAI_MODEL = import.meta.env.VITE_OPENAI_MODEL || "gpt-4.1-mini";
 
-const SYSTEM_PROMPT =
-  "You are a financial analysis assistant for a Roth IRA planning app. Return valid JSON only and no markdown.";
+/**
+ * The account-type context matters more than it might look. Without it the
+ * model reasons as though this were a taxable brokerage account and produces
+ * advice that does not apply — harvesting losses for a deduction, timing sales
+ * around long-term capital gains rates, avoiding wash sales. None of that is
+ * relevant inside a Roth IRA, and all of it is actively misleading.
+ */
+const ROTH_CONTEXT = [
+  "This is a Roth IRA, a US retirement account. Its rules change what advice is appropriate:",
+  "sales inside the account are not taxable events, so there are no capital gains considerations and no long-term versus short-term holding period to optimize;",
+  "tax-loss harvesting provides no benefit because losses cannot be deducted;",
+  "wash-sale rules are not a concern for trades within the account;",
+  "new money is capped by an annual contribution limit, so cash is scarce and rebalancing usually matters more than adding;",
+  "the time horizon is retirement, so favour durable long-term reasoning over short-term trading ideas.",
+  "Do not raise tax considerations that do not apply to this account type.",
+].join(" ");
 
-const STOOQ_BASE_URL = import.meta.env.DEV ? "/stooq-api" : "https://stooq.com";
-const YAHOO_BASE_URL = import.meta.env.DEV ? "/yahoo-api" : "https://query1.finance.yahoo.com";
+const SYSTEM_PROMPT = [
+  "You are a financial analysis assistant for a Roth IRA planning app.",
+  "Return valid JSON only and no markdown.",
+  ROTH_CONTEXT,
+  "When measured indicator values are supplied, reason from those numbers rather than from recalled figures, and refer to them explicitly in your reasoning.",
+  "Leave any field blank rather than guessing. Never invent a URL, a date, or a specific figure you were not given.",
+].join(" ");
 
-const getStooqUrl = (path: string): string => `${STOOQ_BASE_URL}${path}`;
+// Always same-origin. In dev this is Vite's proxy (vite.config.ts); in
+// production it is the Express proxy in server.ts. Calling
+// query1.finance.yahoo.com from the browser fails on CORS — it sends no
+// Access-Control-Allow-Origin — so the request has to be relayed either way.
+const YAHOO_BASE_URL = "/yahoo-api";
+
 const getYahooUrl = (path: string): string => `${YAHOO_BASE_URL}${path}`;
-
-const normalizeToStooqSymbol = (symbol: string): string => {
-  const s = symbol.trim().toLowerCase();
-  if (!s) return "";
-  if (s.includes(".")) return s;
-  return `${s}.us`;
-};
 
 const normalizeToYahooSymbol = (symbol: string): string => {
   const s = symbol.trim().toUpperCase();
   if (!s) return "";
   if (s.endsWith(".US")) return s.slice(0, -3);
   return s.replace(/\./g, "-");
-};
-
-const fetchStooqCurrentPrice = async (symbol: string): Promise<number | null> => {
-  const stooqSymbol = normalizeToStooqSymbol(symbol);
-  if (!stooqSymbol) return null;
-
-  const response = await fetch(getStooqUrl(`/q/l/?s=${encodeURIComponent(stooqSymbol)}&i=d`));
-  if (!response.ok) return null;
-
-  const csv = (await response.text()).trim();
-  const parts = csv.split(",");
-  // Stooq format: SYMBOL,DATE,TIME,OPEN,HIGH,LOW,CLOSE,VOLUME,...
-  if (parts.length < 7) return null;
-
-  const close = Number(parts[6]);
-  if (!Number.isFinite(close) || close <= 0) return null;
-  return close;
 };
 
 const getRangeStartDate = (range: string): Date | null => {
@@ -108,7 +109,11 @@ const getYahooRangeAndInterval = (range: string): { range: string; interval: str
   }
 };
 
-const fetchYahooPriceHistory = async (symbol: string, selectedRange: string): Promise<PriceData[]> => {
+const fetchYahooPriceHistory = async (
+  symbol: string,
+  selectedRange: string,
+  { sample = true }: { sample?: boolean } = {},
+): Promise<PriceData[]> => {
   const yahooSymbol = normalizeToYahooSymbol(symbol);
   if (!yahooSymbol) return [];
 
@@ -129,6 +134,7 @@ const fetchYahooPriceHistory = async (symbol: string, selectedRange: string): Pr
   const highs: Array<number | null> = quote.high || [];
   const lows: Array<number | null> = quote.low || [];
   const closes: Array<number | null> = quote.close || [];
+  const volumes: Array<number | null> = quote.volume || [];
   if (timestamps.length === 0 || closes.length === 0) return [];
 
   const rows: PriceData[] = [];
@@ -140,6 +146,7 @@ const fetchYahooPriceHistory = async (symbol: string, selectedRange: string): Pr
     const high = Number(highs[i]);
     const low = Number(lows[i]);
     const close = Number(closes[i]);
+    const volume = Number(volumes[i]);
     if (!Number.isFinite(ts) || !Number.isFinite(close) || close <= 0) continue;
 
     const date = new Date(ts * 1000);
@@ -156,19 +163,21 @@ const fetchYahooPriceHistory = async (symbol: string, selectedRange: string): Pr
       high: normalizedHigh,
       low: normalizedLow,
       close,
+      volume: Number.isFinite(volume) && volume >= 0 ? volume : undefined,
     });
   }
 
   if (rows.length === 0) return [];
 
   if (isIntraday) {
-    return sampleEvenly(rows.sort((a, b) => a.date.localeCompare(b.date)), 24);
+    const sorted = rows.sort((a, b) => a.date.localeCompare(b.date));
+    return sample ? sampleEvenly(sorted, 24) : sorted;
   }
 
   const deduped = Array.from(new Map(rows.map((row) => [row.date, row])).values())
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  return sampleEvenly(deduped, 30);
+  return sample ? sampleEvenly(deduped, 30) : deduped;
 };
 
 const extractJson = <T>(content: string): T => {
@@ -185,12 +194,46 @@ const extractJson = <T>(content: string): T => {
   return JSON.parse(cleaned) as T;
 };
 
-const chatJson = async <T>(prompt: string): Promise<T> => {
-  const trimmedKey = OPENAI_API_KEY.trim();
-  const hasPlaceholderKey = trimmedKey === "MY_OPENAI_API_KEY" || trimmedKey === "YOUR_OPENAI_API_KEY";
+const PLACEHOLDER_KEYS = ["MY_OPENAI_API_KEY", "YOUR_OPENAI_API_KEY"];
 
-  if (!trimmedKey || hasPlaceholderKey) {
+const hasClientKey = (() => {
+  const trimmed = OPENAI_API_KEY.trim();
+  return trimmed.length > 0 && !PLACEHOLDER_KEYS.includes(trimmed);
+})();
+
+/**
+ * How AI calls reach OpenAI:
+ *   'client' - a VITE_OPENAI_API_KEY is set, so call OpenAI directly. Convenient
+ *              for local development, but note that anything with a VITE_ prefix
+ *              is compiled into the bundle and readable by anyone loading a
+ *              deployed page. Fine locally, not fine on a public host.
+ *   'server' - no client key, but a production build, so assume server.ts is
+ *              relaying with a server-side OPENAI_API_KEY.
+ *   'disabled' - no key anywhere; AI features are switched off in the UI.
+ */
+export const AI_MODE: 'client' | 'server' | 'disabled' =
+  hasClientKey ? 'client' : import.meta.env.DEV ? 'disabled' : 'server';
+
+export const isAiConfigured = AI_MODE !== 'disabled';
+
+const chatJson = async <T>(prompt: string): Promise<T> => {
+  if (AI_MODE === 'disabled') {
     throw new Error("Missing OpenAI API key. Set VITE_OPENAI_API_KEY in .env and restart the app.");
+  }
+
+  if (AI_MODE === 'server') {
+    const response = await fetch("/api/ai/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ system: SYSTEM_PROMPT, prompt }),
+    });
+
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(payload?.error || `AI request failed: ${response.status}`);
+    }
+
+    return extractJson<T>(payload?.content || "");
   }
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -220,27 +263,150 @@ const chatJson = async <T>(prompt: string): Promise<T> => {
   return extractJson<T>(content);
 };
 
+/**
+ * Live quote from the Yahoo chart endpoint's metadata, which carries
+ * `regularMarketPrice` alongside the bars.
+ */
+const fetchYahooCurrentPrice = async (symbol: string): Promise<number | null> => {
+  const yahooSymbol = normalizeToYahooSymbol(symbol);
+  if (!yahooSymbol) return null;
+
+  const response = await fetch(
+    getYahooUrl(`/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=1d&interval=1d`),
+  );
+  if (!response.ok) return null;
+
+  const payload = await response.json();
+  const meta = payload?.chart?.result?.[0]?.meta;
+  const price = Number(meta?.regularMarketPrice ?? meta?.previousClose);
+
+  return Number.isFinite(price) && price > 0 ? price : null;
+};
+
+/**
+ * Current price for a symbol, or 0 when unavailable.
+ *
+ * This previously read Stooq's `/q/l/` CSV endpoint, which no longer exists —
+ * it 404s for every symbol, and Stooq's CSV download is now behind a JavaScript
+ * browser check. Every quote silently returned 0, which is why holdings fell
+ * back to average cost. Yahoo serves a real-time quote from the same host
+ * already supplying chart data.
+ */
 export const getCurrentPrice = async (symbol: string): Promise<number> => {
-  const livePrice = await fetchStooqCurrentPrice(symbol);
-  return livePrice || 0;
+  try {
+    return (await fetchYahooCurrentPrice(symbol)) || 0;
+  } catch {
+    return 0;
+  }
 };
 
 export const getStockPriceHistory = async (symbol: string, range: string): Promise<PriceData[]> => {
   return fetchYahooPriceHistory(symbol, range);
 };
 
-export const getStockNews = async (symbol: string, settings: UserSettings, isGeneral: boolean = false): Promise<NewsItem[]> => {
-  const sources = settings.preferredNewsSources.length > 0
-    ? `Prefer sources like ${settings.preferredNewsSources.join(", ")}.`
-    : "";
+/**
+ * Full, unsampled daily bars for indicator math.
+ *
+ * `getStockPriceHistory` thins its result to ~30 points so charts stay readable.
+ * Rolling windows over thinned data are meaningless, so technical analysis needs
+ * its own fetch. A year of daily bars gives every 20-period window room to warm up.
+ */
+export const getIndicatorBars = async (symbol: string): Promise<PriceData[]> => {
+  return fetchYahooPriceHistory(symbol, "1Y", { sample: false });
+};
 
-  const query = isGeneral
-    ? `Latest general stock market and macroeconomic headlines. ${sources}`
-    : `Latest financial news for ${symbol}. ${sources}`;
+/**
+ * Measured indicators for a symbol, or null when there is not enough history.
+ * Computed locally from OHLCV — no API key needed and no model involved.
+ */
+export const getTechnicals = async (symbol: string): Promise<TechnicalSnapshot | null> => {
+  const bars = await getIndicatorBars(symbol);
+  if (bars.length < 30) return null;
+  return computeIndicators(symbol.trim().toUpperCase(), bars);
+};
 
-  const prompt = `Return ONLY JSON in this format: {"items": [{"title":"","url":"","source":"","snippet":"","date":""}]}.\n${query}`;
-  const data = await chatJson<{ items?: NewsItem[] }>(prompt);
-  return Array.isArray(data.items) ? data.items : [];
+/**
+ * Real headlines from Yahoo Finance's search endpoint.
+ *
+ * This used to ask the language model for news, which cannot work: the model has
+ * no web access during a completion, so every headline, publisher and URL it
+ * returned was invented and the links went nowhere. These are actual articles
+ * with working links and real publish times.
+ */
+export const getStockNews = async (
+  symbol: string,
+  settings: UserSettings,
+  isGeneral: boolean = false,
+): Promise<NewsItem[]> => {
+  const query = isGeneral ? "stock market" : normalizeToYahooSymbol(symbol);
+  if (!query) return [];
+
+  const response = await fetch(
+    getYahooUrl(`/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=0&newsCount=12`),
+  );
+  if (!response.ok) {
+    throw new Error(`News request failed: ${response.status}`);
+  }
+
+  const payload = await response.json();
+  const rawItems: any[] = Array.isArray(payload?.news) ? payload.news : [];
+
+  const items: NewsItem[] = rawItems
+    .filter((item) => item?.title && item?.link)
+    .map((item) => {
+      const publishedSeconds = Number(item.providerPublishTime);
+      return {
+        title: String(item.title),
+        url: String(item.link),
+        source: String(item.publisher || "Yahoo Finance"),
+        // The search endpoint returns no summary text, so the related tickers
+        // stand in as context rather than leaving the card blank.
+        snippet: Array.isArray(item.relatedTickers) && item.relatedTickers.length > 0
+          ? `Related: ${item.relatedTickers.slice(0, 6).join(", ")}`
+          : "",
+        date: Number.isFinite(publishedSeconds) && publishedSeconds > 0
+          ? new Date(publishedSeconds * 1000).toISOString()
+          : undefined,
+      };
+    });
+
+  // Preferred sources move to the front rather than filtering others out, so the
+  // feed never empties just because a favourite publisher had a quiet day.
+  const preferred = settings.preferredNewsSources.map((source) => source.toLowerCase());
+  if (preferred.length === 0) return items;
+
+  const isPreferred = (item: NewsItem) =>
+    preferred.some((source) => item.source.toLowerCase().includes(source));
+
+  return [...items.filter(isPreferred), ...items.filter((item) => !isPreferred(item))];
+};
+
+/** Gather measured indicators for a set of symbols, skipping any that fail. */
+const collectTechnicals = async (symbols: string[]): Promise<TechnicalSnapshot[]> => {
+  const results = await Promise.all(
+    symbols.map(async (symbol) => {
+      try {
+        const bars = await getIndicatorBars(symbol);
+        if (bars.length < 30) return null;
+        return computeIndicators(symbol.trim().toUpperCase(), bars);
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  return results.filter((snapshot): snapshot is TechnicalSnapshot => snapshot !== null);
+};
+
+/**
+ * Turn snapshots into a prompt block of measured facts. This is what stops the
+ * model from inventing indicator values it has no way to know.
+ */
+const technicalsPromptBlock = (snapshots: TechnicalSnapshot[]): string => {
+  if (snapshots.length === 0) return "";
+  return `\n\nMeasured indicators computed from live OHLCV data (use these; do not substitute remembered values):\n${snapshots
+    .map((snapshot) => `- ${describeTechnicals(snapshot)}`)
+    .join("\n")}`;
 };
 
 export const analyzePortfolio = async (holdings: StockHolding[], settings: UserSettings): Promise<StockAnalysis[]> => {
@@ -250,7 +416,10 @@ export const analyzePortfolio = async (holdings: StockHolding[], settings: UserS
     ? "both short-term and long-term"
     : settings.investmentHorizon.toLowerCase().replace("_", "-");
 
-  const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","recommendation":"BUY|SELL|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}]}.\nAnalyze these holdings for a Roth IRA (${horizonText}): ${JSON.stringify(holdings)}.`;
+  const symbols = Array.from(new Set(holdings.map((h) => h.symbol.trim().toUpperCase()).filter(Boolean)));
+  const snapshots = await collectTechnicals(symbols);
+
+  const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","recommendation":"BUY|SELL|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}]}.\nAnalyze these holdings for a Roth IRA (${horizonText}): ${JSON.stringify(holdings)}.${technicalsPromptBlock(snapshots)}`;
 
   const data = await chatJson<{ items?: StockAnalysis[] }>(prompt);
   return Array.isArray(data.items) ? data.items : [];
@@ -271,7 +440,9 @@ export const analyzeWatchlistStock = async (symbol: string, settings: UserSettin
     ? "both short-term and long-term"
     : settings.investmentHorizon.toLowerCase().replace("_", "-");
 
-  const prompt = `Return ONLY JSON in this format: {"item": {"symbol":"","recommendation":"BUY|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}}.\nAnalyze ${symbol} for a potential Roth IRA addition for ${horizonText}.`;
+  const snapshots = await collectTechnicals([symbol]);
+
+  const prompt = `Return ONLY JSON in this format: {"item": {"symbol":"","recommendation":"BUY|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}}.\nAnalyze ${symbol} for a potential Roth IRA addition for ${horizonText}.${technicalsPromptBlock(snapshots)}`;
   const data = await chatJson<{ item?: StockAnalysis }>(prompt);
 
   return data.item || {

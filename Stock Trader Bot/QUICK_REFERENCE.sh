@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# QUICK REFERENCE CARD - ML Finance Bot
+# QUICK REFERENCE CARD - Stock Trader Bot
 
 cat << 'EOF'
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
-║             ROTH IRA ML FINANCE BOT - QUICK REFERENCE CARD                  ║
+║                   STOCK TRADER BOT - QUICK REFERENCE CARD                    ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -12,7 +12,7 @@ cat << 'EOF'
 ═══════════════════════════════════════════════════════════════════════════════
 
   QUICK START (5 min):
-    cd Personal\ Projects
+    cd "Stock Trader Bot"
     ./quickstart.sh
 
   MANUAL SETUP:
@@ -21,12 +21,12 @@ cat << 'EOF'
     python3 data_collector.py     # ⏱️  5 min
     python3 train_model.py        # ⏱️  10 min
     cd ..
-    make -f Makefile-ML Roth-IRA-ML
+    make
 
   BUILD OPTIONS:
-    make -f Makefile-ML Roth-IRA-ML  # Build ML version
-    make -f Makefile-ML all          # Build both versions
-    make -f Makefile-ML run-ml       # Build + run
+    make              # Build the trader
+    make legacy       # Build the superseded version
+    make run          # Build + run
 
 ═══════════════════════════════════════════════════════════════════════════════
   TESTING & DIAGNOSTICS
@@ -38,7 +38,7 @@ cat << 'EOF'
     python3 predict.py --batch VOO,MSFT,NVDA  # Multiple
 
   Run bot once:
-    ./Roth-IRA-ML
+    ./trader
 
   View trade history:
     cat portfolio_log.csv
@@ -50,60 +50,70 @@ cat << 'EOF'
   CONFIGURATION
 ═══════════════════════════════════════════════════════════════════════════════
 
-  Environment variables:
-    export ALPHAVANTAGE_API_KEY="your_key_here"
-    export ML_CONFIDENCE_THRESHOLD="0.65"    # 0.65=balanced, 0.75=conservative
-    export WATCHLIST="VOO,AAPL,MSFT"
+  All settings are environment variables. Start from the template:
+    cp config.env.example config.env
+    source config.env && ./trader --dry-run
 
-  Or edit in code:
-    Roth-IRA-ML.cpp → main() → PortfolioManager construction
-    Line: PortfolioManager myIRA("portfolio_log.csv", 0.25, apiKey, 0.65);
-                                                     ^^^^              ^^^^
-                                            Risk Threshold    ML Confidence
+  ENTRY RULES:
+    export ML_CONFIDENCE_THRESHOLD="0.65"  # 0.55 loose, 0.65 balanced, 0.75 tight
+    export RISK_THRESHOLD="0.25"           # max share of portfolio per position
+
+  EXIT RULES:
+    export STOP_LOSS_PCT="0.15"            # close at -15% from avg cost; 0 = off
+    export TAKE_PROFIT_PCT="0.30"          # close at +30% from avg cost; 0 = off
+    export ML_SELL_ENABLED="0"             # let the model close positions (off)
+    export ML_SELL_CONFIDENCE="0.70"       # confidence needed if enabled
+
+  SAFETY & PATHS:
+    export DRY_RUN="0"                     # 1 = evaluate, write nothing
+    export PYTHON_BIN="/path/to/venv/bin/python"
+    export ALPHAVANTAGE_API_KEY="..."      # legacy-alphavantage.cpp only
+
+  The watchlist is watchlist.txt, one ticker per line.
 
 ═══════════════════════════════════════════════════════════════════════════════
   RASPBERRY PI DEPLOYMENT
 ═══════════════════════════════════════════════════════════════════════════════
 
   1. COPY PROJECT:
-     scp -r Personal\ Projects pi@raspberrypi.local:~/roth-bot/
+     scp -r Personal\ Projects pi@raspberrypi.local:~/trader-bot/
 
   2. SSH IN & INSTALL:
      ssh pi@raspberrypi.local
-     cd ~/roth-bot/ml_model
+     cd ~/trader-bot/ml_model
      pip3 install --only-binary :all: -r requirements.txt
 
   3. BUILD & TEST:
      cd ..
-     make -f Makefile-ML Roth-IRA-ML
-     ./Roth-IRA-ML
+     make
+     ./trader
 
   4. AUTO-START OPTIONS:
      
      A) Cron (daily at market open):
         crontab -e
-        # 30 14 * * 1-5 /home/pi/roth-bot/Roth-IRA-ML >> /home/pi/roth-bot/bot.log 2>&1
+        # 30 14 * * 1-5 /home/pi/trader-bot/trader >> /home/pi/trader-bot/bot.log 2>&1
      
      B) Systemd (continuous):
-        sudo cp ~/roth-bot/roth-bot.service /etc/systemd/system/
-        sudo systemctl enable roth-bot.service
-        sudo systemctl start roth-bot.service
-        sudo systemctl status roth-bot.service
+        sudo cp ~/trader-bot/trader-bot.service /etc/systemd/system/
+        sudo systemctl enable trader-bot.service
+        sudo systemctl start trader-bot.service
+        sudo systemctl status trader-bot.service
 
 ═══════════════════════════════════════════════════════════════════════════════
   FILE STRUCTURE
 ═══════════════════════════════════════════════════════════════════════════════
 
   Personal Projects/
-  ├── Roth-IRA.cpp                    # Original bot (no ML)
-  ├── Roth-IRA-ML.cpp                 # ML-integrated bot ✨
-  ├── Makefile-ML                     # Build configuration
+  ├── legacy-alphavantage.cpp                    # Original bot (no ML)
+  ├── trader.cpp                 # ML-integrated bot ✨
+  ├── Makefile                     # Build configuration
   ├── quickstart.sh                   # Automated setup
   ├── config.env.example              # Configuration template
-  ├── roth-bot.service                # Systemd service (Raspberry Pi)
+  ├── trader-bot.service                # Systemd service (Raspberry Pi)
   ├── portfolio_log.csv               # Trade history
   │
-  ├── README-ML.md                    # Full documentation
+  ├── README.md                    # Full documentation
   ├── ARCHITECTURE.md                 # System design & data flow
   ├── IMPLEMENTATION_SUMMARY.md       # What was built
   ├── RASPBERRY_PI_GUIDE.md           # Pi deployment walkthrough
@@ -202,7 +212,7 @@ cat << 'EOF'
   IMMEDIATE:
     ☐ Run ./quickstart.sh
     ☐ Test predictions: cd ml_model && python3 predict.py AAPL
-    ☐ Run bot once: ./Roth-IRA-ML
+    ☐ Run bot once: ./trader
     ☐ Check portfolio_log.csv for trades
 
   SHORT-TERM (1-2 weeks):
@@ -228,13 +238,13 @@ cat << 'EOF'
 ═══════════════════════════════════════════════════════════════════════════════
 
   Start with:
-    1. README-ML.md               — Feature overview & quick start
+    1. README.md               — Feature overview & quick start
     2. ARCHITECTURE.md             — System design, data flow
     3. IMPLEMENTATION_SUMMARY.md  — What was built
     4. RASPBERRY_PI_GUIDE.md      — Pi deployment (in-depth)
 
   Code:
-    • Roth-IRA-ML.cpp            — C++ bot with ML integration
+    • trader.cpp            — C++ bot with ML integration
     • ml_model/data_collector.py — Feature engineering
     • ml_model/train_model.py    — Model training logic
     • ml_model/predict.py        — Inference wrapper

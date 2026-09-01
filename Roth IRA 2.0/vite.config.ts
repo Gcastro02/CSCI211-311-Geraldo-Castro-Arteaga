@@ -17,14 +17,16 @@ export default defineConfig(({mode}) => {
       // Do not modify; file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
       proxy: {
-        '/stooq-api': {
-          target: 'https://stooq.com',
-          changeOrigin: true,
-          rewrite: (requestPath) => requestPath.replace(/^\/stooq-api/, ''),
-        },
+        // Yahoo sends no CORS headers, so browser requests must be relayed.
+        // server.ts mirrors this proxy for production builds.
         '/yahoo-api': {
           target: 'https://query1.finance.yahoo.com',
           changeOrigin: true,
+          // Without a browser-like User-Agent, Yahoo answers 429 Too Many
+          // Requests almost immediately and every chart comes back empty.
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; RothIRAStrategist/2.0)',
+          },
           rewrite: (requestPath) => requestPath.replace(/^\/yahoo-api/, ''),
         },
       },

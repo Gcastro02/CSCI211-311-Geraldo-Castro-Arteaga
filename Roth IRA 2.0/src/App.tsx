@@ -3,17 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  TrendingUp, 
-  Plus, 
-  Trash2, 
-  PieChart as PieChartIcon, 
-  List, 
-  Sparkles, 
-  AlertCircle, 
-  ChevronRight,
+import {
+  TrendingUp,
+  Plus,
+  Trash2,
+  PieChart as PieChartIcon,
+  List,
+  Sparkles,
+  AlertCircle,
   Wallet,
   ArrowUpRight,
   ArrowDownRight,
@@ -30,7 +29,8 @@ import {
   Bell,
   BellRing,
   X,
-  CheckCircle2
+  CheckCircle2,
+  PiggyBank
 } from 'lucide-react';
 import { 
   PieChart, 
@@ -48,29 +48,55 @@ import {
   CartesianGrid
 } from 'recharts';
 import { cn } from './lib/utils';
-import { 
-  PortfolioData, 
-  StockHolding, 
-  WatchlistItem, 
-  StockAnalysis, 
+import {
+  PortfolioData,
+  StockHolding,
+  WatchlistItem,
+  StockAnalysis,
   MarketSuggestion,
   NewsItem,
   UserSettings,
-  PriceData
+  PriceData,
+  Transaction
 } from './types';
-import { 
-  analyzePortfolio, 
-  getMarketSuggestions, 
+import {
+  analyzePortfolio,
+  getMarketSuggestions,
   analyzeWatchlistStock,
   getStockNews,
   getStockPriceHistory,
-  getCurrentPrice
+  getCurrentPrice,
+  getTechnicals,
+  isAiConfigured
 } from './services/openaiService';
+import { TechnicalSnapshot, scoreTechnicals } from './lib/indicators';
+import { auditRisk, DEFAULT_RISK_THRESHOLD } from './lib/portfolioMath';
+import { applyTransaction, reconcile, replayTransactions } from './lib/transactions';
+import { contributionBasis, contributionYears, summarizeContributions } from './lib/contributions';
+import { TechnicalsPanel } from './components/TechnicalsPanel';
+import { RiskAuditCard } from './components/RiskAuditCard';
+import { PositionSizer } from './components/PositionSizer';
+import { ContributionTracker } from './components/ContributionTracker';
+import { TransactionForm } from './components/TransactionForm';
+import { TransactionHistory } from './components/TransactionHistory';
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 const TREND_UP_COLOR = '#16a34a';
 const TREND_DOWN_COLOR = '#dc2626';
 type ChartMode = 'LINE' | 'CANDLES' | 'BOTH';
+
+/**
+ * Reserved cache key for the market-wide news feed. The watchlist and the
+ * dashboard both pull news, and without a distinct key the general feed would
+ * be cached under a ticker and then served back as that ticker's news.
+ */
+const GENERAL_NEWS_KEY = '__MARKET__';
+
+const MARKET_INDICES = [
+  { key: 'S&P 500', symbol: 'SPY' },
+  { key: 'Nasdaq', symbol: 'QQQ' },
+  { key: 'Dow', symbol: 'DIA' },
+];
 
 const defaultSettings: UserSettings = {
   currency: 'USD',
@@ -78,6 +104,8 @@ const defaultSettings: UserSettings = {
   investmentHorizon: 'LONG_TERM',
   preferredNewsSources: [],
   themeMode: 'LIGHT',
+  catchUpEligible: false,
+  contributionLimitOverrides: {},
 };
 
 const normalizeSettings = (raw: unknown): UserSettings => {
@@ -91,8 +119,18 @@ const normalizeSettings = (raw: unknown): UserSettings => {
       ? candidate.preferredNewsSources
       : [],
     themeMode: candidate.themeMode === 'DARK' ? 'DARK' : 'LIGHT',
+    catchUpEligible: candidate.catchUpEligible === true,
+    // Settings saved before contribution tracking existed have no overrides.
+    contributionLimitOverrides:
+      candidate.contributionLimitOverrides && typeof candidate.contributionLimitOverrides === 'object'
+        ? candidate.contributionLimitOverrides
+        : {},
   };
 };
+
+/** Stable id for a new transaction. */
+const createTransactionId = () =>
+  `tx_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 
 const renderCandleWick = (props: any) => {
   const { x, y, width, height, payload } = props;
@@ -151,8 +189,6 @@ function ExpandableText({
 }
 
 export default function App() {
-  const aiApiKey = (import.meta.env.VITE_OPENAI_API_KEY || '').trim();
-  const isAiConfigured = aiApiKey.length > 0 && aiApiKey !== 'MY_OPENAI_API_KEY' && aiApiKey !== 'YOUR_OPENAI_API_KEY';
 
   const [portfolio, setPortfolio] = useState<PortfolioData>(() => {
     const saved = localStorage.getItem('roth_ira_portfolio');
@@ -163,6 +199,19 @@ export default function App() {
     const saved = localStorage.getItem('roth_ira_watchlist');
     return saved ? JSON.parse(saved) : [];
   });
+
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    const saved = localStorage.getItem('roth_ira_transactions');
+    if (!saved) return [];
+    try {
+      const parsed = JSON.parse(saved);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [selectedTaxYear, setSelectedTaxYear] = useState(() => new Date().getFullYear());
 
   const [analyses, setAnalyses] = useState<Record<string, StockAnalysis>>({});
   const [suggestions, setSuggestions] = useState<MarketSuggestion[]>([]);
@@ -191,7 +240,7 @@ export default function App() {
   const [generalNews, setGeneralNews] = useState<NewsItem[]>([]);
   const [loadingGeneralNews, setLoadingGeneralNews] = useState(false);
   const [isAutoAnalyzingWatchlist, setIsAutoAnalyzingWatchlist] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'holdings' | 'watchlist' | 'detailed' | 'suggestions' | 'settings'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'holdings' | 'activity' | 'watchlist' | 'detailed' | 'suggestions' | 'settings'>('dashboard');
 
   // Alert states
   const [notifications, setNotifications] = useState<{id: string, message: string, type: 'success'|'info'}[]>([]);
@@ -209,14 +258,27 @@ export default function App() {
   const [detailedHistory, setDetailedHistory] = useState<PriceData[]>([]);
   const [detailedCurrentPrice, setDetailedCurrentPrice] = useState<number | null>(null);
   const [isLoadingDetailed, setIsLoadingDetailed] = useState(false);
-  const [detailedPanel, setDetailedPanel] = useState<'overview' | 'news' | 'financials'>('overview');
+  const [detailedPanel, setDetailedPanel] = useState<'technicals' | 'overview' | 'news'>('technicals');
   const [marketSnapshot, setMarketSnapshot] = useState<Record<string, { value: number; change: number; changePercent: number }>>({});
 
-  const trackedSymbols = Array.from(
-    new Set([
-      ...portfolio.holdings.map(h => h.symbol.trim().toUpperCase()),
-      ...watchlist.map(w => w.symbol.trim().toUpperCase()),
-    ].filter(Boolean)),
+  // Measured technical indicators, computed locally from OHLCV bars.
+  const [technicals, setTechnicals] = useState<Record<string, TechnicalSnapshot>>({});
+  const [loadingTechnicals, setLoadingTechnicals] = useState<Record<string, boolean>>({});
+
+  // Position sizing calculator inputs (Holdings tab).
+  const [sizerSymbol, setSizerSymbol] = useState('');
+  const [sizerConfidence, setSizerConfidence] = useState(0.65);
+
+  // Memoized so it is referentially stable — this feeds effect dependency
+  // arrays, and a fresh array every render would re-run them on every render.
+  const trackedSymbols = useMemo(
+    () => Array.from(
+      new Set([
+        ...portfolio.holdings.map(h => h.symbol.trim().toUpperCase()),
+        ...watchlist.map(w => w.symbol.trim().toUpperCase()),
+      ].filter(Boolean)),
+    ),
+    [portfolio.holdings, watchlist],
   );
 
   const [detailedSymbol, setDetailedSymbol] = useState<string>(() => {
@@ -224,10 +286,17 @@ export default function App() {
       || watchlist[0]?.symbol?.trim().toUpperCase()
       || 'AAPL';
   });
-  const priceRefreshKey = [
-    ...portfolio.holdings.map(h => h.symbol.trim().toUpperCase()),
-    ...watchlist.map(w => w.symbol.trim().toUpperCase())
-  ].sort().join('|');
+  /** Draft text for the Detailed tab's symbol box, committed on submit. */
+  const [detailedSymbolDraft, setDetailedSymbolDraft] = useState(detailedSymbol);
+  const priceRefreshKey = trackedSymbols.join('|');
+
+  // Symbols already sent for analysis, so a failure is not retried forever by
+  // the auto-analyze effect below (which re-runs whenever `analyses` changes).
+  const attemptedAnalysis = useRef<Set<string>>(new Set());
+
+  // Same guard for indicator fetches: a symbol with too little history never
+  // lands in `technicals`, so without this it would be re-fetched every render.
+  const attemptedTechnicals = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     localStorage.setItem('roth_ira_portfolio', JSON.stringify(portfolio));
@@ -236,6 +305,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('roth_ira_watchlist', JSON.stringify(watchlist));
   }, [watchlist]);
+
+  useEffect(() => {
+    localStorage.setItem('roth_ira_transactions', JSON.stringify(transactions));
+  }, [transactions]);
 
   useEffect(() => {
     localStorage.setItem('roth_ira_settings', JSON.stringify(settings));
@@ -250,12 +323,10 @@ export default function App() {
     localStorage.setItem('roth_ira_chart_mode', JSON.stringify(chartMode));
   }, [chartMode]);
 
+  // Keep the search box in step with selections made from the sidebar.
   useEffect(() => {
-    if (trackedSymbols.length === 0) return;
-    if (!trackedSymbols.includes(detailedSymbol)) {
-      setDetailedSymbol(trackedSymbols[0]);
-    }
-  }, [trackedSymbols, detailedSymbol]);
+    setDetailedSymbolDraft(detailedSymbol);
+  }, [detailedSymbol]);
 
   useEffect(() => {
     let cancelled = false;
@@ -295,14 +366,8 @@ export default function App() {
     let cancelled = false;
 
     const loadMarketSnapshot = async () => {
-      const snapshotSymbols = [
-        { key: 'S&P 500', symbol: 'SPY' },
-        { key: 'Nasdaq', symbol: 'QQQ' },
-        { key: 'Dow', symbol: 'DIA' },
-      ];
-
       try {
-        const results = await Promise.all(snapshotSymbols.map(async ({ key, symbol }) => {
+        const results = await Promise.all(MARKET_INDICES.map(async ({ key, symbol }) => {
           const history = await getStockPriceHistory(symbol, '5D');
           const latest = history[history.length - 1]?.close ?? history[history.length - 1]?.price ?? 0;
           const previous = history.length > 1 ? (history[history.length - 2].close ?? history[history.length - 2].price) : latest;
@@ -331,7 +396,7 @@ export default function App() {
   const fetchGeneralNews = async () => {
     setLoadingGeneralNews(true);
     try {
-      const data = await getStockNews('', settings, true);
+      const data = await getStockNews(GENERAL_NEWS_KEY, settings, true);
       setGeneralNews(data);
     } catch (error) {
       console.error("Failed to fetch general news", error);
@@ -346,14 +411,21 @@ export default function App() {
   }, [settings.preferredNewsSources]);
 
   useEffect(() => {
+    if (!isAiConfigured) return;
+
+    // Skip anything already analyzed *or already tried*. Without the second
+    // check a symbol that errors out gets re-requested every time `analyses`
+    // changes, which burns API calls in a loop that never resolves.
     const missingSymbols = watchlist
       .map(item => item.symbol.trim().toUpperCase())
-      .filter(symbol => symbol && !analyses[symbol]);
+      .filter(symbol => symbol && !analyses[symbol] && !attemptedAnalysis.current.has(symbol));
 
     if (missingSymbols.length === 0) {
       setIsAutoAnalyzingWatchlist(false);
       return;
     }
+
+    missingSymbols.forEach(symbol => attemptedAnalysis.current.add(symbol));
 
     let cancelled = false;
     setIsAutoAnalyzingWatchlist(true);
@@ -397,7 +469,59 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [watchlist, analyses, settings]);
+  }, [watchlist, analyses, settings, isAiConfigured]);
+
+  // Measured indicators for every tracked symbol. Independent of the AI path —
+  // these work with no API key at all.
+  useEffect(() => {
+    if (trackedSymbols.length === 0) return;
+
+    const missing = trackedSymbols.filter(
+      symbol => !technicals[symbol] && !attemptedTechnicals.current.has(symbol),
+    );
+    if (missing.length === 0) return;
+
+    missing.forEach(symbol => attemptedTechnicals.current.add(symbol));
+
+    let cancelled = false;
+    setLoadingTechnicals(prev => {
+      const next = { ...prev };
+      missing.forEach(symbol => { next[symbol] = true; });
+      return next;
+    });
+
+    (async () => {
+      const results = await Promise.all(
+        missing.map(async (symbol) => {
+          try {
+            return { symbol, snapshot: await getTechnicals(symbol) };
+          } catch (error) {
+            console.error(`Failed to compute indicators for ${symbol}`, error);
+            return { symbol, snapshot: null };
+          }
+        }),
+      );
+
+      if (cancelled) return;
+
+      setTechnicals(prev => {
+        const next = { ...prev };
+        results.forEach(({ symbol, snapshot }) => {
+          if (snapshot) next[symbol] = snapshot;
+        });
+        return next;
+      });
+      setLoadingTechnicals(prev => {
+        const next = { ...prev };
+        results.forEach(({ symbol }) => { delete next[symbol]; });
+        return next;
+      });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [trackedSymbols, technicals]);
 
   const addNotification = (message: string, type: 'success'|'info' = 'info') => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -419,69 +543,111 @@ export default function App() {
     }
   }, [isAiConfigured]);
 
-  const checkWatchlistAlerts = async () => {
-    setIsCheckingAlerts(true);
-    const itemsWithAlerts = watchlist.filter(item => item.targetPrice);
-    let alertsTriggered = 0;
-    
-    for (const item of itemsWithAlerts) {
-      try {
-        const currentPrice = await getCurrentPrice(item.symbol);
-        if (currentPrice > 0) {
-          if (item.alertDirection === 'ABOVE' && currentPrice >= item.targetPrice!) {
-            addNotification(`${item.symbol} has reached ${formatCurrency(currentPrice)}, above your target of ${formatCurrency(item.targetPrice!)}!`, 'success');
-            alertsTriggered++;
-          } else if (item.alertDirection === 'BELOW' && currentPrice <= item.targetPrice!) {
-            addNotification(`${item.symbol} has dropped to ${formatCurrency(currentPrice)}, below your target of ${formatCurrency(item.targetPrice!)}!`, 'success');
-            alertsTriggered++;
-          }
-        }
-      } catch (error) {
-        console.error(`Failed to check alert for ${item.symbol}`, error);
+  /**
+   * Fire notifications for any alert whose target the given prices have crossed.
+   * Returns how many fired so callers can report "nothing triggered".
+   *
+   * A symbol only alerts once per crossing: `lastAlertedAt` is stamped when it
+   * fires and cleared when price moves back to the other side of the target.
+   * Without that, a five-minute refresh would re-notify forever.
+   */
+  const evaluateAlerts = (prices: Record<string, number>): number => {
+    let triggered = 0;
+    const firedSymbols: string[] = [];
+
+    watchlist.forEach(item => {
+      if (!item.targetPrice) return;
+      const price = prices[item.symbol];
+      if (!Number.isFinite(price) || price <= 0) return;
+
+      const crossed = item.alertDirection === 'BELOW'
+        ? price <= item.targetPrice
+        : price >= item.targetPrice;
+
+      if (crossed && !item.lastAlertedAt) {
+        addNotification(
+          item.alertDirection === 'BELOW'
+            ? `${item.symbol} dropped to ${formatCurrency(price)}, below your ${formatCurrency(item.targetPrice)} target.`
+            : `${item.symbol} reached ${formatCurrency(price)}, above your ${formatCurrency(item.targetPrice)} target.`,
+          'success',
+        );
+        firedSymbols.push(item.symbol);
+        triggered++;
+      } else if (!crossed && item.lastAlertedAt) {
+        // Back on the other side — re-arm so the next crossing notifies again.
+        firedSymbols.push(item.symbol);
       }
+    });
+
+    if (firedSymbols.length > 0) {
+      setWatchlist(prev => prev.map(item => {
+        if (!firedSymbols.includes(item.symbol)) return item;
+        return item.lastAlertedAt
+          ? { ...item, lastAlertedAt: undefined }
+          : { ...item, lastAlertedAt: new Date().toISOString() };
+      }));
     }
-    
-    if (alertsTriggered === 0 && itemsWithAlerts.length > 0) {
-      addNotification(`Checked ${itemsWithAlerts.length} alerts. No targets reached yet.`, 'info');
-    } else if (itemsWithAlerts.length === 0) {
+
+    return triggered;
+  };
+
+  const checkWatchlistAlerts = async () => {
+    const itemsWithAlerts = watchlist.filter(item => item.targetPrice);
+    if (itemsWithAlerts.length === 0) {
       addNotification('No active alerts to check.', 'info');
+      return;
     }
-    setIsCheckingAlerts(false);
+
+    setIsCheckingAlerts(true);
+    try {
+      const prices = await fetchPrices(itemsWithAlerts.map(item => item.symbol));
+      setCurrentPrices(prev => ({ ...prev, ...prices }));
+
+      if (evaluateAlerts(prices) === 0) {
+        addNotification(`Checked ${itemsWithAlerts.length} alerts. No targets reached yet.`, 'info');
+      }
+    } finally {
+      setIsCheckingAlerts(false);
+    }
+  };
+
+  /** Fetch quotes for a list of symbols, skipping any that fail. */
+  const fetchPrices = async (symbols: string[]): Promise<Record<string, number>> => {
+    const unique = Array.from(new Set(symbols.map(s => s.trim().toUpperCase()).filter(Boolean)));
+    const prices: Record<string, number> = {};
+
+    await Promise.all(unique.map(async (symbol) => {
+      try {
+        const price = await getCurrentPrice(symbol);
+        if (price > 0) prices[symbol] = price;
+      } catch (error) {
+        console.error(`Failed to fetch current price for ${symbol}`, error);
+      }
+    }));
+
+    return prices;
   };
 
   const updateAllPrices = async (showNotification = true) => {
-    const symbolsToFetch = new Set([
-      ...portfolio.holdings.map(h => h.symbol),
-      ...watchlist.map(w => w.symbol)
-    ]);
-    
-    if (symbolsToFetch.size === 0) return;
-    
+    if (trackedSymbols.length === 0) return;
+
     setIsUpdatingPrices(true);
-    let updatedCount = 0;
     try {
-      const newPrices: Record<string, number> = {};
-      const promises = Array.from(symbolsToFetch).map(async (symbol) => {
-        try {
-          const price = await getCurrentPrice(symbol);
-          if (price > 0) {
-            newPrices[symbol] = price;
-            updatedCount++;
-          }
-        } catch (err) {
-          console.error(`Failed to fetch current price for ${symbol}`, err);
-        }
-      });
-      
-      await Promise.all(promises);
-      setCurrentPrices(prev => ({ ...prev, ...newPrices }));
-      
+      const prices = await fetchPrices(trackedSymbols);
+      setCurrentPrices(prev => ({ ...prev, ...prices }));
+
+      // Every refresh is also an alert check — otherwise a target could be hit
+      // and cleared between two manual presses of "Check Alerts".
+      evaluateAlerts(prices);
+
+      const updatedCount = Object.keys(prices).length;
       if (showNotification) {
-        if (updatedCount > 0) {
-          addNotification(`Successfully updated prices for ${updatedCount} assets.`, 'success');
-        } else {
-          addNotification('Could not update any prices at this time.', 'info');
-        }
+        addNotification(
+          updatedCount > 0
+            ? `Updated prices for ${updatedCount} ${updatedCount === 1 ? 'asset' : 'assets'}.`
+            : 'Could not update any prices at this time.',
+          updatedCount > 0 ? 'success' : 'info',
+        );
       }
     } catch (error) {
       console.error("Failed to update prices", error);
@@ -506,9 +672,10 @@ export default function App() {
     const price = parseFloat(alertForm.price);
     if (isNaN(price) || price <= 0) return;
     
-    setWatchlist(prev => prev.map(item => 
-      item.symbol === symbol 
-        ? { ...item, targetPrice: price, alertDirection: alertForm.direction }
+    setWatchlist(prev => prev.map(item =>
+      item.symbol === symbol
+        // Clearing lastAlertedAt re-arms the alert against the new target.
+        ? { ...item, targetPrice: price, alertDirection: alertForm.direction, lastAlertedAt: undefined }
         : item
     ));
     setAlertSetup(null);
@@ -518,7 +685,7 @@ export default function App() {
   const handleRemoveAlert = (symbol: string) => {
     setWatchlist(prev => prev.map(item => {
       if (item.symbol === symbol) {
-        const { targetPrice, alertDirection, ...rest } = item;
+        const { targetPrice, alertDirection, lastAlertedAt, ...rest } = item;
         return rest;
       }
       return item;
@@ -532,6 +699,17 @@ export default function App() {
       currency: settings.currency,
     }).format(amount);
   };
+
+  /**
+   * Currency with an explicit sign. Formatting the absolute value and prefixing
+   * the sign keeps this correct for every currency — the old code stripped a
+   * literal '$', which left "€-12.40" mangled for any non-dollar setting.
+   */
+  const formatSignedCurrency = (amount: number) =>
+    `${amount >= 0 ? '+' : '-'}${formatCurrency(Math.abs(amount))}`;
+
+  const formatPercent = (value: number, digits = 1) =>
+    `${value >= 0 ? '+' : ''}${value.toFixed(digits)}%`;
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return 'N/A';
@@ -609,14 +787,14 @@ export default function App() {
     }
   };
 
-  const toggleNews = async (symbol: string, isGeneral: boolean = false) => {
+  const toggleNews = async (symbol: string) => {
     const isExpanded = expandedNews[symbol];
     setExpandedNews(prev => ({ ...prev, [symbol]: !isExpanded }));
 
     if (!isExpanded && !news[symbol]) {
       setLoadingNews(prev => ({ ...prev, [symbol]: true }));
       try {
-        const stockNews = await getStockNews(symbol, settings, isGeneral);
+        const stockNews = await getStockNews(symbol, settings);
         setNews(prev => ({ ...prev, [symbol]: stockNews }));
       } catch (error) {
         console.error(`Failed to fetch news for ${symbol}`, error);
@@ -644,22 +822,19 @@ export default function App() {
     }));
   };
 
-  const handleAddWatchlist = async () => {
-    if (!newWatchlistSymbol.trim()) return;
+  const handleAddWatchlist = () => {
     const symbol = newWatchlistSymbol.trim().toUpperCase();
-    if (watchlist.some(item => item.symbol === symbol)) return;
-    
+    if (!symbol) return;
+    if (watchlist.some(item => item.symbol === symbol)) {
+      addNotification(`${symbol} is already on your watchlist.`, 'info');
+      setNewWatchlistSymbol('');
+      return;
+    }
+
+    // Analysis is left to the auto-analyze effect. Doing it here as well fired
+    // two identical requests for every symbol added through this form.
     setWatchlist(prev => [...prev, { symbol, addedAt: new Date().toISOString() }]);
     setNewWatchlistSymbol('');
-    
-    // Auto-analyze new watchlist item
-    try {
-      const analysis = await analyzeWatchlistStock(symbol, settings);
-      setAnalyses(prev => ({ ...prev, [symbol]: analysis }));
-    } catch (error) {
-      console.error("Failed to analyze watchlist stock", error);
-      addNotification(getErrorMessage(error, `Failed to analyze ${symbol}.`), 'info');
-    }
   };
 
   const handleRemoveWatchlist = (symbol: string) => {
@@ -669,6 +844,9 @@ export default function App() {
       delete next[symbol];
       return next;
     });
+    // Forget the attempt so re-adding the symbol analyzes it again.
+    attemptedAnalysis.current.delete(symbol);
+    attemptedTechnicals.current.delete(symbol);
   };
 
   const runPortfolioAnalysis = async () => {
@@ -702,18 +880,101 @@ export default function App() {
     }
   };
 
-  const totalValue = portfolio.cashBalance + portfolio.holdings.reduce((acc, h) => {
-    const price = currentPrices[h.symbol] || h.averagePrice;
-    return acc + (h.shares * price);
-  }, 0);
+  // Single source of truth for portfolio valuation and concentration. Merges
+  // repeated lots of the same symbol, so holding AAPL twice is one position.
+  const riskAudit = useMemo(
+    () => auditRisk(portfolio.holdings, currentPrices, portfolio.cashBalance, DEFAULT_RISK_THRESHOLD),
+    [portfolio.holdings, portfolio.cashBalance, currentPrices],
+  );
 
-  const chartData = [
-    { name: 'Cash', value: portfolio.cashBalance },
-    ...portfolio.holdings.map(h => {
-      const price = currentPrices[h.symbol] || h.averagePrice;
-      return { name: h.symbol, value: h.shares * price };
-    })
-  ].filter(d => d.value > 0);
+  const totalValue = riskAudit.totalValue;
+
+  // Built from merged positions, so duplicate symbols no longer produce two
+  // slices sharing a React key (which React warns about and renders oddly).
+  const chartData = useMemo(
+    () => [
+      { name: 'Cash', value: portfolio.cashBalance },
+      ...riskAudit.positions.map(position => ({ name: position.symbol, value: position.value })),
+    ].filter(entry => entry.value > 0),
+    [portfolio.cashBalance, riskAudit.positions],
+  );
+
+  // Transaction log replayed into positions, cash and realized gains.
+  const replay = useMemo(() => replayTransactions(transactions), [transactions]);
+
+  const reconciliation = useMemo(
+    () => reconcile(portfolio, replay.positions),
+    [portfolio, replay.positions],
+  );
+
+  const contributionSummary = useMemo(
+    () => summarizeContributions(transactions, selectedTaxYear, settings),
+    [transactions, selectedTaxYear, settings],
+  );
+
+  const basis = useMemo(() => contributionBasis(transactions), [transactions]);
+
+  const availableTaxYears = useMemo(
+    () => contributionYears(transactions, new Date().getFullYear()),
+    [transactions],
+  );
+
+  const handleRecordTransaction = (draft: Omit<Transaction, 'id'>) => {
+    const transaction: Transaction = { ...draft, id: createTransactionId() };
+
+    setTransactions(prev => [...prev, transaction]);
+    // Keep holdings and cash in step with the log, so recording activity is a
+    // single action rather than an edit in two places.
+    setPortfolio(prev => applyTransaction(prev, transaction));
+
+    if (transaction.taxYear) setSelectedTaxYear(transaction.taxYear);
+
+    addNotification(
+      `Recorded ${transaction.type.toLowerCase()} of ${formatCurrency(transaction.amount)}.`,
+      'success',
+    );
+  };
+
+  const handleDeleteTransaction = (id: string) => {
+    const transaction = transactions.find(item => item.id === id);
+    setTransactions(prev => prev.filter(item => item.id !== id));
+
+    // Deleting only removes the log entry. Reversing its effect on holdings
+    // would be wrong when positions were also edited by hand, so the
+    // reconciliation panel reports the difference instead.
+    if (transaction) {
+      addNotification(
+        `Removed log entry. Holdings and cash were left unchanged — check the reconciliation panel.`,
+        'info',
+      );
+    }
+  };
+
+  const handleSetContributionLimit = (year: number, amount: number) => {
+    setSettings(prev => ({
+      ...prev,
+      contributionLimitOverrides: { ...prev.contributionLimitOverrides, [year]: amount },
+    }));
+    addNotification(`Set the ${year} contribution limit to ${formatCurrency(amount)}.`, 'success');
+  };
+
+  /** Total unrealized gain/loss, only across positions with a live quote. */
+  const unrealized = useMemo(() => {
+    let costBasis = 0;
+    let marketValue = 0;
+
+    portfolio.holdings.forEach(holding => {
+      const symbol = holding.symbol.trim().toUpperCase();
+      const livePrice = currentPrices[symbol];
+      if (!Number.isFinite(livePrice) || livePrice <= 0) return;
+      costBasis += holding.shares * holding.averagePrice;
+      marketValue += holding.shares * livePrice;
+    });
+
+    if (costBasis <= 0) return null;
+    const gain = marketValue - costBasis;
+    return { gain, percent: (gain / costBasis) * 100, costBasis };
+  }, [portfolio.holdings, currentPrices]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans transition-colors duration-200">
@@ -753,6 +1014,7 @@ export default function App() {
         {[
           { id: 'dashboard', icon: PieChartIcon, label: 'Dashboard' },
           { id: 'holdings', icon: Wallet, label: 'Holdings' },
+          { id: 'activity', icon: PiggyBank, label: 'Activity' },
           { id: 'watchlist', icon: List, label: 'Watchlist' },
           { id: 'detailed', icon: TrendingUp, label: 'Detailed' },
           { id: 'suggestions', icon: Sparkles, label: 'AI Suggestions' },
@@ -785,6 +1047,14 @@ export default function App() {
             <div className="text-right">
               <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Total Portfolio Value</p>
               <p className="text-xl font-bold text-slate-900">{formatCurrency(totalValue)}</p>
+              {unrealized && (
+                <p className={cn(
+                  'text-xs font-medium',
+                  unrealized.gain >= 0 ? 'text-emerald-600' : 'text-rose-600',
+                )}>
+                  {formatSignedCurrency(unrealized.gain)} ({formatPercent(unrealized.percent, 2)}) unrealized
+                </p>
+              )}
             </div>
             <button
               onClick={() => updateAllPrices(true)}
@@ -894,32 +1164,76 @@ export default function App() {
                     Portfolio Health
                   </h3>
                   <div className="space-y-4">
-                    {portfolio.holdings.length === 0 ? (
+                    {riskAudit.positions.length === 0 ? (
                       <p className="text-sm text-slate-500 italic">Add holdings to get AI insights.</p>
                     ) : (
-                      portfolio.holdings.slice(0, 3).map(h => (
-                        <div key={h.symbol} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-                          <div>
-                            <p className="font-bold text-sm">{h.symbol}</p>
-                            <p className="text-[10px] text-slate-400 uppercase">Recommendation</p>
+                      riskAudit.positions.slice(0, 3).map(position => {
+                        const analysis = analyses[position.symbol];
+                        const technical = technicals[position.symbol];
+                        const technicalBias = technical ? scoreTechnicals(technical).bias : null;
+
+                        return (
+                          <div key={position.symbol} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                            <div>
+                              <p className="font-bold text-sm">{position.symbol}</p>
+                              {/* Measured signal shows even with AI disabled. */}
+                              <p className="text-[10px] text-slate-400 uppercase">
+                                {technicalBias ? `Technicals: ${technicalBias}` : 'Recommendation'}
+                              </p>
+                            </div>
+                            {analysis ? (
+                              <span className={cn(
+                                "text-xs font-bold px-2 py-1 rounded-lg",
+                                analysis.recommendation === 'BUY' && "bg-emerald-100 text-emerald-700",
+                                analysis.recommendation === 'HOLD' && "bg-amber-100 text-amber-700",
+                                analysis.recommendation === 'SELL' && "bg-rose-100 text-rose-700",
+                              )}>
+                                {analysis.recommendation}
+                              </span>
+                            ) : (
+                              <span className="text-[10px] text-slate-400 italic">
+                                {isAiConfigured ? 'Pending analysis' : 'AI disabled'}
+                              </span>
+                            )}
                           </div>
-                          {analyses[h.symbol] ? (
-                            <span className={cn(
-                              "text-xs font-bold px-2 py-1 rounded-lg",
-                              analyses[h.symbol].recommendation === 'BUY' && "bg-emerald-100 text-emerald-700",
-                              analyses[h.symbol].recommendation === 'HOLD' && "bg-amber-100 text-amber-700",
-                              analyses[h.symbol].recommendation === 'SELL' && "bg-rose-100 text-rose-700",
-                            )}>
-                              {analyses[h.symbol].recommendation}
-                            </span>
-                          ) : (
-                            <span className="text-[10px] text-slate-400 italic">Pending analysis</span>
-                          )}
-                        </div>
-                      ))
+                        );
+                      })
                     )}
                   </div>
                 </div>
+              </div>
+
+              {/* Market Snapshot — index moves over the last session */}
+              <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {MARKET_INDICES.map(({ key }) => {
+                  const snapshot = marketSnapshot[key];
+                  const isUp = (snapshot?.change ?? 0) >= 0;
+
+                  return (
+                    <div key={key} className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">{key}</p>
+                      {snapshot ? (
+                        <>
+                          <p className="text-2xl font-bold text-slate-900 tabular-nums">{formatCurrency(snapshot.value)}</p>
+                          <p className={cn(
+                            'text-sm font-medium flex items-center gap-1 mt-1',
+                            isUp ? 'text-emerald-600' : 'text-rose-600',
+                          )}>
+                            {isUp ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                            {formatSignedCurrency(snapshot.change)} ({formatPercent(snapshot.changePercent, 2)})
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-sm text-slate-300 italic">Loading...</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Risk & Diversification audit */}
+              <div className="lg:col-span-3">
+                <RiskAuditCard audit={riskAudit} formatCurrency={formatCurrency} />
               </div>
 
               {/* General Market News Widget */}
@@ -1023,7 +1337,7 @@ export default function App() {
                     />
                   </div>
                   <div className="flex items-end">
-                    <button 
+                    <button
                       onClick={handleAddHolding}
                       className="w-full bg-blue-600 text-white font-bold py-2 rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
                     >
@@ -1033,6 +1347,17 @@ export default function App() {
                   </div>
                 </div>
               </div>
+
+              <PositionSizer
+                audit={riskAudit}
+                symbols={trackedSymbols}
+                prices={currentPrices}
+                symbol={sizerSymbol || trackedSymbols[0] || ''}
+                onSymbolChange={setSizerSymbol}
+                confidence={sizerConfidence}
+                onConfidenceChange={setSizerConfidence}
+                formatCurrency={formatCurrency}
+              />
 
               {/* Holdings List */}
               <div className="bg-white rounded-3xl overflow-visible shadow-sm border border-slate-100">
@@ -1155,8 +1480,13 @@ export default function App() {
                           </td>
                         </tr>
                       ))}
-                      {portfolio.holdings.map((holding, idx) => (expandedChart[holding.symbol] || expandedNews[holding.symbol]) && (
-                        <tr key={`details-${holding.symbol}-${idx}`} className="bg-slate-50/50">
+                      {/* Chart/news state is keyed by symbol, so only the first
+                          lot of a symbol renders the detail row — otherwise two
+                          lots of the same ticker each drew their own copy. */}
+                      {portfolio.holdings.map((holding, idx) =>
+                        portfolio.holdings.findIndex(h => h.symbol === holding.symbol) === idx
+                        && (expandedChart[holding.symbol] || expandedNews[holding.symbol]) && (
+                        <tr key={`details-${holding.symbol}`} className="bg-slate-50/50">
                           <td colSpan={7} className="px-6 py-4">
                             <div className="space-y-6">
                               {/* Chart Section */}
@@ -1287,6 +1617,40 @@ export default function App() {
                   </table>
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'activity' && (
+            <motion.div
+              key="activity"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-6"
+            >
+              <ContributionTracker
+                summary={contributionSummary}
+                basis={basis}
+                years={availableTaxYears}
+                onYearChange={setSelectedTaxYear}
+                onSetLimit={handleSetContributionLimit}
+                formatCurrency={formatCurrency}
+              />
+
+              <TransactionForm
+                onSubmit={handleRecordTransaction}
+                symbols={trackedSymbols}
+                defaultTaxYear={selectedTaxYear}
+              />
+
+              <TransactionHistory
+                transactions={transactions}
+                replay={replay}
+                reconciliation={reconciliation}
+                onDelete={handleDeleteTransaction}
+                formatCurrency={formatCurrency}
+                formatDate={formatDate}
+              />
             </motion.div>
           )}
 
@@ -1457,7 +1821,7 @@ export default function App() {
                             {expandedChart[item.symbol] ? 'Hide Chart' : 'Show Chart'}
                           </button>
                           <button 
-                            onClick={() => toggleNews(item.symbol, true)}
+                            onClick={() => toggleNews(item.symbol)}
                             className={cn(
                               "text-[10px] font-bold flex items-center gap-1 transition-colors",
                               expandedNews[item.symbol] ? "text-blue-600" : "text-slate-400 hover:text-blue-600"
@@ -1555,7 +1919,9 @@ export default function App() {
                           >
                             <div className="space-y-3 pt-2">
                               {loadingNews[item.symbol] ? (
-                                <div className="text-[10px] text-slate-400 italic">Loading general market news...</div>
+                                <div className="text-[10px] text-slate-400 italic">Loading {item.symbol} news...</div>
+                              ) : news[item.symbol]?.length === 0 ? (
+                                <div className="text-[10px] text-slate-400 italic">No recent news for {item.symbol}.</div>
                               ) : news[item.symbol]?.map((n, nIdx) => (
                                 <div
                                   key={nIdx}
@@ -1711,6 +2077,7 @@ export default function App() {
               <section className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-sm flex flex-col">
                 {(() => {
                   const analysis = analyses[detailedSymbol];
+                  const snapshot = technicals[detailedSymbol];
                   const hasHistory = detailedHistory.length > 1;
                   const first = hasHistory ? (detailedHistory[0].close ?? detailedHistory[0].price) : 0;
                   const lastRow = detailedHistory[detailedHistory.length - 1];
@@ -1723,6 +2090,29 @@ export default function App() {
                   const low = lastRow?.low ?? lastRow?.price ?? 0;
                   const mode = chartMode[detailedSymbol] || 'BOTH';
 
+                  // The close of the bar before the latest one — the actual
+                  // "previous close". The old code showed `first`, the opening
+                  // bar of the whole range, which for 1Y was a year-old price.
+                  const previousRow = detailedHistory[detailedHistory.length - 2];
+                  const previousClose = previousRow ? (previousRow.close ?? previousRow.price) : 0;
+
+                  const periodHigh = hasHistory
+                    ? Math.max(...detailedHistory.map(row => row.high ?? row.close ?? row.price))
+                    : 0;
+                  const periodLow = hasHistory
+                    ? Math.min(...detailedHistory.map(row => row.low ?? row.close ?? row.price))
+                    : 0;
+
+                  // Bars are daily except 1D (hourly), 5Y (weekly) and MAX (monthly),
+                  // so calling the latest bar's span a "day range" would be wrong.
+                  const barLabel = detailedRange === '1D'
+                    ? 'Hour'
+                    : detailedRange === '5Y'
+                      ? 'Week'
+                      : detailedRange === 'MAX'
+                        ? 'Month'
+                        : 'Day';
+
                   const rows = hasHistory ? toCandleRows(detailedHistory) : [];
                   const trendColor = getTrendColor(rows);
 
@@ -1732,16 +2122,27 @@ export default function App() {
                       <div className="mb-8">
                         <div className="flex justify-between items-start">
                           <h2 className="text-3xl font-bold text-slate-900 tracking-tight">{detailedSymbol}</h2>
-                          <div className="flex gap-2 relative">
+                          {/* Commit on submit rather than per keystroke — typing
+                              "AAPL" into the old version fired four lookups. */}
+                          <form
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const next = detailedSymbolDraft.trim().toUpperCase();
+                              if (next) setDetailedSymbol(next);
+                            }}
+                            className="flex gap-2 relative"
+                          >
                             <input
                               type="text"
-                              value={detailedSymbol}
-                              onChange={(e) => setDetailedSymbol(e.target.value.trim().toUpperCase())}
+                              value={detailedSymbolDraft}
+                              onChange={(e) => setDetailedSymbolDraft(e.target.value)}
+                              onBlur={() => setDetailedSymbolDraft(detailedSymbol)}
                               placeholder="Search symbol"
+                              aria-label="Search symbol"
                               className="w-40 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
-                          </div>
+                          </form>
                         </div>
                         
                         <div className="mt-6 flex flex-wrap items-end gap-3">
@@ -1873,17 +2274,34 @@ export default function App() {
                         <h3 className="text-xl font-medium text-slate-900 mb-6">Key stats</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-6">
                           {[
-                            { label: 'Previous close', value: formatCurrency(first) },
-                            { label: 'Day range', value: `${formatCurrency(low)} - ${formatCurrency(high)}` },
-                            { label: 'Open', value: formatCurrency(open) },
-                            { label: 'Market cap', value: analysis?.metrics?.marketCap || '--' },
-                            { label: 'P/E ratio', value: analysis?.metrics?.peRatio || '--' },
-                            { label: 'Div yield', value: analysis?.metrics?.dividendYield || '--' },
-                            { label: 'AI Verdict', value: analysis?.recommendation || '--' },
-                            { label: 'Risk Level', value: analysis?.riskLevel || '--' },
+                            { label: 'Previous close', value: previousClose > 0 ? formatCurrency(previousClose) : '--' },
+                            { label: 'Open', value: open > 0 ? formatCurrency(open) : '--' },
+                            { label: `${barLabel} range`, value: hasHistory ? `${formatCurrency(low)} - ${formatCurrency(high)}` : '--' },
+                            { label: `${detailedRange} range`, value: hasHistory ? `${formatCurrency(periodLow)} - ${formatCurrency(periodHigh)}` : '--' },
+                            { label: 'RSI (14)', value: snapshot?.rsi14 != null ? snapshot.rsi14.toFixed(1) : '--' },
+                            {
+                              label: 'Ann. volatility',
+                              value: snapshot?.annualizedVolatility != null
+                                ? `${(snapshot.annualizedVolatility * 100).toFixed(0)}%`
+                                : '--',
+                            },
+                            // These three come from the language model, which has no
+                            // live market data — flagged so they are not read as measured.
+                            { label: 'Market cap', value: analysis?.metrics?.marketCap || '--', estimated: true },
+                            { label: 'P/E ratio', value: analysis?.metrics?.peRatio || '--', estimated: true },
                           ].map((stat, i) => (
                             <div key={i} className="flex flex-col border-t border-slate-100 pt-3">
-                              <span className="text-sm text-slate-500 mb-1">{stat.label}</span>
+                              <span className="text-sm text-slate-500 mb-1 flex items-center gap-1">
+                                {stat.label}
+                                {stat.estimated && stat.value !== '--' && (
+                                  <span
+                                    className="text-[9px] font-bold text-amber-600 bg-amber-50 px-1 py-0.5 rounded uppercase"
+                                    title="Estimated by the AI model, not measured from market data"
+                                  >
+                                    est
+                                  </span>
+                                )}
+                              </span>
                               <span className="text-base font-medium text-slate-900">{stat.value}</span>
                             </div>
                           ))}
@@ -1893,6 +2311,12 @@ export default function App() {
                       {/* 5. Additional Tabs (News / AI Insights) */}
                       <div>
                         <div className="flex gap-6 border-b border-slate-200 mb-6">
+                          <button
+                            onClick={() => setDetailedPanel('technicals')}
+                            className={cn('pb-3 text-sm font-medium transition-all border-b-2', detailedPanel === 'technicals' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-900')}
+                          >
+                            Technicals
+                          </button>
                           <button
                             onClick={() => setDetailedPanel('overview')}
                             className={cn('pb-3 text-sm font-medium transition-all border-b-2', detailedPanel === 'overview' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-900')}
@@ -1911,6 +2335,13 @@ export default function App() {
                         </div>
 
                         <div className="min-h-[200px]">
+                          {detailedPanel === 'technicals' && (
+                            <TechnicalsPanel
+                              snapshot={snapshot}
+                              loading={loadingTechnicals[detailedSymbol]}
+                            />
+                          )}
+
                           {detailedPanel === 'overview' && (
                             <div className="space-y-6">
                               {analysis ? (
@@ -2099,9 +2530,9 @@ export default function App() {
                       <Globe className="w-6 h-6" />
                     </div>
                     <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-1">Currency</h4>
-                      <p className="text-sm text-slate-500 mb-4">Select your preferred currency for portfolio valuation.</p>
-                      <select 
+                      <h4 className="font-bold text-slate-900 mb-1">Display Currency</h4>
+                      <p className="text-sm text-slate-500 mb-4">Which currency symbol and number format to display.</p>
+                      <select
                         value={settings.currency}
                         onChange={e => setSettings(prev => ({ ...prev, currency: e.target.value }))}
                         className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -2113,6 +2544,18 @@ export default function App() {
                         <option value="CAD">CAD - Canadian Dollar</option>
                         <option value="AUD">AUD - Australian Dollar</option>
                       </select>
+                      {/* Market data arrives in USD and there is no FX conversion,
+                          so any other choice relabels the same numbers. */}
+                      {settings.currency !== 'USD' && (
+                        <div className="mt-3 flex items-start gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl">
+                          <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                          <p className="text-xs text-amber-800 leading-relaxed">
+                            Prices are quoted in USD and are <strong>not converted</strong>. Selecting
+                            {' '}{settings.currency} changes the symbol and formatting only — the
+                            underlying values are still US dollars.
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -2184,12 +2627,15 @@ export default function App() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-900 mb-1">Investment Horizon</h4>
-                      <p className="text-sm text-slate-500 mb-4">This helps AI tailor recommendations for your goals.</p>
+                      <p className="text-sm text-slate-500 mb-4">
+                        This helps AI tailor recommendations for your goals. A Roth IRA is a
+                        retirement account, so long term is usually the fitting choice.
+                      </p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                         {[
                           { id: 'LONG_TERM', label: 'Long Term' },
-                          { id: 'SHORT_TERM', label: 'Short Term' },
-                          { id: 'BOTH', label: 'Balanced' }
+                          { id: 'BOTH', label: 'Balanced' },
+                          { id: 'SHORT_TERM', label: 'Short Term' }
                         ].map(horizon => (
                           <button
                             key={horizon.id}
@@ -2205,6 +2651,70 @@ export default function App() {
                           </button>
                         ))}
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Catch-up contributions */}
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-blue-50 rounded-2xl text-blue-600">
+                      <PiggyBank className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 mb-1">Catch-Up Contributions</h4>
+                      <p className="text-sm text-slate-500 mb-4">
+                        Account holders aged 50 and over may contribute an additional catch-up
+                        amount each year. This raises the limit used on the Activity tab.
+                      </p>
+                      <div className="flex gap-2">
+                        {[
+                          { value: false, label: 'Under 50' },
+                          { value: true, label: '50 or over' },
+                        ].map(option => (
+                          <button
+                            key={String(option.value)}
+                            onClick={() => setSettings(prev => ({ ...prev, catchUpEligible: option.value }))}
+                            className={cn(
+                              'px-4 py-2 rounded-xl text-sm font-medium border transition-all',
+                              settings.catchUpEligible === option.value
+                                ? 'bg-slate-900 text-white border-slate-900'
+                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300',
+                            )}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {Object.keys(settings.contributionLimitOverrides).length > 0 && (
+                        <div className="mt-4 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                            Your limit overrides
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(settings.contributionLimitOverrides)
+                              .sort(([a], [b]) => Number(b) - Number(a))
+                              .map(([year, amount]) => (
+                                <span
+                                  key={year}
+                                  className="inline-flex items-center gap-2 text-xs font-medium bg-white border border-slate-200 rounded-lg px-2 py-1"
+                                >
+                                  {year}: {formatCurrency(amount)}
+                                  <button
+                                    onClick={() => setSettings(prev => {
+                                      const next = { ...prev.contributionLimitOverrides };
+                                      delete next[Number(year)];
+                                      return { ...prev, contributionLimitOverrides: next };
+                                    })}
+                                    className="text-slate-300 hover:text-rose-500 transition-colors"
+                                    aria-label={`Remove the ${year} override`}
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </span>
+                              ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 

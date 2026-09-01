@@ -1,425 +1,219 @@
-# ML Finance Bot - Visual Architecture & Workflow
+# Architecture
 
-## System Architecture
+How the pieces fit together, and what each run actually does.
 
-```
-                    ┌─────────────────────────────────────┐
-                    │   MARKET DATA SOURCE                 │
-                    │  (Alpha Vantage + Yahoo Finance)    │
-                    └────────────────┬────────────────────┘
-                                     │
-                    ┌────────────────┴────────────────┐
-                    │                                  │
-                    ▼                                  ▼
-        ┌──────────────────────┐        ┌──────────────────────┐
-        │  LIVE PRICE FEED     │        │  HISTORICAL DATA     │
-        │  (Alpha Vantage API) │        │  (Yahoo Finance)     │
-        │                      │        │  5 years of OHLCV    │
-        └──────────────┬───────┘        └──────────────┬───────┘
-                       │                               │
-                       │                    ┌──────────▼──────────┐
-                       │                    │ DATA COLLECTION     │
-                       │                    │ (data_collector.py) │
-                       │                    │                     │
-                       │                    │ • Downloads OHLCV   │
-                       │                    │ • Calculates 14     │
-                       │                    │   indicators        │
-                       │                    │ • Creates labels    │
-                       │                    │ • Exports training  │
-                       │                    │   dataset           │
-                       │                    └──────────┬──────────┘
-                       │                               │
-                       │              ┌────────────────▼────────────────┐
-                       │              │   MODEL TRAINING                 │
-                       │              │   (train_model.py)               │
-                       │              │                                  │
-                       │              │ • Loads training dataset         │
-                       │              │ • Trains Random Forest (100      │
-                       │              │   trees, depth=15)              │
-                       │              │ • Standardizes features          │
-                       │              │ • Evaluates on test set          │
-                       │              │ • Saves model artifacts:         │
-                       │              │   - stock_classifier.pkl        │
-                       │              │   - feature_scaler.pkl          │
-                       │              │   - metadata.json               │
-                       │              └────────────────┬────────────────┘
-                       │                               │
-        ┌──────────────▼─────────────────────────────┬▼────┐
-        │                                                   │
-        │   C++ PORTFOLIO MANAGEMENT BOT                   │
-        │   (Roth-IRA-ML.cpp)                              │
-        │                                                   │
-        │  ┌─────────────────────────────────────────┐    │
-        │  │ 1. MARKET DATA FETCH                    │    │
-        │  │    • Connect to Alpha Vantage API       │    │
-        │  │    • Get current price for ticker       │    │
-        │  │    • Handle rate limiting (5 req/min)   │    │
-        │  └──────────────────┬──────────────────────┘    │
-        │                     │                             │
-        │  ┌──────────────────▼──────────────────────┐    │
-        │  │ 2. ML PREDICTION REQUEST                │    │
-        │  │    • Spawn Python subprocess            │    │
-        │  │    • Call predict.py with ticker        │    │
-        │  │    • Parse JSON response                │    │
-        │  └──────────────────┬──────────────────────┘    │
-        │                     │                             │
-        │         ┌───────────▼───────────┐                │
-        │         │ PYTHON ML ENGINE      │                │
-        │         │ (predict.py)          │                │
-        │         │                       │                │
-        │         │ • Download latest     │                │
-        │         │   price data          │                │
-        │         │ • Calculate 14        │                │
-        │         │   technical           │                │
-        │         │   indicators          │                │
-        │         │ • Load pre-trained    │                │
-        │         │   model               │                │
-        │         │ • Predict buy/hold    │                │
-        │         │   signal              │                │
-        │         │ • Return JSON:        │                │
-        │         │   {                  │                │
-        │         │     buy_signal: bool, │                │
-        │         │     confidence: 0-1,  │                │
-        │         │     probability: 0-1, │                │
-        │         │     status: string    │                │
-        │         │   }                   │                │
-        │         └───────────┬───────────┘                │
-        │                     │                             │
-        │  ┌──────────────────▼──────────────────────┐    │
-        │  │ 3. TRADING DECISION LOGIC               │    │
-        │  │    Decision Tree:                       │    │
-        │  │    ├─ ML buy_signal == true?            │    │
-        │  │    │  └─ Confidence > threshold (0.65)? │    │
-        │  │    │     ├─ YES → BUY                   │    │
-        │  │    │     └─ NO  → SKIP                  │    │
-        │  │    └─ NO  → SKIP                        │    │
-        │  └──────────────────┬──────────────────────┘    │
-        │                     │                             │
-        │  ┌──────────────────▼──────────────────────┐    │
-        │  │ 4. POSITION SIZING                      │    │
-        │  │    • Calculate shares to buy             │    │
-        │  │    • (Future: risk-based allocation)     │    │
-        │  │    • Currently: 1 share per signal       │    │
-        │  └──────────────────┬──────────────────────┘    │
-        │                     │                             │
-        │  ┌──────────────────▼──────────────────────┐    │
-        │  │ 5. LOG TRADE                            │    │
-        │  │    Write to portfolio_log.csv:          │    │
-        │  │    DATE,TICKER,PRICE,SHARES,VALUE       │    │
-        │  └──────────────────┬──────────────────────┘    │
-        │                     │                             │
-        │  ┌──────────────────▼──────────────────────┐    │
-        │  │ 6. RISK AUDIT                           │    │
-        │  │    • Analyze holdings                   │    │
-        │  │    • Check allocation % per stock       │    │
-        │  │    • Flag positions > 25% limit         │    │
-        │  │    • Print audit report                 │    │
-        │  └──────────────────────────────────────────┘    │
-        │                                                   │
-        └─────────────────────────────────────────────────┘
-                           │
-                ┌──────────┴──────────┐
-                │                     │
-                ▼                     ▼
-        ┌─────────────────┐  ┌──────────────────┐
-        │ PORTFOLIO LOG   │  │ ALERT/DASHBOARD  │
-        │ (CSV)           │  │ (Future)         │
-        │                 │  │                  │
-        │ Records all     │  │ • Email trades   │
-        │ trades with     │  │ • Notify buys    │
-        │ timestamps      │  │ • Show gains/loss│
-        │ and values      │  │                  │
-        └─────────────────┘  └──────────────────┘
-```
+## System overview
 
----
-
-## Data Flow Example: Buy Signal
+The C++ binary owns portfolio state and all trading rules. It knows nothing
+about market data or machine learning — it shells out to Python for both and
+reads back a small JSON object per ticker.
 
 ```
-Input: AAPL in watchlist
-│
-├─ Fetch price: AAPL = $195.45
-│
-├─ Call ML model: predict.py AAPL
-│  │
-│  ├─ Download last 60 days of AAPL data
-│  ├─ Calculate features:
-│  │  • RSI = 52.3
-│  │  • MACD = +0.42
-│  │  • BB position = 0.68
-│  │  • Volatility = 0.018
-│  │  • [10 more features...]
-│  │
-│  ├─ Load pre-trained model
-│  ├─ Predict: buy_signal=TRUE, confidence=0.72
-│  │
-│  └─ Return JSON: {"ticker": "AAPL", "buy_signal": true, "confidence": 0.72}
-│
-├─ Parse decision:
-│  • buy_signal == true? ✓ YES
-│  • confidence (0.72) > threshold (0.65)? ✓ YES
-│
-├─ EXECUTE: Buy 1 share @ $195.45
-│
-└─ Log to portfolio_log.csv:
-   2026-02-15,AAPL,195.45,1,195.45
-```
-
----
-
-## Machine Learning Pipeline Details
-
-### Feature Calculation (14 indicators)
-
-```
-Input: Daily OHLCV Data
-│
-├─ MOMENTUM FEATURES
-│  ├─ Return 5d  = (Close[t] - Close[t-5]) / Close[t-5]
-│  ├─ Return 10d = (Close[t] - Close[t-10]) / Close[t-10]
-│  └─ Return 20d = (Close[t] - Close[t-20]) / Close[t-20]
-│
-├─ VOLUME FEATURES
-│  ├─ Volume change = (Volume[t] - Volume[t-1]) / Volume[t-1]
-│  └─ Volume MA ratio = Volume[t] / MA_20(Volume)
-│
-├─ TREND FEATURES
-│  ├─ RSI (14) = 100 - 100/(1 + RS)  where RS = avg_gain/avg_loss
-│  ├─ MACD = EMA(12) - EMA(26)
-│  ├─ MACD Signal = EMA(9, MACD)
-│  └─ MACD Histogram = MACD - Signal
-│
-├─ VOLATILITY FEATURES
-│  ├─ Bollinger Band Upper = SMA(20) + 2*STD(20)
-│  ├─ Bollinger Band Lower = SMA(20) - 2*STD(20)
-│  ├─ BB Position = (Price - Lower) / (Upper - Lower)
-│  └─ Volatility 20d = STD(Returns_20d)
-│
-├─ MOVING AVERAGE FEATURES
-│  ├─ SMA 5  = Mean(Close[t-5:t])
-│  ├─ SMA 10 = Mean(Close[t-10:t])
-│  ├─ SMA 20 = Mean(Close[t-20:t])
-│  └─ Close vs SMA20 = (Price - SMA20) / SMA20
-│
-└─ VOLATILITY & GAP FEATURES
-   ├─ HL Range = (High - Low) / Close
-   └─ Overnight Gap = (Open - Close[t-1]) / Close[t-1]
-
-Output: Feature vector [14 dimensions]
-```
-
-### Model Architecture
-
-```
-Feature Vector [14 dimensions]
-          │
-          ▼
-    ┌─────────────────┐
-    │ StandardScaler  │  (Feature normalization)
-    └────────┬────────┘
-             │
-             ▼
-    ┌─────────────────────────────────┐
-    │  RANDOM FOREST CLASSIFIER       │
-    │  (100 Decision Trees)           │
-    │                                 │
-    │  Tree 1:                        │
-    │  if RSI > 50 and MACD > 0 then  │
-    │    ...predict BUY               │
-    │                                 │
-    │  Tree 2:                        │
-    │  if Volatility < 0.02 and       │
-    │     Volume > MA then            │
-    │    ...predict BUY               │
-    │  ...                            │
-    │  Tree 100:                      │
-    │  if Close > SMA20 and           │
-    │     BB Position > 0.7 then      │
-    │    ...predict BUY               │
-    │                                 │
-    │  Final Decision: MAJORITY VOTE  │
-    │  (how many trees vote BUY)      │
-    │                                 │
-    └────────┬────────────────────────┘
-             │
-             ▼
-    ┌─────────────────────────────────┐
-    │ Output Layer                    │
-    │                                 │
-    │ Prediction: 0 or 1              │
-    │ (HOLD/SELL or BUY)              │
-    │                                 │
-    │ Probability: 0.0-1.0            │
-    │ (confidence of prediction)       │
-    │                                 │
-    │ Confidence Score:               │
-    │ max(probability, 1-probability) │
-    │                                 │
-    └─────────────────────────────────┘
-```
-
-### Model Training Pipeline
-
-```
-Historical Data (5 years, 10 stocks)
-       │
-       ├─ Clean & normalize
-       ├─ Calculate features
-       └─ Create labels (1 if price ↑ 2% in 5 days, else 0)
-              │
-              ▼
-    Training Set (80%)    Test Set (20%)
-       │                       │
-       ├─ Standardize          │
-       │                       │
-       ├─ Fit 100 trees        │
-       │  (Random subsamples)   │
-       │                       │
-       ├─ Tune hyperparameters │
-       │  max_depth=15         │
-       │  min_samples_leaf=5   │
-       │                       │
-       └─ Train complete ──────┼──→ Evaluate on test set
-                               │
-                               ├─ Accuracy:  58%
-                               ├─ F1 Score:  52%
-                               └─ ROC-AUC:   61%
-                                    │
-                                    └─→ Save model artifacts
-                                       if performance acceptable
-```
-
----
-
-## Raspberry Pi Deployment Flow
-
-```
-Development Machine          Raspberry Pi
-    (Your Laptop)             (24/7 Trader)
-         │                           │
-         ├─ Train Model              │
-         │  (5-15 min)               │
-         │                           │
-         ├─ Save:                    │
-         │ • stock_classifier.pkl    │
-         │ • feature_scaler.pkl      │
-         │ • metadata.json           │
-         │                           │
-         ├─ SCP files ───────────────┼──→ ml_model/models/
-         │                           │
-         ├─ Build bot ───────────────┼──→ Roth-IRA-ML (binary)
-         │ (Makefile)                │
-         │                           │
-         └─────────────────────────┐ │
-                                   │ │
-                                   │ ▼
-                              ┌──────────────┐
-                              │   systemd    │
-                              │   (cron or   │
-                              │   daemon)    │
-                              └──────┬───────┘
-                                     │
-                         ┌───────────┴───────────┐
-                         │                       │
-                    Market Open              After Hours
-                    (Daily)                  (Monthly)
-                         │                       │
-                         ▼                       ▼
-                  ┌──────────────┐        ┌──────────────┐
-                  │ Run Bot      │        │ Retrain      │
-                  │ Roth-IRA-ML  │        │ Model        │
-                  └──────┬───────┘        │              │
-                         │               │ • Collect    │
-                         ├─ Fetch prices │   new data   │
-                         ├─ ML predict   │ • Train      │
-                         ├─ Log trades   │   Random     │
-                         └─ Risk audit   │   Forest     │
-                                         │ • Save new   │
-                                         │   weights    │
-                                         └──────────────┘
-                                         
-                     Daily: Run at 9:30 AM EST
-                  Monthly: Run on first Sunday
-```
-
----
-
-## Configuration Hierarchy
-
-```
-Global Defaults
-   │
-   ├─ Hardcoded in code
-   │  (Roth-IRA-ML.cpp)
-   │  • API key: "OWJMTJTHU3LCRV1F"
-   │  • Watchlist: VOO, AAPL, MSFT
-   │  • Risk threshold: 25%
-   │  • ML threshold: 0.65
-   │
-   ├─ Environment variables (Override)
-   │  • ALPHAVANTAGE_API_KEY
-   │  • ML_CONFIDENCE_THRESHOLD
-   │  • WATCHLIST
-   │
-   └─ config.env (Systemd)
-      • Source before running service
-      • Separate from code
-      • Secure on production
-```
-
----
-
-## Decision Tree Example
-
-```
-Is ML model ready?
-  ├─ NO → Skip (model_not_ready)
-  │
-  └─ YES
-      ├─ Get stock price
-      │
-      ├─ Call Python predict.py
-      │  └─ Executes: python3 ml_model/predict.py AAPL
-      │
-      ├─ Parse JSON response
-      │
-      └─ Evaluate buying conditions
-         ├─ Condition 1: buy_signal == true?
-         │  ├─ NO → Don't buy (ML says HOLD/SELL)
-         │  │
-         │  └─ YES → Check next condition
-         │
-         └─ Condition 2: confidence > 0.65?
-            ├─ NO → Don't buy (confidence too low)
+┌──────────────────────────────────────────────────────────────┐
+│  watchlist.txt          portfolio_state.json                 │
+│  (candidates)           (cash + open positions)              │
+└───────────┬──────────────────────┬───────────────────────────┘
+            │                      │
+            v                      v
+┌──────────────────────────────────────────────────────────────┐
+│  trader.cpp                                                  │
+│                                                              │
+│   1. runExits()      close positions hitting stop/target     │
+│   2. runEntries()    open or add where the model signals     │
+│   3. performRiskAudit()   report concentration               │
+│   4. persist()       write state (skipped on --dry-run)      │
+│                                                              │
+│   MLPredictor: popen("python3 predict.py TICKER")            │
+│                one call per ticker per run, cached           │
+└───────────┬──────────────────────────────────────────────────┘
+            │  JSON on stdout
+            v
+┌──────────────────────────────────────────────────────────────┐
+│  ml_model/predict.py                                         │
+│                                                              │
+│   download_historical_data(ticker, period="3mo")             │
+│           │                                                  │
+│           v                                                  │
+│   create_features()  ──> 14 technical indicators             │
+│           │                                                  │
+│           v                                                  │
+│   scaler.transform() ──> model.predict_proba()               │
+│           │                                                  │
+│           v                                                  │
+│   {ticker, buy_signal, confidence, latest_price, ...}        │
+└───────────┬──────────────────────────────────────────────────┘
             │
-            └─ YES → BUY!
-               ├─ Calculate position size
-               ├─ Log to portfolio_log.csv
-               └─ Continue to next ticker
+            v
+      yfinance ──> Yahoo Finance
 ```
 
----
+Alpha Vantage appears only in `legacy-alphavantage.cpp`, the superseded first
+version. The current bot gets prices from yfinance via `predict.py`, in the same
+call that returns the prediction.
 
-## Status Codes from ML Model
+## What one run does
+
+```
+load portfolio_state.json
+  │
+  ├─ EXITS (open positions, evaluated first so freed cash can be redeployed)
+  │    │
+  │    ├─ no live price?          -> skip, report status
+  │    ├─ no cost basis?          -> skip, cannot evaluate a return
+  │    ├─ return <= -STOP_LOSS    -> SELL all      (checked first)
+  │    ├─ return >= +TAKE_PROFIT  -> SELL all
+  │    ├─ ML_SELL_ENABLED and model says no, confidently -> SELL all
+  │    └─ otherwise               -> hold
+  │
+  ├─ ENTRIES (watchlist)
+  │    │
+  │    ├─ model says no?                  -> skip
+  │    ├─ confidence < threshold?         -> skip
+  │    ├─ no cash after 5% buffer?        -> skip
+  │    ├─ position already at risk cap?   -> skip
+  │    └─ else BUY min(confidence x spendable, risk headroom, spendable)
+  │
+  ├─ RISK AUDIT   weight per position, flag anything over the cap
+  │
+  └─ persist (unless --dry-run)
+```
+
+### Position sizing
+
+Three constraints, smallest wins:
+
+```
+cashBuffer      = cash x 0.05                  always retained
+spendableCash   = cash - cashBuffer
+confidenceAlloc = spendableCash x confidence   conviction sizes the buy
+riskHeadroom    = (RISK_THRESHOLD x totalValue) - currentPositionValue
+
+allocation = min(confidenceAlloc, riskHeadroom, spendableCash)
+shares     = allocation / price
+```
+
+`totalValue` is cash plus every position marked to the prices seen this run,
+falling back to cost for anything unpriced so the denominator stays honest.
+
+## Cost basis
+
+Positions carry a weighted average cost, updated on each buy:
+
+```
+avgCost = (oldShares x oldAvgCost + newShares x price) / (oldShares + newShares)
+```
+
+With one exception. A position loaded from the older state format has **no**
+cost basis, and averaging a known price against an unknown one treated as zero
+would fabricate a basis well below what was actually paid — the next run would
+then read a large fictitious gain and sell. So a position with unknown basis
+stays unknown, and its exit rules stay skipped, until a human fills in
+`avg_cost` in `portfolio_state.json`.
+
+## Feature pipeline
+
+`data_collector.py:create_features()` produces 14 features from OHLCV bars:
+
+| Group | Features |
+| --- | --- |
+| Momentum | `return_5d`, `return_10d`, `return_20d` |
+| Volume | `volume_change`, `volume_ma_ratio` |
+| Oscillator | `rsi_14` |
+| Trend | `macd`, `macd_signal`, `macd_hist`, `close_vs_sma20` |
+| Volatility | `bb_position`, `hl_range`, `volatility_20` |
+| Gap | `overnight_gap` |
+
+Conventions worth knowing, because they are not the only reasonable choices:
+
+- **RSI** uses a simple moving average of gains and losses (Cutler's RSI), not
+  Wilder's smoothing.
+- **Bollinger Bands** use pandas' sample standard deviation (`ddof=1`).
+- **MACD** uses `ewm(adjust=False)`, i.e. the recursive form.
+
+These same conventions are reimplemented in TypeScript in the sibling *Roth IRA
+2.0* project and pinned to this pipeline by a fixture test, so changing one here
+will fail that test there.
+
+## Model
+
+| Property | Value |
+| --- | --- |
+| Type | `RandomForestClassifier` |
+| Trees | 100, max depth 15 |
+| Class weight | balanced |
+| Label | gained >= 2% over the next 5 trading days |
+| Training window | 5 years per ticker |
+| Test accuracy | 0.695 |
+| Test F1 | 0.423 |
+| Test ROC-AUC | 0.657 |
+
+Hyperparameters were chosen for a Raspberry Pi: small enough to load and infer
+quickly, shallow enough to keep memory modest.
+
+The metrics are weak. Accuracy looks respectable only because the label is
+imbalanced; F1 0.42 and ROC-AUC 0.657 put this modestly above chance. That is
+why the model gates entries but does not, by default, drive exits.
+
+## Prediction status codes
+
+`predict.py` always returns JSON with a `status`. The C++ side treats anything
+other than `success` as "no opinion" and moves on.
+
+| Status | Meaning |
+| --- | --- |
+| `success` | Prediction valid; `latest_price` usable |
+| `insufficient_data` | Fewer than 30 bars returned |
+| `feature_calculation_failed` | All rows dropped as NaN |
+| `invalid_features` | Non-finite values in the feature vector |
+| `error: ...` | Exception inside Python |
+| `model_not_ready` | Model files missing (C++ side) |
+| `execution_failed` | `popen` failed (C++ side) |
+| `empty_output` | Python produced nothing (C++ side) |
+| `subprocess_error: ...` | Output was not JSON (C++ side) |
+
+## Configuration
+
+Every tunable is an environment variable, read once at startup in `main()`.
+`config.env.example` documents all of them.
+
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `ML_CONFIDENCE_THRESHOLD` | 0.55 | Minimum confidence to buy |
+| `RISK_THRESHOLD` | 0.25 | Max weight per position |
+| `STOP_LOSS_PCT` | 0.15 | Exit below this loss; 0 disables |
+| `TAKE_PROFIT_PCT` | 0.30 | Exit above this gain; 0 disables |
+| `ML_SELL_ENABLED` | off | Let the model close positions |
+| `ML_SELL_CONFIDENCE` | 0.70 | Confidence needed for a model exit |
+| `DRY_RUN` | off | Same as `--dry-run` |
+| `PYTHON_BIN` | `python3` | Interpreter for inference |
+
+## Files written
+
+**`portfolio_state.json`** — rewritten in full each run:
 
 ```json
 {
-  "status": "success",                    // ✓ Prediction successful
-  "status": "insufficient_data",          // ⚠ <30 days of history
-  "status": "feature_calculation_failed", // ⚠ Indicators couldn't compute
-  "status": "invalid_features",           // ⚠ NaN or Inf in features
-  "status": "error: <message>",           // ✗ Exception occurred
-  "status": "model_not_ready"             // ✗ Model files missing
+  "cash_usd": 54.47,
+  "holdings": { "FRO": { "shares": 5.0, "avg_cost": 21.30 } }
 }
 ```
 
----
+**`portfolio_log.csv`** — appended, never rewritten:
 
-This architecture ensures:
+```
+date,ticker,price,shares,total,side
+```
 
-✓ **Modularity** — Python ML independent from C++ bot
-✓ **Scalability** — Easy to add more stocks to watchlist
-✓ **Reliability** — Error handling at each step
-✓ **Performance** — Lightweight for Raspberry Pi
-✓ **Maintainability** — Clear data flow and logging
+`side` was appended last so rows written before selling existed still parse;
+a five-field row is a buy.
+
+Neither is touched under `--dry-run`.
+
+## Known gaps
+
+- **No backtest.** None of these rules have been evaluated against history or
+  compared to buy-and-hold. This is the biggest missing piece.
+- **No rebalancing.** The audit reports a position over the cap but will not
+  trim it; it only refuses to add more.
+- **Sells are all-or-nothing.** No partial profit-taking.
+- **No transaction costs or slippage** are modelled anywhere.

@@ -1,5 +1,5 @@
 # Raspberry Pi Deployment Guide
-## Roth IRA ML Finance Bot
+## Stock Trader Bot
 
 This guide covers deploying the ML-enhanced finance bot to a Raspberry Pi for 24/7 automated trading.
 
@@ -44,14 +44,14 @@ sudo raspi-config  # Advance Options > Expand Filesystem > Reboot
 ```bash
 # Clone or copy project to Raspberry Pi
 cd ~
-git clone <repo-url> roth-bot
+git clone <repo-url> trader-bot
 # OR
-scp -r Personal\ Projects pi@raspberrypi.local:~/roth-bot/
+scp -r Personal\ Projects pi@raspberrypi.local:~/trader-bot/
 
 ssh pi@raspberrypi.local
 
 # 2. Install Python dependencies (use --only-binary for ARM)
-cd ~/roth-bot/ml_model
+cd ~/trader-bot/ml_model
 pip3 install --only-binary :all: -r requirements.txt
 
 # This takes 5-10 minutes on Pi. Grab coffee.
@@ -62,14 +62,14 @@ pip3 install --only-binary :all: -r requirements.txt
 ## Step 3: Build C++ Bot
 
 ```bash
-cd ~/roth-bot
+cd ~/trader-bot
 
 # Compile
-make -f Makefile-ML Roth-IRA-ML
+make
 
 # Verify build
-ls -la Roth-IRA-ML
-./Roth-IRA-ML --help  # Won't work yet, but checks compilation
+ls -la trader
+./trader --help   # verify the binary runs
 ```
 
 ---
@@ -84,13 +84,13 @@ cp config.env.example config.env
 nano config.env
 
 # Key settings:
-# - ALPHAVANTAGE_API_KEY: Your API key (or leave fallback)
+# - ALPHAVANTAGE_API_KEY: only needed by legacy-alphavantage.cpp
 # - ML_CONFIDENCE_THRESHOLD: 0.65 (balanced) or 0.75 (conservative)
 # - WATCHLIST: Stocks to monitor
 
 # Test manually first
 source config.env
-./Roth-IRA-ML
+./trader
 ```
 
 ---
@@ -105,7 +105,7 @@ crontab -e
 
 # Add line to run bot every day at market open (9:30 AM EST)
 # Convert to your timezone!
-30 14 * * 1-5 /home/pi/roth-bot/Roth-IRA-ML >> /home/pi/roth-bot/bot.log 2>&1
+30 14 * * 1-5 /home/pi/trader-bot/trader >> /home/pi/trader-bot/bot.log 2>&1
 ```
 
 **Crontab Timezone Help:**
@@ -117,21 +117,21 @@ crontab -e
 
 ```bash
 # Copy service template
-sudo cp ~/roth-bot/roth-bot.service /etc/systemd/system/
+sudo cp ~/trader-bot/trader-bot.service /etc/systemd/system/
 
 # Edit if needed (paths, user, environment)
-sudo nano /etc/systemd/system/roth-bot.service
+sudo nano /etc/systemd/system/trader-bot.service
 
 # Enable and start
 sudo systemctl daemon-reload
-sudo systemctl enable roth-bot.service
-sudo systemctl start roth-bot.service
+sudo systemctl enable trader-bot.service
+sudo systemctl start trader-bot.service
 
 # Check status
-sudo systemctl status roth-bot.service
+sudo systemctl status trader-bot.service
 
 # View logs
-sudo journalctl -u roth-bot.service -f
+sudo journalctl -u trader-bot.service -f
 ```
 
 ---
@@ -141,23 +141,23 @@ sudo journalctl -u roth-bot.service -f
 ### Check Trade Log
 
 ```bash
-tail -n 20 ~/roth-bot/portfolio_log.csv
+tail -n 20 ~/trader-bot/portfolio_log.csv
 ```
 
 ### View Bot Logs
 
 ```bash
 # If using systemd
-sudo journalctl -u roth-bot.service --since "2 hours ago"
+sudo journalctl -u trader-bot.service --since "2 hours ago"
 
 # If using cron
-tail -n 50 ~/roth-bot/bot.log
+tail -n 50 ~/trader-bot/bot.log
 ```
 
 ### Retrain Model (Monthly)
 
 ```bash
-cd ~/roth-bot/ml_model
+cd ~/trader-bot/ml_model
 python3 data_collector.py
 python3 train_model.py
 ```
@@ -173,7 +173,7 @@ python3 train_model.py
 To quantize and compress:
 
 ```bash
-cd ~/roth-bot/ml_model
+cd ~/trader-bot/ml_model
 python3 << 'EOF'
 import joblib
 import sklearn
@@ -215,7 +215,7 @@ EOF
 
 ### 3. Disable Unnecessary Logging
 
-In `Roth-IRA-ML.cpp`, comment out verbose output for production:
+In `trader.cpp`, comment out verbose output for production:
 
 ```cpp
 // std::cout << "  [ML] " << ticker << "..." << std::endl;
@@ -227,7 +227,7 @@ Modify watchlist to only high-conviction stocks:
 
 ```bash
 # config.env
-export WATCHLIST="VOO,MSFT"  # Fewer tickers = faster execution
+# Fewer tickers = faster execution: edit watchlist.txt
 ```
 
 ### 5. Limit Prediction Cache
@@ -259,13 +259,13 @@ free -h
 # Typical: bot uses 80-150MB
 
 # Monitor during execution
-watch -n 1 'free -h && ps aux | grep Roth-IRA-ML'
+watch -n 1 'free -h && ps aux | grep trader'
 ```
 
 ### Check CPU Usage
 
 ```bash
-top -b -n 1 | grep Roth-IRA-ML
+top -b -n 1 | grep trader
 ```
 
 ### Monitor Temperature
@@ -286,7 +286,7 @@ vcgencmd measure_temp
 which python3
 
 # Update bot script to full path
-# Edit Roth-IRA-ML.cpp line ~65:
+# Edit trader.cpp line ~65:
 // std::string cmd = "/usr/bin/python3 ml_model/predict.py " + ticker + " 2>/dev/null";
 ```
 
@@ -294,8 +294,8 @@ which python3
 
 ```bash
 # Ensure paths are absolute in systemd service
-WorkingDirectory=/home/pi/roth-bot
-# Or use full path: /home/pi/roth-bot/ml_model/models/...
+WorkingDirectory=/home/pi/trader-bot
+# Or use full path: /home/pi/trader-bot/ml_model/models/...
 ```
 
 ### API Rate Limit Errors
@@ -303,7 +303,7 @@ WorkingDirectory=/home/pi/roth-bot
 ```bash
 # Reduce watchlist size
 # OR upgrade Alpha Vantage API plan
-# OR increase delay between requests (in Roth-IRA-ML.cpp)
+# OR increase delay between requests (in trader.cpp)
 std::this_thread::sleep_for(std::chrono::seconds(20));  // was 15
 ```
 
@@ -311,10 +311,10 @@ std::this_thread::sleep_for(std::chrono::seconds(20));  // was 15
 
 ```bash
 # Check for memory leaks
-ps aux | grep Roth-IRA-ML
+ps aux | grep trader
 
 # Restart service
-sudo systemctl restart roth-bot.service
+sudo systemctl restart trader-bot.service
 
 # Check swap usage
 free -h
@@ -337,16 +337,16 @@ WORKDIR /app
 COPY . .
 
 RUN cd ml_model && pip3 install -r requirements.txt
-RUN make -f Makefile-ML Roth-IRA-ML
+RUN make
 
-CMD ["./Roth-IRA-ML"]
+CMD ["./trader"]
 ```
 
 Build and run:
 
 ```bash
-docker build -t roth-bot .
-docker run -v ~/portfolio_log.csv:/app/portfolio_log.csv roth-bot
+docker build -t trader-bot .
+docker run -v ~/portfolio_log.csv:/app/portfolio_log.csv trader-bot
 ```
 
 ---
@@ -383,14 +383,14 @@ echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
 
 ```bash
 # Weekly backup to external storage
-0 0 * * 0 cp ~/roth-bot/portfolio_log.csv ~/backups/portfolio_$(date +\%Y\%m\%d).csv
+0 0 * * 0 cp ~/trader-bot/portfolio_log.csv ~/backups/portfolio_$(date +\%Y\%m\%d).csv
 ```
 
 ### Backup Trained Model
 
 ```bash
 # Monthly model checkpoint
-0 0 1 * * cp -r ~/roth-bot/ml_model/models ~/backups/models_$(date +\%Y\%m\%d)/
+0 0 1 * * cp -r ~/trader-bot/ml_model/models ~/backups/models_$(date +\%Y\%m\%d)/
 ```
 
 ---
@@ -409,15 +409,15 @@ echo "dtoverlay=disable-wifi" | sudo tee -a /boot/config.txt
 ## Support & Logs
 
 All logs are in:
-- `/home/pi/roth-bot/portfolio_log.csv` - Trade history
-- `/home/pi/roth-bot/bot.log` - stdout/stderr (if using cron)
+- `/home/pi/trader-bot/portfolio_log.csv` - Trade history
+- `/home/pi/trader-bot/bot.log` - stdout/stderr (if using cron)
 - `systemctl logs` - If using systemd service
 
 For debugging:
 
 ```bash
 # Run with verbose output
-cd ~/roth-bot && ./Roth-IRA-ML
+cd ~/trader-bot && ./trader
 
 # Check ML directly
 cd ml_model && python3 predict.py AAPL

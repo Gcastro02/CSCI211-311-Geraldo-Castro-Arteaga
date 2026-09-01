@@ -1,30 +1,29 @@
 [Unit]
-Description=Roth IRA ML Finance Bot
-Documentation=file:///home/pi/roth-bot/README-ML.md
+Description=Stock Trader Bot
+Documentation=file:///home/pi/trader-bot/README.md
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 User=pi
-WorkingDirectory=/home/pi/roth-bot
-EnvironmentFile=/home/pi/roth-bot/config.env
+WorkingDirectory=/home/pi/trader-bot
+EnvironmentFile=/home/pi/trader-bot/config.env
 
-# Run the bot
-ExecStart=/home/pi/roth-bot/Roth-IRA-ML
+ExecStart=/home/pi/trader-bot/trader
 
 # Restart on failure
 Restart=on-failure
 RestartSec=300
 
-# Resource limits (for Raspberry Pi)
+# Resource limits (sized for a Raspberry Pi)
 MemoryLimit=500M
 CPUQuota=75%
 
 # Logging
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=roth-bot
+SyslogIdentifier=trader-bot
 
 [Install]
 WantedBy=multi-user.target

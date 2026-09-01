@@ -1,3 +1,15 @@
+/**
+ * Superseded reference implementation — kept for comparison only.
+ *
+ * This was the first version of the bot: fetch a quote from Alpha Vantage, log a
+ * simulated one-share buy regardless of any signal, then audit concentration
+ * using cost basis read back from the CSV. trader.cpp replaces it and is what
+ * you should run — it uses a model for entry decisions, values positions at
+ * market rather than cost, sizes against a risk budget, and can exit.
+ *
+ * Requires libcurl. Build with `make legacy`.
+ */
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -7,6 +19,7 @@
 #include <sstream>
 #include <thread>
 #include <chrono>
+#include <cstdlib>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
@@ -116,15 +129,25 @@ public:
 };
 
 int main() {
-    // Note: Use your actual API key from Alpha Vantage here
-    PortfolioManager myIRA("portfolio_log.csv", 0.25, "OWJMTJTHU3LCRV1F");
+    // Read the key from the environment. An earlier version of this file had a
+    // key committed inline, which put it in the repository's history — if you
+    // are reading this, that key should be treated as compromised and rotated.
+    const char* apiKey = std::getenv("ALPHAVANTAGE_API_KEY");
+    if (!apiKey || !*apiKey) {
+        std::cerr << "Error: ALPHAVANTAGE_API_KEY is not set.\n"
+                  << "Get a free key at https://www.alphavantage.co/ then:\n"
+                  << "  export ALPHAVANTAGE_API_KEY=your_key_here\n";
+        return 1;
+    }
 
-    myIRA.addToWatchlist("VOO");
-    myIRA.addToWatchlist("AAPL");
-    myIRA.addToWatchlist("MSFT");
+    PortfolioManager portfolio("portfolio_log.csv", 0.25, apiKey);
 
-    myIRA.runUpdate();
-    myIRA.performRiskAudit();
+    portfolio.addToWatchlist("VOO");
+    portfolio.addToWatchlist("AAPL");
+    portfolio.addToWatchlist("MSFT");
+
+    portfolio.runUpdate();
+    portfolio.performRiskAudit();
 
     return 0;
 }

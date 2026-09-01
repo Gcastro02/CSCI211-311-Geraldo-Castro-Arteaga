@@ -1,6 +1,5 @@
 #!/bin/bash
-# Quick Start Guide for ML Finance Bot
-# Automated setup and validation
+# Stock Trader Bot - automated setup and validation
 
 set -e
 
@@ -8,13 +7,13 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$SCRIPT_DIR"
 
 echo "=========================================="
-echo "Roth IRA ML Bot - Quick Start"
+echo "Stock Trader Bot - Quick Start"
 echo "=========================================="
 echo ""
 
 # Step 1: Check Python
 echo "[1/5] Checking Python installation..."
-PYTHON_CMD=$(command -v python3 || command -v python)
+PYTHON_CMD=${PYTHON_BIN:-$(command -v python3 || command -v python)}
 if [ -z "$PYTHON_CMD" ]; then
     echo "ERROR: Python 3 not found. Install Python 3.7+."
     exit 1
@@ -35,35 +34,35 @@ echo ""
 
 # Step 3: Train model (if not already done)
 if [ ! -f "ml_model/models/stock_classifier.pkl" ]; then
-    echo "[3/5] Training ML model (this takes 10-15 minutes)..."
+    echo "[3/5] Training model (this takes 10-15 minutes)..."
     cd ml_model
     $PYTHON_CMD data_collector.py
     $PYTHON_CMD train_model.py
     cd ..
     echo "✓ Model trained"
 else
-    echo "[3/5] ML model already trained"
+    echo "[3/5] Model already trained"
     echo "✓ Using existing model"
 fi
 echo ""
 
-# Step 4: Test ML predictions
-echo "[4/5] Testing ML predictions..."
+# Step 4: Test predictions
+echo "[4/5] Testing model predictions..."
 TEST_OUTPUT=$(cd ml_model && $PYTHON_CMD predict.py AAPL 2>/dev/null)
 if echo "$TEST_OUTPUT" | grep -q "success"; then
-    echo "✓ ML prediction successful"
+    echo "✓ Prediction successful"
     echo "  Sample output: $(echo $TEST_OUTPUT | head -c 100)..."
 else
-    echo "⚠ ML prediction test failed"
+    echo "⚠ Prediction test failed"
     echo "  Output: $TEST_OUTPUT"
 fi
 echo ""
 
-# Step 5: Build C++ bot
-echo "[5/5] Building C++ bot..."
+# Step 5: Build
+echo "[5/5] Building the trader..."
 if command -v g++ &> /dev/null; then
-    g++ -std=c++17 -Wall -O2 Roth-IRA-ML.cpp -o Roth-IRA-ML -lcurl
-    echo "✓ Build complete: ./Roth-IRA-ML"
+    g++ -std=c++17 -Wall -O2 -Iinclude trader.cpp -o trader
+    echo "✓ Build complete: ./trader"
 else
     echo "WARNING: g++ not found. Install build-essential or clang."
 fi
@@ -75,16 +74,20 @@ echo "=========================================="
 echo ""
 echo "Next steps:"
 echo ""
-echo "1. Run the bot:"
-echo "   ./Roth-IRA-ML"
+echo "1. See what it would do, without writing anything:"
+echo "   ./trader --dry-run"
 echo ""
-echo "2. View trades:"
+echo "2. Run it for real:"
+echo "   ./trader"
+echo ""
+echo "3. Review activity:"
 echo "   cat portfolio_log.csv"
+echo "   cat portfolio_state.json"
 echo ""
-echo "3. Configure (optional):"
-echo "   export ALPHAVANTAGE_API_KEY=your_key_here"
-echo "   ./Roth-IRA-ML"
+echo "4. Adjust thresholds:"
+echo "   cp config.env.example config.env && \$EDITOR config.env"
+echo "   source config.env && ./trader --dry-run"
 echo ""
-echo "4. Retrain model with new data:"
-echo "   cd ml_model && bash setup.sh"
+echo "5. Retrain on fresh data:"
+echo "   make setup-ml"
 echo ""

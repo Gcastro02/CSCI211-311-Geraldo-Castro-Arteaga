@@ -1,0 +1,14 @@
+# Build artifacts
+trader
+legacy-alphavantage
+*.o
+
+# Local configuration — may hold API keys
+config.env
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Note: ml_model/models/*.pkl and data/*.pkl are intentionally committed so the
+# bot runs without a 15-minute retrain. Regenerate them with `make setup-ml`.
