@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Catalog | Central Cash &amp; Carry, San Jose</title>
+  <meta name="description" content="Browse the product catalog for Central Cash & Carry in San Jose — restaurant supplies, packaging, paper goods, janitorial, and party products. Visit or call to purchase." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-soft: #f6f8fb;
+      --bg-deep: #0f1b2d;
+      --card: #ffffff;
+      --ink: #14202e;
+      --muted: #5b6b7d;
+      --line: #e7ecf2;
+      --accent: #e0512b;
+      --accent-dark: #b93c19;
+      --accent-soft: #fff1ec;
+      --blue: #15324f;
+      --blue-soft: #eef3f9;
+      --green: #1f9d55;
+      --green-soft: #e7f6ed;
+      --shadow-sm: 0 1px 2px rgba(15, 27, 45, 0.06), 0 4px 14px rgba(15, 27, 45, 0.05);
+      --shadow-md: 0 10px 30px rgba(15, 27, 45, 0.10);
+      --shadow-lg: 0 24px 60px rgba(15, 27, 45, 0.16);
+      --radius: 16px;
+      --radius-lg: 22px;
+      --max: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3, .brand { font-family: "Plus Jakarta Sans", "Inter", sans-serif; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .container { width: min(var(--max), calc(100% - 40px)); margin: 0 auto; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px; border-radius: 999px;
+      background: var(--accent-soft); color: var(--accent-dark);
+      font-size: 12.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase;
+    }
+
+    /* Top bar */
+    .topbar { background: var(--bg-deep); color: #d9e2ee; font-size: 13.5px; }
+    .topbar .container { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; padding: 9px 0; }
+    .topbar .tb-item { display: inline-flex; align-items: center; gap: 7px; }
+    .topbar a { color: #fff; font-weight: 600; }
+    .topbar svg { width: 15px; height: 15px; opacity: 0.85; }
+
+    /* Header */
+    header { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(12px); border-bottom: 1px solid var(--line); }
+    nav { min-height: 72px; display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+    .brand { font-size: 22px; font-weight: 800; letter-spacing: -0.3px; display: flex; align-items: center; gap: 11px; }
+    .brand .mark { width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); color: #fff; display: grid; place-items: center; font-size: 17px; font-weight: 800; box-shadow: var(--shadow-sm); }
+    .brand span { color: var(--accent); }
+    .nav-links { display: flex; gap: 28px; color: var(--muted); font-weight: 600; font-size: 15px; }
+    .nav-links a { transition: color 0.15s ease; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-cta { display: flex; align-items: center; gap: 12px; }
+
+    .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 12px 20px; font-weight: 700; font-size: 15px; font-family: "Plus Jakarta Sans", sans-serif; cursor: pointer; transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease; border: 1px solid transparent; white-space: nowrap; }
+    .btn svg { width: 17px; height: 17px; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn.primary { background: var(--accent); color: #fff; box-shadow: 0 8px 20px rgba(224, 81, 43, 0.30); }
+    .btn.primary:hover { background: var(--accent-dark); }
+    .btn.secondary { background: #fff; color: var(--ink); border-color: var(--line); box-shadow: var(--shadow-sm); }
+    .btn.secondary:hover { border-color: #cdd6e0; }
+
+    /* Catalog hero */
+    .cat-hero {
+      background:
+        radial-gradient(900px 460px at 88% -20%, rgba(224,81,43,0.10), transparent 60%),
+        radial-gradient(700px 460px at -5% 120%, rgba(21,50,79,0.07), transparent 55%),
+        var(--bg);
+      padding: 56px 0 38px;
+    }
+    .cat-hero h1 { margin: 16px 0 14px; font-size: clamp(32px, 4.6vw, 50px); letter-spacing: -1px; line-height: 1.05; }
+    .cat-hero p { margin: 0; color: var(--muted); font-size: 18px; max-width: 62ch; }
+    .notice {
+      margin-top: 22px; display: inline-flex; align-items: center; gap: 12px;
+      background: var(--blue-soft); border: 1px solid #dbe6f1; color: var(--blue);
+      padding: 12px 18px; border-radius: 14px; font-size: 14.5px; font-weight: 500;
+    }
+    .notice svg { width: 20px; height: 20px; flex-shrink: 0; color: var(--accent-dark); }
+    .notice a { font-weight: 700; color: var(--accent-dark); }
+
+    /* Controls */
+    .controls { position: sticky; top: 72px; z-index: 30; background: rgba(255,255,255,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); padding: 16px 0; }
+    .controls-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: space-between; }
+    .search {
+      position: relative; flex: 1 1 280px; max-width: 360px;
+    }
+    .search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); }
+    .search input {
+      width: 100%; padding: 12px 16px 12px 42px; border-radius: 999px;
+      border: 1px solid var(--line); background: var(--bg-soft); font-size: 15px; font-family: inherit; color: var(--ink);
+      outline: none; transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .search input:focus { border-color: var(--accent); background: #fff; }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tab {
+      border: 1px solid var(--line); background: #fff; color: var(--muted);
+      padding: 9px 16px; border-radius: 999px; font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit; transition: all 0.15s ease; white-space: nowrap;
+    }
+    .tab:hover { border-color: #cdd6e0; color: var(--ink); }
+    .tab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* Grid */
+    .catalog-section { padding: 34px 0 70px; }
+    .result-count { color: var(--muted); font-size: 14.5px; margin-bottom: 20px; }
+    .result-count strong { color: var(--ink); }
+    .product-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+
+    .pcard {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-lg);
+      overflow: hidden; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .pcard:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: #dbe3ec; }
+    .pcard.is-out { background: #fafbfc; }
+    .pcard.is-out .pcard-media img { filter: grayscale(0.85); opacity: 0.55; }
+    .pcard.is-out .pcard-cat { color: #9aa6b2; }
+    .pcard.is-out h3, .pcard.is-out p { color: #97a3af; }
+    .pcard.is-out .pcard-price { color: #9aa6b2; }
+    .pcard-media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; display: grid; place-items: center; }
+    .pcard-media img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+    .ph-ic { width: 56px; height: 56px; opacity: 0.55; }
+    .pcard-badge {
+      position: absolute; top: 12px; left: 12px; z-index: 2;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 700; padding: 6px 11px; border-radius: 999px;
+      backdrop-filter: blur(4px);
+    }
+    .pcard-badge .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .badge-in { background: var(--green-soft); color: var(--green); }
+    .badge-in .dot { background: var(--green); }
+    .badge-out { background: #f1f3f6; color: #7a8794; }
+    .badge-out .dot { background: #9aa6b2; }
+
+    .pcard-body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+    .pcard-cat { font-size: 11.5px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: var(--accent-dark); margin-bottom: 8px; }
+    .pcard h3 { margin: 0 0 8px; font-size: 16.5px; line-height: 1.3; letter-spacing: -0.2px; }
+    .pcard p { margin: 0 0 16px; color: var(--muted); font-size: 14px; flex: 1; }
+    .pcard-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
+    .pcard-price { font-family: "Plus Jakarta Sans", sans-serif; font-weight: 800; font-size: 18px; color: var(--ink); }
+    .pcard-price.call { font-size: 14px; font-weight: 700; color: var(--muted); }
+
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty svg { width: 46px; height: 46px; opacity: 0.5; margin-bottom: 12px; }
+    .empty h3 { margin: 0 0 6px; color: var(--ink); }
+
+    /* CTA */
+    .cta-band { background: linear-gradient(135deg, var(--blue), var(--bg-deep)); color: #fff; border-radius: 26px; padding: 46px; text-align: center; box-shadow: var(--shadow-lg); position: relative; overflow: hidden; margin-bottom: 70px; }
+    .cta-band::after { content: ""; position: absolute; inset: 0; background: radial-gradient(600px 300px at 80% -20%, rgba(224,81,43,0.35), transparent 60%); pointer-events: none; }
+    .cta-band h2 { margin: 0 0 12px; font-size: clamp(24px, 3.2vw, 34px); letter-spacing: -0.6px; position: relative; }
+    .cta-band p { margin: 0 auto 24px; max-width: 50ch; color: #c4d0de; font-size: 16.5px; position: relative; }
+    .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+    .btn.ghost { background: rgba(255,255,255,0.12); color: #fff; border-color: rgba(255,255,255,0.25); }
+    .btn.ghost:hover { background: rgba(255,255,255,0.2); }
+
+    /* Footer */
+    footer { background: var(--bg-deep); color: #9fb0c2; padding: 50px 0 30px; font-size: 14.5px; }
+    .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 36px; margin-bottom: 34px; }
+    .foot-brand .brand { color: #fff; margin-bottom: 14px; }
+    .foot-brand p { max-width: 38ch; margin: 0; }
+    footer h4 { color: #fff; font-size: 15px; margin: 0 0 14px; font-family: "Plus Jakarta Sans", sans-serif; }
+    footer ul { list-style: none; margin: 0; padding: 0; }
+    footer ul li { margin-bottom: 9px; }
+    footer ul a:hover { color: #fff; }
+    .foot-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-size: 13.5px; }
+
+    @media (max-width: 980px) {
+      .product-grid { grid-template-columns: repeat(3, 1fr); }
+      .foot-grid { grid-template-columns: 1fr 1fr; gap: 28px; }
+      .nav-links { display: none; }
+      .controls { top: 0; }
+    }
+    @media (max-width: 680px) { .product-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+    @media (max-width: 560px) {
+      .topbar .tb-item.hide-sm { display: none; }
+      .cta-band { padding: 34px 22px; }
+      .foot-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="container">
+      <div class="tb-item hide-sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        1919 Monterey Rd, Ste 10, San Jose, CA 95112
+      </div>
+      <div class="tb-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        Call <a href="tel:14089752485">(408) 975-2485</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="index.html">
+          <div class="mark">CC</div>
+          Central <span>&nbsp;Cash &amp; Carry</span>
+        </a>
+        <div class="nav-links">
+          <a href="index.html#about">About</a>
+          <a href="index.html#categories">Categories</a>
+          <a href="catalog.html" class="active">Catalog</a>
+          <a href="index.html#visit">Visit</a>
+          <a href="index.html#contact">Contact</a>
+        </div>
+        <div class="nav-cta">
+          <a class="btn primary" href="tel:14089752485">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            Call store
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Catalog hero -->
+  <section class="cat-hero">
+    <div class="container">
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Product catalog
+      </span>
+      <h1>Browse what we stock</h1>
+      <p>A growing list of the restaurant, packaging, paper, janitorial, and party supplies you&rsquo;ll find on our shelves. Filter by category or search for what you need.</p>
+      <div class="notice">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>This is a catalog, not an online store. To buy, <a href="index.html#visit">visit us</a> or call <a href="tel:14089752485">(408) 975-2485</a>.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="container">
+      <div class="controls-row">
+        <label class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="search" type="search" placeholder="Search products&hellip;" aria-label="Search products" />
+        </label>
+        <div class="tabs" id="tabs"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catalog grid -->
+  <section class="catalog-section">
+    <div class="container">
+      <div class="result-count" id="count"></div>
+      <div class="product-grid" id="grid"></div>
+      <div class="empty" id="empty" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <h3>No products found</h3>
+        <p>Try a different search or category.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section>
+    <div class="container">
+      <div class="cta-band">
+        <h2>See something you need?</h2>
+        <p>Come by the store or give us a call &mdash; we&rsquo;ll check current stock and pricing and help you load up.</p>
+        <div class="cta-actions">
+          <a class="btn primary" href="tel:14089752485">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            Call (408) 975-2485
+          </a>
+          <a class="btn ghost" href="index.html#visit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            Get directions
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <div class="brand"><div class="mark">CC</div> Central&nbsp;<span style="color:var(--accent)">Cash &amp; Carry</span></div>
+          <p>San Jose&rsquo;s one-stop wholesale supply store for restaurants, caterers, party planners, and local businesses &mdash; serving the Bay Area for over 20 years.</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="index.html#categories">Categories</a></li>
+            <li><a href="catalog.html">Catalog</a></li>
+            <li><a href="index.html#visit">Visit &amp; hours</a></li>
+            <li><a href="index.html#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Visit us</h4>
+          <ul>
+            <li>1919 Monterey Rd, Ste 10</li>
+            <li>San Jose, CA 95112</li>
+            <li><a href="tel:14089752485">(408) 975-2485</a></li>
+            <li>Mon&ndash;Sat &middot; Closed Sunday</li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <div>&copy; <span id="yr">2026</span> Central Cash &amp; Carry. All rights reserved.</div>
+        <div>1919 Monterey Rd, Ste 10, San Jose, CA 95112</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="products.js"></script>
+  <script>
+    (function () {
+      var yr = document.getElementById('yr');
+      if (yr) yr.textContent = new Date().getFullYear();
+
+      var products = (window.PRODUCTS || []).slice();
+      var CATS = ["Foodservice & Restaurant", "Packaging & Paper Goods", "Cleaning, Party & Extras"];
+      var ICONS = {
+        "Foodservice & Restaurant": '<path d="M3 11h18"/><path d="M12 3v8"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M8 21h8"/><path d="M12 19v2"/>',
+        "Packaging & Paper Goods": '<path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+        "Cleaning, Party & Extras": '<path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/><path d="M9 9v.01"/><path d="M9 12v.01"/><path d="M9 15v.01"/>'
+      };
+      function placeholderSvg(cat) {
+        return '<svg class="ph-ic" viewBox="0 0 24 24" fill="none" stroke="#9aa6b2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[cat] || ICONS[CATS[0]]) + '</svg>';
+      }
+      function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (m) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m]; }); }
+
+      var state = { cat: 'All', q: '' };
+      var grid = document.getElementById('grid');
+      var countEl = document.getElementById('count');
+      var emptyEl = document.getElementById('empty');
+
+      // Build tabs
+      var tabsEl = document.getElementById('tabs');
+      var tabCats = ['All'].concat(CATS);
+      tabsEl.innerHTML = tabCats.map(function (c) {
+        var label = c === 'All' ? 'All products'
+          : c === 'Cleaning, Party & Extras' ? 'Cleaning &amp; Party' : esc(c);
+        return '<button class="tab' + (c === 'All' ? ' active' : '') + '" data-cat="' + esc(c) + '">' + label + '</button>';
+      }).join('');
+      tabsEl.addEventListener('click', function (e) {
+        var b = e.target.closest('.tab'); if (!b) return;
+        state.cat = b.getAttribute('data-cat');
+        Array.prototype.forEach.call(tabsEl.children, function (t) { t.classList.toggle('active', t === b); });
+        render();
+      });
+
+      document.getElementById('search').addEventListener('input', function (e) {
+        state.q = e.target.value.trim().toLowerCase();
+        render();
+      });
+
+      function card(p) {
+        var inStock = p.inStock !== false;
+        var badge = inStock
+          ? '<span class="pcard-badge badge-in"><span class="dot"></span>In stock</span>'
+          : '<span class="pcard-badge badge-out"><span class="dot"></span>Out of stock</span>';
+        var media = '<div class="pcard-media">' + placeholderSvg(p.category) +
+          (p.image ? '<img src="' + esc(p.image) + '" alt="' + esc(p.name) + '" loading="lazy" onerror="this.remove()" />' : '') +
+          badge + '</div>';
+        var price = '';
+        if (p.price && /call/i.test(p.price)) price = '<span class="pcard-price call">' + esc(p.price) + '</span>';
+        else if (p.price) price = '<span class="pcard-price">' + esc(p.price) + '</span>';
+        else price = '<span class="pcard-price call">In store</span>';
+        return '<article class="pcard' + (inStock ? '' : ' is-out') + '">' + media +
+          '<div class="pcard-body">' +
+            '<div class="pcard-cat">' + esc(p.category) + '</div>' +
+            '<h3>' + esc(p.name) + '</h3>' +
+            (p.desc ? '<p>' + esc(p.desc) + '</p>' : '<p></p>') +
+            '<div class="pcard-foot">' + price + '</div>' +
+          '</div></article>';
+      }
+
+      function render() {
+        var list = products.filter(function (p) {
+          if (state.cat !== 'All' && p.category !== state.cat) return false;
+          if (state.q) {
+            var hay = (p.name + ' ' + (p.desc || '') + ' ' + p.category).toLowerCase();
+            if (hay.indexOf(state.q) === -1) return false;
+          }
+          return true;
+        });
+        grid.innerHTML = list.map(card).join('');
+        emptyEl.style.display = list.length ? 'none' : 'block';
+        grid.style.display = list.length ? 'grid' : 'none';
+        countEl.innerHTML = list.length
+          ? 'Showing <strong>' + list.length + '</strong> of ' + products.length + ' products'
+          : '';
+      }
+
+      if (!products.length) {
+        countEl.innerHTML = '';
+        emptyEl.style.display = 'block';
+        emptyEl.querySelector('h3').textContent = 'Catalog coming soon';
+        emptyEl.querySelector('p').textContent = 'Product list is being added.';
+      } else {
+        render();
+      }
+    })();
+  </script>
+</body>
+</html>

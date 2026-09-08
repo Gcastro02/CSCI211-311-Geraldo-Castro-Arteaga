@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Design &amp; Care — Services &amp; Pricing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --ink:#0f1b2d; --body:#33414f; --muted:#6b7a8a; --line:#e6ebf1;
+      --bg:#ffffff; --soft:#f5f8fb; --brand:#2f6df6; --brand-dark:#1f4fc0;
+      --brand-soft:#eaf1fe; --accent:#0fb17a; --accent-soft:#e6f7f0;
+      --radius:16px; --max:1000px;
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:"Inter",system-ui,sans-serif;color:var(--body);background:var(--soft);line-height:1.6;-webkit-font-smoothing:antialiased;}
+    h1,h2,h3,.brand{font-family:"Plus Jakarta Sans",sans-serif;color:var(--ink);}
+    .sheet{max-width:var(--max);margin:24px auto;background:var(--bg);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 20px 50px rgba(15,27,45,.08);}
+    .pad{padding:38px 44px;}
+
+    header.top{background:linear-gradient(135deg,var(--ink),#16283f);color:#fff;padding:34px 44px;}
+    .brand{color:#fff;font-size:24px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:12px;}
+    .brand .mark{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--brand-dark));display:grid;place-items:center;font-size:15px;font-weight:800;}
+    header.top p{margin:12px 0 0;color:#c3d0e0;font-size:15.5px;max-width:60ch;}
+    .edit{color:var(--brand);font-weight:700;}
+
+    h2.section{font-size:20px;margin:0 0 4px;letter-spacing:-.3px;}
+    .section-sub{color:var(--muted);font-size:14px;margin:0 0 20px;}
+    .divider{height:1px;background:var(--line);margin:0 44px;}
+
+    /* package cards */
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    .card{border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column;background:#fff;}
+    .card.feature{border-color:var(--brand);box-shadow:0 10px 26px rgba(47,109,246,.14);position:relative;}
+    .badge{position:absolute;top:-11px;right:16px;background:var(--brand);color:#fff;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:999px;}
+    .card h3{margin:0 0 2px;font-size:18px;}
+    .tier-tag{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--brand-dark);margin-bottom:12px;}
+    .price{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:26px;color:var(--ink);}
+    .price small{display:block;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.3px;margin-top:2px;}
+    .ideal{font-size:13px;color:var(--muted);margin:12px 0 14px;padding-bottom:14px;border-bottom:1px dashed var(--line);}
+    ul.feat{list-style:none;margin:0 0 14px;padding:0;flex:1;}
+    ul.feat li{position:relative;padding:5px 0 5px 22px;font-size:13.5px;}
+    ul.feat li::before{content:"";position:absolute;left:0;top:11px;width:12px;height:12px;border-radius:50%;background:var(--accent-soft);}
+    ul.feat li::after{content:"";position:absolute;left:4px;top:14px;width:4px;height:7px;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(40deg);}
+    .timeline{font-size:12.5px;font-weight:700;color:var(--muted);}
+
+    /* care plan table */
+    .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+    .plan{border:1px solid var(--line);border-radius:var(--radius);padding:20px;background:#fff;}
+    .plan h3{margin:0 0 2px;font-size:16px;}
+    .plan .pr{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:22px;color:var(--ink);}
+    .plan .pr small{font-size:12px;font-weight:600;color:var(--muted);}
+    .plan ul{list-style:none;margin:12px 0 0;padding:0;}
+    .plan ul li{font-size:13px;padding:4px 0 4px 18px;position:relative;}
+    .plan ul li::before{content:"+";position:absolute;left:0;color:var(--accent);font-weight:800;}
+    .note-pill{display:inline-block;margin-top:16px;background:var(--accent-soft);color:#0a7d57;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:999px;}
+
+    /* add-ons */
+    .addons{columns:2;column-gap:26px;}
+    .addon{break-inside:avoid;display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;}
+    .addon .amt{font-weight:700;color:var(--ink);white-space:nowrap;font-family:"Plus Jakarta Sans",sans-serif;}
+
+    /* how it works */
+    .steps{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+    .step{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:12.5px;}
+    .step .n{width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;display:grid;place-items:center;font-size:13px;margin-bottom:8px;font-family:"Plus Jakarta Sans",sans-serif;}
+
+    footer.foot{background:var(--soft);border-top:1px solid var(--line);padding:22px 44px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--muted);}
+    footer.foot strong{color:var(--ink);}
+    .disclaimer{font-size:12px;color:var(--muted);margin-top:6px;}
+
+    @media (max-width:780px){
+      .cards,.plans,.steps{grid-template-columns:1fr;}
+      .addons{columns:1;}
+      .pad{padding:26px 22px;} header.top,.divider,footer.foot{padding-left:22px;padding-right:22px;} .divider{margin:0 22px;}
+    }
+    @media print{
+      body{background:#fff;}
+      .sheet{box-shadow:none;border:none;margin:0;border-radius:0;max-width:none;}
+      .card.feature{box-shadow:none;}
+      header.top{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header class="top">
+      <div class="brand"><div class="mark">YS</div> <span class="edit">[Your Studio Name]</span></div>
+      <p>Modern, mobile-friendly websites for local businesses &mdash; built fast, kept running, and made to bring you customers. Bilingual (English/Spanish) available on every project.</p>
+    </header>
+
+    <!-- WEBSITE PACKAGES -->
+    <div class="pad">
+      <h2 class="section">Website packages</h2>
+      <p class="section-sub">One clear flat price per project. Pick the level that fits &mdash; you can always add on.</p>
+      <div class="cards">
+        <div class="card">
+          <div class="tier-tag">Starter</div>
+          <h3>One-page site</h3>
+          <div class="price">$900&ndash;$1,500<small>one-time</small></div>
+          <p class="ideal">For new or very small businesses that need a clean, credible presence fast.</p>
+          <ul class="feat">
+            <li>Single-page responsive design</li>
+            <li>Mobile &amp; tablet friendly</li>
+            <li>Click-to-call &amp; directions</li>
+            <li>Google Map + hours</li>
+            <li>Basic on-page SEO</li>
+            <li>Domain &amp; hosting setup</li>
+          </ul>
+          <div class="timeline">Timeline: ~1 week</div>
+        </div>
+
+        <div class="card feature">
+          <span class="badge">Most popular</span>
+          <div class="tier-tag">Growth</div>
+          <h3>Multi-section site</h3>
+          <div class="price">$2,000&ndash;$3,800<small>one-time</small></div>
+          <p class="ideal">For established local businesses that want to show what they offer and build trust.</p>
+          <ul class="feat">
+            <li>Everything in Starter, plus:</li>
+            <li>Multi-section homepage</li>
+            <li>Photo gallery (up to ~15 photos)</li>
+            <li>Contact form + social links</li>
+            <li>Refined custom design</li>
+            <li>Photo optimization for speed</li>
+          </ul>
+          <div class="timeline">Timeline: ~2&ndash;3 weeks</div>
+        </div>
+
+        <div class="card">
+          <div class="tier-tag">Full</div>
+          <h3>Complete site</h3>
+          <div class="price">$4,500&ndash;$8,000+<small>one-time</small></div>
+          <p class="ideal">For businesses that want the works &mdash; a standout site that does more.</p>
+          <ul class="feat">
+            <li>Everything in Growth, plus:</li>
+            <li>Extra pages (catalog / menu)</li>
+            <li>Searchable, filterable catalog</li>
+            <li>Bilingual English/Spanish toggle</li>
+            <li>On-location photography</li>
+            <li>Copywriting + advanced local SEO</li>
+          </ul>
+          <div class="timeline">Timeline: ~3&ndash;5 weeks</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- CARE PLANS -->
+    <div class="pad">
+      <h2 class="section">Care plans <span style="font-weight:600;color:var(--muted);font-size:14px;">(monthly)</span></h2>
+      <p class="section-sub">Keep the site fresh, backed up, and handled &mdash; so the owner never has to think about it.</p>
+      <div class="plans">
+        <div class="plan">
+          <h3>Basic</h3>
+          <div class="pr">$35<small>/mo</small></div>
+          <ul>
+            <li>Domain &amp; hosting managed</li>
+            <li>SSL, backups &amp; monitoring</li>
+            <li>Security updates</li>
+            <li>1 small content edit / month</li>
+          </ul>
+        </div>
+        <div class="plan">
+          <h3>Standard</h3>
+          <div class="pr">$85<small>/mo</small></div>
+          <ul>
+            <li>Everything in Basic</li>
+            <li>Up to 3 edits / month</li>
+            <li>Seasonal updates</li>
+            <li>Google Business Profile upkeep</li>
+            <li>Monthly traffic report</li>
+          </ul>
+        </div>
+        <div class="plan">
+          <h3>Pro</h3>
+          <div class="pr">$150<small>/mo</small></div>
+          <ul>
+            <li>Everything in Standard</li>
+            <li>Priority same-week edits</li>
+            <li>Catalog / menu updates</li>
+            <li>Ongoing local SEO</li>
+            <li>Quarterly strategy check-in</li>
+          </ul>
+        </div>
+      </div>
+      <span class="note-pill">Pay yearly and get 2 months free.</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ADD-ONS -->
+    <div class="pad">
+      <h2 class="section">Add-ons</h2>
+      <p class="section-sub">Mix and match onto any package or care plan.</p>
+      <div class="addons">
+        <div class="addon"><span>On-location photography</span><span class="amt">from $400</span></div>
+        <div class="addon"><span>Copywriting / content</span><span class="amt">from $250</span></div>
+        <div class="addon"><span>Bilingual / Spanish version</span><span class="amt">from $450</span></div>
+        <div class="addon"><span>Google Business Profile setup</span><span class="amt">from $250</span></div>
+        <div class="addon"><span>Local SEO setup (citations, schema)</span><span class="amt">from $500</span></div>
+        <div class="addon"><span>Professional email (setup)</span><span class="amt">from $120</span></div>
+        <div class="addon"><span>Contact form / booking / ordering</span><span class="amt">from $200</span></div>
+        <div class="addon"><span>Extra page</span><span class="amt">from $250</span></div>
+        <div class="addon"><span>Logo touch-up / print collateral</span><span class="amt">from $150</span></div>
+        <div class="addon"><span>Review-generation kit (QR + cards)</span><span class="amt">from $90</span></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- HOW IT WORKS -->
+    <div class="pad">
+      <h2 class="section">How it works</h2>
+      <p class="section-sub">Simple, no surprises.</p>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><strong>Free consult</strong><br/>We talk goals &amp; scope.</div>
+        <div class="step"><div class="n">2</div><strong>Flat quote</strong><br/>One clear price.</div>
+        <div class="step"><div class="n">3</div><strong>50% deposit</strong><br/>Work begins.</div>
+        <div class="step"><div class="n">4</div><strong>Build + 2 revisions</strong><br/>You review &amp; refine.</div>
+        <div class="step"><div class="n">5</div><strong>Launch</strong><br/>Balance due, care plan starts.</div>
+      </div>
+    </div>
+
+    <footer class="foot">
+      <div>
+        <strong class="edit">[Your Studio Name]</strong> &nbsp;·&nbsp; <span class="edit">you@email.com</span> &nbsp;·&nbsp; <span class="edit">(000) 000-0000</span> &nbsp;·&nbsp; <span class="edit">yoursite.com</span>
+        <div class="disclaimer">Example starting prices &mdash; final quote depends on scope. Adjust for your market (the Bay Area typically runs higher).</div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central Cash &amp; Carry | Welcome</title>
+  <meta name="description" content="Welcome to Central Cash & Carry — San Jose's one-stop wholesale & retail shop, open to the public, for restaurant supplies, groceries, party goods, and everyday essentials." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --ink:#14202e; --muted:#5b6b7d; --line:#e7ecf2; --bg:#ffffff; --soft:#f6f8fb;
+      --deep:#0f1b2d; --accent:#e0512b; --accent-dark:#b93c19; --blue:#15324f;
+      --radius:18px; --max:1180px;
+    }
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{margin:0;font-family:"Inter",system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;}
+    h1,h2,h3,.brand{font-family:"Plus Jakarta Sans",sans-serif;}
+    a{color:inherit;text-decoration:none;} img{max-width:100%;display:block;}
+    .container{width:min(var(--max),calc(100% - 40px));margin:0 auto;}
+
+    /* Header */
+    header{position:fixed;top:0;left:0;right:0;z-index:60;background:rgba(15,27,45,.55);backdrop-filter:blur(10px);transition:background .3s ease;}
+    header.solid{background:rgba(15,27,45,.92);}
+    nav{display:flex;align-items:center;justify-content:space-between;min-height:66px;}
+    .brand{display:flex;align-items:center;gap:11px;color:#fff;font-size:20px;font-weight:800;letter-spacing:-.3px;}
+    .brand .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:grid;place-items:center;font-size:15px;font-weight:800;}
+    .lang{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px;cursor:pointer;transition:background .15s ease;}
+    .lang:hover{background:rgba(255,255,255,.26);}
+    .lang svg{width:16px;height:16px;}
+
+    .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:14px 24px;font-weight:700;font-size:15.5px;font-family:"Plus Jakarta Sans",sans-serif;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;border:1px solid transparent;white-space:nowrap;}
+    .btn svg{width:18px;height:18px;}
+    .btn:hover{transform:translateY(-2px);}
+    .btn.primary{background:var(--accent);color:#fff;box-shadow:0 10px 26px rgba(224,81,43,.4);}
+    .btn.primary:hover{background:var(--accent-dark);}
+    .btn.glass{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.45);}
+    .btn.glass:hover{background:rgba(255,255,255,.24);}
+    .btn.dark{background:var(--ink);color:#fff;}
+    .btn.dark:hover{background:var(--deep);}
+    .btn.outline{background:#fff;color:var(--ink);border-color:var(--line);}
+
+    /* Hero */
+    .hero{position:relative;min-height:100vh;display:grid;place-items:center;text-align:center;color:#fff;overflow:hidden;}
+    .hero .bg{position:absolute;inset:0;background:url('images/storefront2.jpg') center 40%/cover no-repeat;transform:scale(1.03);}
+    .hero .bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,27,45,.4) 0%,rgba(15,27,45,.32) 45%,rgba(15,27,45,.68) 100%);}
+    .hero-inner{position:relative;z-index:2;padding:120px 20px 80px;max-width:900px;}
+    .hero .eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffd9cc;margin-bottom:22px;}
+    .hero h1{margin:0 0 20px;font-size:clamp(34px,5.4vw,60px);line-height:1.04;letter-spacing:-1.2px;font-weight:800;text-shadow:0 2px 30px rgba(0,0,0,.35);}
+    .hero h1 .name{display:block;color:#fff;}
+    .hero h1 .welcome{color:#ffb59e;}
+    .hero p.tag{font-size:clamp(17px,2.2vw,21px);color:#e7edf4;max-width:60ch;margin:0 auto 34px;}
+    .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+    .scroll-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.7);animation:bob 2s ease-in-out infinite;}
+    .scroll-cue svg{width:26px;height:26px;}
+    @keyframes bob{0%,100%{transform:translate(-50%,0);}50%{transform:translate(-50%,8px);}}
+
+    /* Section basics */
+    section{padding:88px 0;}
+    .sec-head{text-align:center;max-width:640px;margin:0 auto 48px;}
+    .sec-head .kicker{display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-dark);margin-bottom:12px;}
+    .sec-head h2{margin:0 0 12px;font-size:clamp(28px,4vw,42px);letter-spacing:-.8px;line-height:1.08;}
+    .sec-head p{margin:0;color:var(--muted);font-size:17px;}
+
+    /* Welcome note */
+    .welcome-note{background:var(--soft);text-align:center;}
+    .welcome-note .container{max-width:820px;}
+    .welcome-note h2{font-size:clamp(26px,3.6vw,38px);letter-spacing:-.6px;margin:0 0 18px;}
+    .welcome-note p{font-size:clamp(17px,2vw,20px);color:var(--muted);margin:0;}
+
+    /* Categories (cards) */
+    .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+    .cat-card{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(15,27,45,.06),0 4px 14px rgba(15,27,45,.05);transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;}
+    .cat-card:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(15,27,45,.1);border-color:#dbe3ec;}
+    .cat-photo{position:relative;height:190px;overflow:hidden;}
+    .cat-photo img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+    .cat-card:hover .cat-photo img{transform:scale(1.06);}
+    .cat-body{padding:26px 28px 30px;position:relative;}
+    .cat-ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;margin:-52px 0 16px;position:relative;background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;box-shadow:0 8px 18px rgba(224,81,43,.35);border:3px solid #fff;}
+    .cat-ic svg{width:24px;height:24px;}
+    .cat-card h3{margin:0 0 10px;font-size:21px;letter-spacing:-.3px;color:var(--ink);}
+    .cat-card p{margin:0 0 16px;color:var(--muted);font-size:15px;}
+    .mini-tags{display:flex;flex-wrap:wrap;gap:7px;}
+    .mini-tag{font-size:12.5px;font-weight:600;color:var(--muted);background:var(--soft);border:1px solid var(--line);padding:5px 10px;border-radius:8px;}
+
+    /* Gallery strip */
+    .gallery{background:var(--soft);}
+    .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+    .gitem{position:relative;margin:0;padding:0;border:0;cursor:pointer;border-radius:14px;overflow:hidden;aspect-ratio:1/1;background:#e7ecf2;box-shadow:0 4px 14px rgba(15,27,45,.06);}
+    .gitem img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+    .gitem:hover img{transform:scale(1.08);}
+    .gitem::after{content:"";position:absolute;inset:0;background:rgba(15,27,45,.16);opacity:0;transition:opacity .2s ease;}
+    .gitem:hover::after{opacity:1;}
+    .gitem.is-hidden{display:none;}
+    .gallery-nav{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:26px;}
+    .gnav-btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 4px 14px rgba(15,27,45,.06);transition:all .15s ease;}
+    .gnav-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);transform:translateY(-2px);}
+    .gnav-btn svg{width:20px;height:20px;}
+    .gallery-pages{font-weight:700;font-size:15px;color:var(--muted);min-width:64px;text-align:center;font-family:"Plus Jakarta Sans",sans-serif;}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;z-index:100;background:rgba(10,16,26,.93);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;}
+    .lightbox.open{display:flex;}
+    .lightbox img{max-width:90vw;max-height:82vh;border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.5);}
+    .lb-btn{position:absolute;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.28);border-radius:50%;width:52px;height:52px;cursor:pointer;display:grid;place-items:center;}
+    .lb-btn:hover{background:rgba(255,255,255,.26);} .lb-btn svg{width:24px;height:24px;}
+    .lb-prev{left:20px;top:50%;transform:translateY(-50%);} .lb-next{right:20px;top:50%;transform:translateY(-50%);}
+    .lb-close{top:20px;right:20px;width:46px;height:46px;}
+
+    /* Visit */
+    .visit-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:start;}
+    .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 10px 30px rgba(15,27,45,.06);overflow:hidden;}
+    .storefront{position:relative;height:230px;overflow:hidden;}
+    .storefront img{width:100%;height:100%;object-fit:cover;}
+    .storefront-tag{position:absolute;left:16px;bottom:16px;background:rgba(15,27,45,.82);color:#fff;font-size:13px;font-weight:600;padding:8px 13px;border-radius:999px;backdrop-filter:blur(4px);}
+    .map-head{padding:24px 28px 16px;}
+    .map-head h3{margin:0 0 6px;font-size:22px;}
+    .map-head .addr{color:var(--muted);font-size:15px;}
+    .map-actions{display:flex;gap:10px;padding:18px 28px 24px;flex-wrap:wrap;}
+    .map-card iframe{width:100%;min-height:340px;border:0;display:block;}
+    .visit-info{padding:30px;display:flex;flex-direction:column;}
+    .visit-info h3{margin:0 0 4px;font-size:22px;}
+    .visit-info .addr{color:var(--muted);font-size:15px;margin-bottom:18px;}
+    .hours{display:grid;gap:9px;margin-bottom:22px;}
+    .hours .row{display:flex;justify-content:space-between;gap:14px;font-size:15px;border-bottom:1px dashed var(--line);padding-bottom:9px;}
+    .hours .row:last-child{border-bottom:0;}
+    .hours .d{color:var(--muted);font-weight:500;} .hours .t{font-weight:700;}
+    .pay-row{margin-top:22px;}
+    .pay-row .pl{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;margin-bottom:10px;}
+    .pay-tags{display:flex;flex-wrap:wrap;gap:8px;}
+    .pay-tag{font-size:13px;font-weight:600;padding:7px 13px;border-radius:9px;background:var(--soft);border:1px solid var(--line);color:var(--ink);}
+    .visit-info .btn{margin-top:auto;justify-content:center;}
+
+    /* Footer */
+    footer{background:var(--deep);color:#9fb0c2;padding:56px 0 30px;text-align:center;}
+    footer .brand{justify-content:center;margin-bottom:16px;}
+    footer .fphone{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;font-size:26px;color:#fff;margin:0 0 6px;}
+    footer .fhours{font-size:15px;margin:0 0 20px;}
+    .socials{display:flex;gap:12px;justify-content:center;margin-bottom:24px;}
+    .socials a{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#cdd8e4;transition:all .18s ease;}
+    .socials a:hover{background:var(--accent);border-color:var(--accent);color:#fff;transform:translateY(-2px);}
+    .socials svg{width:19px;height:19px;}
+    .fbottom{border-top:1px solid rgba(255,255,255,.1);padding-top:20px;font-size:13.5px;color:#7e8fa2;}
+
+    @media (max-width:900px){
+      .cat-grid{grid-template-columns:repeat(2,1fr);}
+      .strip{grid-template-columns:repeat(4,1fr);}
+      .visit-grid{grid-template-columns:1fr;}
+    }
+    @media (max-width:560px){
+      .cat-grid{grid-template-columns:1fr;}
+      .strip{grid-template-columns:repeat(2,1fr);}
+      section{padding:64px 0;}
+      .hero-actions .btn{padding:13px 20px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header id="hdr">
+    <div class="container">
+      <nav>
+        <div class="brand"><div class="mark">CC</div> Central&nbsp;<span style="color:#ffb59e">Cash &amp; Carry</span></div>
+        <button id="langToggle" class="lang" type="button" aria-label="Cambiar a Español">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span id="langLabel">Español</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <div class="bg"></div>
+    <div class="hero-inner">
+      <span class="eyebrow">Open to the public &middot; San Jose</span>
+      <h1><span class="welcome">Welcome to</span> <span class="name">Central Cash &amp; Carry</span></h1>
+      <p class="tag">One-stop wholesale &amp; retail shop &mdash; restaurant supplies, groceries, party goods, and everyday essentials, all under one roof.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="tel:14089752485">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+          Call us
+        </a>
+        <a class="btn glass" href="#visit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+          Get directions
+        </a>
+        <a class="btn glass" href="#categories">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          See what we carry
+        </a>
+      </div>
+    </div>
+    <a class="scroll-cue" href="#welcome" aria-label="Scroll down">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </a>
+  </section>
+
+  <!-- Welcome note -->
+  <section class="welcome-note" id="welcome">
+    <div class="container">
+      <h2>Come stock up with us</h2>
+      <p>For over 20 years, Central Cash &amp; Carry has been where the public comes to buy in bulk and by piece. We&rsquo;re open to everyone &mdash; businesses and the public alike &mdash; so come in, look around, and we&rsquo;ll help you find what you need.</p>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section id="categories">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">What we carry</span>
+        <h2>What you&rsquo;ll find inside</h2>
+        <p>A few of the departments waiting for you on our shelves.</p>
+      </div>
+      <div class="cat-grid">
+        <div class="cat-card">
+          <div class="cat-photo"><img src="images/cat-foodservice.jpg" alt="Takeout containers and foodservice supplies on the shelves" /></div>
+          <div class="cat-body">
+            <div class="cat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18"/><path d="M12 3v8"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M8 21h8"/><path d="M12 19v2"/></svg></div>
+            <h3>Foodservice &amp; restaurant</h3>
+            <p>Everything the kitchen and counter run on, from disposables to small equipment.</p>
+            <div class="mini-tags"><span class="mini-tag">Cups &amp; lids</span><span class="mini-tag">Containers</span><span class="mini-tag">Pizza boxes</span><span class="mini-tag">Food wrap</span><span class="mini-tag">Glassware</span><span class="mini-tag">Brewers &amp; warmers</span></div>
+          </div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-photo"><img src="images/cat-packaging.jpg" alt="Bulk paper goods and packaging materials in stock" /></div>
+          <div class="cat-body">
+            <div class="cat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></div>
+            <h3>Packaging &amp; paper goods</h3>
+            <p>Bulk packaging and paper products for day-to-day operations.</p>
+            <div class="mini-tags"><span class="mini-tag">Bags</span><span class="mini-tag">Can liners</span><span class="mini-tag">Napkins</span><span class="mini-tag">Tapes</span><span class="mini-tag">Plastic cutlery</span><span class="mini-tag">Table covers</span></div>
+          </div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-photo"><img src="images/cat-groceries.jpg" alt="Grocery aisle with canned, jarred, and bottled goods" /></div>
+          <div class="cat-body">
+            <div class="cat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+            <h3>Dry goods &amp; groceries</h3>
+            <p>Pantry staples by the case &mdash; canned, jarred, dried, and bulk.</p>
+            <div class="mini-tags"><span class="mini-tag">Canned goods</span><span class="mini-tag">Spices</span><span class="mini-tag">Cooking oils</span><span class="mini-tag">Dried chiles</span><span class="mini-tag">Rice &amp; beans</span><span class="mini-tag">Flour &amp; sugar</span></div>
+          </div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-photo"><img src="images/cat-beverages.jpg" alt="Cases of sodas and bottled drinks" /></div>
+          <div class="cat-body">
+            <div class="cat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14l-1.5 17a2 2 0 0 1-2 1.8H8.5a2 2 0 0 1-2-1.8Z"/><path d="M6 8h12"/></svg></div>
+            <h3>Beverages</h3>
+            <p>Sodas, water, juice, and drinks by the case for your counter or event.</p>
+            <div class="mini-tags"><span class="mini-tag">Sodas</span><span class="mini-tag">Bottled water</span><span class="mini-tag">Juice</span><span class="mini-tag">Sports drinks</span><span class="mini-tag">Coffee</span><span class="mini-tag">Mixers</span></div>
+          </div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-photo"><img src="images/cat-cleaning.jpg" alt="Shelves of bulk cleaning chemicals and janitorial supplies" /></div>
+          <div class="cat-body">
+            <div class="cat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2s6 7 6 12a6 6 0 0 1-12 0c0-5 6-12 6-12Z"/></svg></div>
+            <h3>Cleaning &amp; janitorial</h3>
+            <p>Keep things spotless with bulk cleaners, liners, and supplies.</p>
+            <div class="mini-tags"><span class="mini-tag">Cleaners</span><span class="mini-tag">Can liners</span><span class="mini-tag">Dispensers</span><span class="mini-tag">Paper towels</span><span class="mini-tag">Gloves</span><span class="mini-tag">Degreasers</span></div>
+          </div>
+        </div>
+        <div class="cat-card">
+          <div class="cat-photo"><img src="images/cat-party.jpg" alt="Colorful party supplies, piñatas, and seasonal goods" /></div>
+          <div class="cat-body">
+            <div class="cat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M5 12v9h14v-9"/><path d="M12 8S9.5 2 7 4s2.5 4 5 4Z"/><path d="M12 8s2.5-6 5-4-2.5 4-5 4Z"/></svg></div>
+            <h3>Party &amp; seasonal</h3>
+            <p>Everything to throw a party &mdash; plus seasonal and everyday extras.</p>
+            <div class="mini-tags"><span class="mini-tag">Party supplies</span><span class="mini-tag">Pi&ntilde;atas</span><span class="mini-tag">Tableware</span><span class="mini-tag">Balloons</span><span class="mini-tag">Decorations</span><span class="mini-tag">Barbecue</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="gallery" id="gallery">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">Inside the store</span>
+        <h2>Take a look inside</h2>
+        <p>Tap any photo to explore the aisles.</p>
+      </div>
+      <div class="strip" id="strip">
+        <button class="gitem" type="button" data-full="images/store-01.jpg"><img src="images/store-01.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 1" /></button>
+        <button class="gitem" type="button" data-full="images/store-02.jpg"><img src="images/store-02.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 2" /></button>
+        <button class="gitem" type="button" data-full="images/store-03.jpg"><img src="images/store-03.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 3" /></button>
+        <button class="gitem" type="button" data-full="images/store-04.jpg"><img src="images/store-04.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 4" /></button>
+        <button class="gitem" type="button" data-full="images/store-05.jpg"><img src="images/store-05.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 5" /></button>
+        <button class="gitem" type="button" data-full="images/store-06.jpg"><img src="images/store-06.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 6" /></button>
+        <button class="gitem" type="button" data-full="images/store-07.jpg"><img src="images/store-07.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 7" /></button>
+        <button class="gitem" type="button" data-full="images/store-08.jpg"><img src="images/store-08.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 8" /></button>
+        <button class="gitem" type="button" data-full="images/store-09.jpg"><img src="images/store-09.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 9" /></button>
+        <button class="gitem" type="button" data-full="images/store-10.jpg"><img src="images/store-10.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 10" /></button>
+        <button class="gitem" type="button" data-full="images/store-11.jpg"><img src="images/store-11.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 11" /></button>
+        <button class="gitem" type="button" data-full="images/store-12.jpg"><img src="images/store-12.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 12" /></button>
+        <button class="gitem" type="button" data-full="images/store-13.jpg"><img src="images/store-13.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 13" /></button>
+        <button class="gitem" type="button" data-full="images/store-14.jpg"><img src="images/store-14.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 14" /></button>
+        <button class="gitem" type="button" data-full="images/store-15.jpg"><img src="images/store-15.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 15" /></button>
+        <button class="gitem" type="button" data-full="images/store-16.jpg"><img src="images/store-16.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 16" /></button>
+        <button class="gitem" type="button" data-full="images/store-17.jpg"><img src="images/store-17.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 17" /></button>
+        <button class="gitem" type="button" data-full="images/store-18.jpg"><img src="images/store-18.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 18" /></button>
+        <button class="gitem" type="button" data-full="images/store-19.jpg"><img src="images/store-19.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 19" /></button>
+        <button class="gitem" type="button" data-full="images/store-20.jpg"><img src="images/store-20.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 20" /></button>
+        <button class="gitem" type="button" data-full="images/store-21.jpg"><img src="images/store-21.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 21" /></button>
+        <button class="gitem" type="button" data-full="images/store-22.jpg"><img src="images/store-22.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 22" /></button>
+        <button class="gitem" type="button" data-full="images/store-23.jpg"><img src="images/store-23.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 23" /></button>
+        <button class="gitem" type="button" data-full="images/store-24.jpg"><img src="images/store-24.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 24" /></button>
+        <button class="gitem" type="button" data-full="images/store-25.jpg"><img src="images/store-25.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 25" /></button>
+        <button class="gitem" type="button" data-full="images/store-26.jpg"><img src="images/store-26.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 26" /></button>
+        <button class="gitem" type="button" data-full="images/store-27.jpg"><img src="images/store-27.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 27" /></button>
+        <button class="gitem" type="button" data-full="images/store-28.jpg"><img src="images/store-28.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 28" /></button>
+        <button class="gitem" type="button" data-full="images/store-29.jpg"><img src="images/store-29.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 29" /></button>
+        <button class="gitem" type="button" data-full="images/store-30.jpg"><img src="images/store-30.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 30" /></button>
+        <button class="gitem" type="button" data-full="images/store-31.jpg"><img src="images/store-31.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 31" /></button>
+        <button class="gitem" type="button" data-full="images/store-33.jpg"><img src="images/store-33.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 33" /></button>
+        <button class="gitem" type="button" data-full="images/store-34.jpg"><img src="images/store-34.jpg" loading="lazy" alt="Inside Central Cash & Carry, photo 34" /></button>
+      </div>
+      <div class="gallery-nav">
+        <button class="gnav-btn" id="galPrev" type="button" aria-label="Previous photos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <span class="gallery-pages" id="galPages">1 / 5</span>
+        <button class="gnav-btn" id="galNext" type="button" aria-label="Next photos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visit -->
+  <section id="visit">
+    <div class="container">
+      <div class="sec-head">
+        <span class="kicker">Come see us</span>
+        <h2>Visit the store</h2>
+        <p>Open 7 days a week on Monterey Road in San Jose.</p>
+      </div>
+      <div class="visit-grid">
+        <div class="card map-card">
+          <div class="storefront">
+            <img src="images/storefront.jpg" alt="Storefront of Central Cash & Carry on Monterey Road, San Jose" />
+            <span class="storefront-tag">Look for the blue building on Monterey Rd</span>
+          </div>
+          <div class="map-head">
+            <h3>Central Cash &amp; Carry</h3>
+            <div class="addr">1919 Monterey Rd, Ste 10, San Jose, CA 95112</div>
+          </div>
+          <iframe loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=1919+Monterey+Rd+STE+10,+San+Jose,+CA+95112&z=13&output=embed"></iframe>
+          <div class="map-actions">
+            <a class="btn primary" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=1919+Monterey+Rd+STE+10,+San+Jose,+CA+95112">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              Get directions
+            </a>
+            <a class="btn outline" href="tel:14089752485">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+              (408) 975-2485
+            </a>
+          </div>
+        </div>
+        <div class="card visit-info">
+          <h3>Hours of operation</h3>
+          <div class="hours">
+            <div class="row"><span class="d">Monday</span><span class="t">7 AM &ndash; 7 PM</span></div>
+            <div class="row"><span class="d">Tuesday</span><span class="t">7 AM &ndash; 7 PM</span></div>
+            <div class="row"><span class="d">Wednesday</span><span class="t">7 AM &ndash; 7 PM</span></div>
+            <div class="row"><span class="d">Thursday</span><span class="t">7 AM &ndash; 7 PM</span></div>
+            <div class="row"><span class="d">Friday</span><span class="t">7 AM &ndash; 7 PM</span></div>
+            <div class="row"><span class="d">Saturday</span><span class="t">8 AM &ndash; 6 PM</span></div>
+            <div class="row"><span class="d">Sunday</span><span class="t">9 AM &ndash; 5 PM</span></div>
+          </div>
+          <div class="pay-row">
+            <div class="pl">Payments accepted</div>
+            <div class="pay-tags"><span class="pay-tag">Cash</span><span class="pay-tag">Visa</span><span class="pay-tag">Mastercard</span><span class="pay-tag">Debit</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="brand"><div class="mark">CC</div> Central&nbsp;<span style="color:#ffb59e">Cash &amp; Carry</span></div>
+      <p class="fphone"><a href="tel:14089752485">(408) 975-2485</a></p>
+      <p class="fhours">Open 7 days a week &middot; 1919 Monterey Rd, Ste 10, San Jose, CA</p>
+      <div class="socials">
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+      </div>
+      <div class="fbottom">&copy; <span id="yr">2026</span> Central Cash &amp; Carry. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lb-btn lb-close" id="lbClose" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <img id="lbImg" src="" alt="Central Cash & Carry store photo" />
+    <button class="lb-btn lb-next" id="lbNext" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+  </div>
+
+  <script>
+    (function(){
+      var yr=document.getElementById('yr'); if(yr) yr.textContent=new Date().getFullYear();
+      // header solid on scroll
+      var hdr=document.getElementById('hdr');
+      var onScroll=function(){ hdr.classList.toggle('solid', window.scrollY>60); };
+      onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+      // lightbox
+      var items=[].slice.call(document.querySelectorAll('.gitem'));
+      var srcs=items.map(function(b){return b.getAttribute('data-full');});
+      // paged gallery (8 per page)
+      var PAGE=8, page=0, pageCount=Math.ceil(items.length/PAGE), pagesEl=document.getElementById('galPages');
+      function renderPage(){var start=page*PAGE; items.forEach(function(b,i){b.classList.toggle('is-hidden', i<start||i>=start+PAGE);}); if(pagesEl)pagesEl.textContent=(page+1)+' / '+pageCount;}
+      function go(d){page=(page+d+pageCount)%pageCount; renderPage();}
+      var gp=document.getElementById('galPrev'), gn=document.getElementById('galNext');
+      if(gp)gp.addEventListener('click',function(){go(-1);});
+      if(gn)gn.addEventListener('click',function(){go(1);});
+      renderPage();
+      var lb=document.getElementById('lightbox'), img=document.getElementById('lbImg'), cur=0;
+      function show(i){cur=(i+srcs.length)%srcs.length; img.src=srcs[cur];}
+      function open(i){show(i); lb.classList.add('open'); document.body.style.overflow='hidden';}
+      function close(){lb.classList.remove('open'); document.body.style.overflow='';}
+      items.forEach(function(b,i){b.addEventListener('click',function(){open(i);});});
+      document.getElementById('lbClose').addEventListener('click',close);
+      document.getElementById('lbPrev').addEventListener('click',function(){show(cur-1);});
+      document.getElementById('lbNext').addEventListener('click',function(){show(cur+1);});
+      lb.addEventListener('click',function(e){if(e.target===lb)close();});
+      document.addEventListener('keydown',function(e){if(!lb.classList.contains('open'))return; if(e.key==='Escape')close(); else if(e.key==='ArrowLeft')show(cur-1); else if(e.key==='ArrowRight')show(cur+1);});
+    })();
+  </script>
+
+  <!-- Spanish / English toggle -->
+  <script>
+  (function(){
+    var T={
+      "Open to the public · San Jose":"Tienda abierta al público · San Jose",
+      "Welcome to":"Bienvenidos a",
+      "One-stop wholesale & retail shop — restaurant supplies, groceries, party goods, and everyday essentials, all under one roof.":"La tienda de mayoreo y menudeo — suministros para restaurantes, abarrotes, artículos para fiestas y básicos del diario, todo bajo un mismo techo.",
+      "Call us":"Llámanos",
+      "Get directions":"Cómo llegar",
+      "See what we carry":"Mira lo que vendemos",
+      "Come stock up with us":"Ven a surtirte con nosotros",
+      "For over 20 years, Central Cash & Carry has been where the public comes to buy in bulk and by piece. We’re open to everyone — businesses and the public alike — so come in, look around, and we’ll help you find what you need.":"Por más de 20 años, Central Cash & Carry ha sido el lugar donde el público viene a comprar al por mayor y al menudeo. Estamos abiertos a todos — negocios y público en general — así que pásale, mira con calma y te ayudamos a encontrar lo que necesitas.",
+      "What we carry":"Lo que vendemos",
+      "What you’ll find inside":"Lo que encontrarás adentro",
+      "A few of the departments waiting for you on our shelves.":"Algunos de los departamentos que te esperan en nuestros estantes.",
+      "Foodservice & restaurant":"Restaurante y servicio de comida",
+      "Dry goods & groceries":"Abarrotes y productos secos",
+      "Packaging & paper goods":"Empaque y productos de papel",
+      "Beverages":"Bebidas",
+      "Cleaning & janitorial":"Limpieza y conserjería",
+      "Party & seasonal":"Fiestas y temporada",
+      "Everything the kitchen and counter run on, from disposables to small equipment.":"Todo lo que mueve la cocina y el mostrador, desde desechables hasta equipo pequeño.",
+      "Cups & lids":"Vasos y tapas","Containers":"Contenedores","Pizza boxes":"Cajas de pizza","Food wrap":"Envoltura","Glassware":"Cristalería","Brewers & warmers":"Cafeteras y calentadores",
+      "Bulk packaging and paper products for day-to-day operations.":"Empaque y productos de papel al por mayor para el día a día.",
+      "Bags":"Bolsas","Can liners":"Bolsas de basura","Napkins":"Servilletas","Tapes":"Cintas","Plastic cutlery":"Cubiertos de plástico","Table covers":"Manteles",
+      "Pantry staples by the case — canned, jarred, dried, and bulk.":"Productos de despensa por caja — enlatados, en frasco, secos y a granel.",
+      "Canned goods":"Enlatados","Spices":"Especias","Cooking oils":"Aceites de cocina","Dried chiles":"Chiles secos","Rice & beans":"Arroz y frijol","Flour & sugar":"Harina y azúcar",
+      "Sodas, water, juice, and drinks by the case for your counter or event.":"Refrescos, agua, jugos y bebidas por caja para tu negocio o evento.",
+      "Sodas":"Refrescos","Bottled water":"Agua embotellada","Juice":"Jugos","Sports drinks":"Bebidas deportivas","Coffee":"Café","Mixers":"Mezcladores",
+      "Keep things spotless with bulk cleaners, liners, and supplies.":"Mantén todo impecable con limpiadores, bolsas y artículos al por mayor.",
+      "Cleaners":"Limpiadores","Dispensers":"Dispensadores","Paper towels":"Toallas de papel","Gloves":"Guantes","Degreasers":"Desengrasantes",
+      "Everything to throw a party — plus seasonal and everyday extras.":"Todo para una fiesta — más artículos de temporada y del diario.",
+      "Party supplies":"Artículos para fiestas","Piñatas":"Piñatas","Tableware":"Vajilla desechable","Balloons":"Globos","Decorations":"Decoraciones","Barbecue":"Barbacoa",
+      "Inside the store":"Dentro de la tienda",
+      "Take a look inside":"Echa un vistazo adentro",
+      "Tap any photo to explore the aisles.":"Toca cualquier foto para explorar los pasillos.",
+      "Come see us":"Ven a vernos",
+      "Visit the store":"Visita la tienda",
+      "Look for the blue building on Monterey Rd":"Busca el edificio azul en Monterey Rd",
+      "Hours of operation":"Horario",
+      "Open 7 days a week on Monterey Road in San Jose.":"Abierto 7 días a la semana sobre Monterey Road en San Jose.",
+      "Monday":"Lunes",
+      "Tuesday":"Martes",
+      "Wednesday":"Miércoles",
+      "Thursday":"Jueves",
+      "Friday":"Viernes",
+      "Saturday":"Sábado",
+      "Sunday":"Domingo",
+      "Payments accepted":"Formas de pago",
+      "Cash":"Efectivo",
+      "Debit":"Débito",
+      "Open 7 days a week · 1919 Monterey Rd, Ste 10, San Jose, CA":"Abierto 7 días a la semana · 1919 Monterey Rd, Ste 10, San Jose, CA",
+      "Central Cash & Carry. All rights reserved.":"Central Cash & Carry. Todos los derechos reservados."
+    };
+    var norm=function(s){return s.replace(/\s+/g,' ').trim();};
+    var btn=document.getElementById('langToggle'), label=document.getElementById('langLabel');
+    if(!btn||!label) return;
+    var nodes=[], w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){
+      if(!n.nodeValue||!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      var p=n.parentNode?n.parentNode.nodeName:''; if(p==='SCRIPT'||p==='STYLE') return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }});
+    var n; while(n=w.nextNode()){n.__en=n.nodeValue; nodes.push(n);}
+    function apply(lang){
+      nodes.forEach(function(nd){
+        if(nd===label.firstChild) return;
+        var en=nd.__en;
+        if(lang==='es'){ var es=T[norm(en)]; if(es!==undefined){ var l=(en.match(/^\s*/)||[''])[0], t=(en.match(/\s*$/)||[''])[0]; nd.nodeValue=l+es+t; } }
+        else nd.nodeValue=en;
+      });
+      document.documentElement.lang=lang; label.textContent=(lang==='es')?'English':'Español';
+      btn.setAttribute('aria-label', lang==='es'?'Switch to English':'Cambiar a Español');
+      try{localStorage.setItem('ccc-lang',lang);}catch(e){}
+    }
+    var cur='en'; try{ if(localStorage.getItem('ccc-lang')==='es') cur='es'; }catch(e){}
+    if(cur==='es') apply('es'); else label.textContent='Español';
+    btn.addEventListener('click',function(){ cur=(cur==='es')?'en':'es'; apply(cur); });
+  })();
+  </script>
+</body>
+</html>
