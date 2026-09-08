@@ -1,4 +1,12 @@
-# Stock Trader Bot
+# Trading Simulator
+
+> **This folder is mid-transition.** The goal is a fake-money trading simulator
+> for learning — historical replay to teach, live paper trading to practise. What
+> is documented below is the autonomous bot that exists today; under the new plan
+> it becomes one *strategy* inside the simulator, the opponent you play against.
+> See `DESIGN.md` for where this is heading.
+
+## The bot (current contents)
 
 A paper-trading bot. It reads a watchlist, asks a Python ML model whether each
 symbol looks like a buy, sizes positions against a risk budget, applies exit

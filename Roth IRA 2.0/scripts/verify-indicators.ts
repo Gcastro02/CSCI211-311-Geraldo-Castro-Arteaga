@@ -1,5 +1,5 @@
 /**
- * Pins src/lib/indicators.ts to the Stock Trader Bot's original Python pipeline.
+ * Pins src/lib/indicators.ts to the Trading Simulator's original Python pipeline.
  *
  * `indicator-fixture.json` holds a synthetic 220-bar OHLCV series plus the
  * feature values that `ml_model/data_collector.py` produces for its final bar.

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Regenerate indicator-fixture.json from the Stock Trader Bot's original Python
+Regenerate indicator-fixture.json from the Trading Simulator's original Python
 feature pipeline, so scripts/verify-indicators.ts has a reference to check the
 TypeScript port against.
 
-Needs pandas + numpy, and the sibling "Stock Trader Bot" project on disk:
+Needs pandas + numpy, and the sibling "Trading Simulator" project on disk:
     python scripts/generate-indicator-fixture.py
 """
 
@@ -17,7 +17,7 @@ import pandas as pd
 
 HERE = Path(__file__).resolve().parent
 PROJECT_ROOT = HERE.parent
-BOT_ML_DIR = PROJECT_ROOT.parent / "Stock Trader Bot" / "ml_model"
+BOT_ML_DIR = PROJECT_ROOT.parent / "Trading Simulator" / "ml_model"
 FIXTURE_PATH = HERE / "indicator-fixture.json"
 
 if not BOT_ML_DIR.exists():

@@ -2,7 +2,7 @@
  * Transaction log replay: turns an ordered list of transactions into positions,
  * cash, and realized gains.
  *
- * Modelled on the Stock Trader Bot's `portfolio_log.csv`
+ * Modelled on the Trading Simulator's `portfolio_log.csv`
  * (`date,ticker,price,shares,total`), extended with the cash-side events a
  * retirement account needs — contributions, withdrawals and dividends.
  *

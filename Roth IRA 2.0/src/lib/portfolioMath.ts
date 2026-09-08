@@ -1,5 +1,5 @@
 /**
- * Portfolio risk and sizing math, ported from the Stock Trader Bot's C++
+ * Portfolio risk and sizing math, ported from the Trading Simulator's C++
  * (`PortfolioManager::performRiskAudit` and the allocation block inside
  * `runUpdate`). Pure functions over numbers the app already has — no network,
  * no model, no API key required.

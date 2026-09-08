@@ -102,7 +102,7 @@ prompt so the model reasons over real numbers rather than recalling them.
 ### Indicator provenance
 
 `src/lib/indicators.ts` is a port of the Python feature pipeline from the
-sibling **Stock Trader Bot** project (`ml_model/data_collector.py`), matching its
+sibling **Trading Simulator** project (`ml_model/data_collector.py`), matching its
 formulas and conventions exactly — including pandas' sample standard deviation
 (`ddof=1`) and `ewm(adjust=False)` recursion.
 

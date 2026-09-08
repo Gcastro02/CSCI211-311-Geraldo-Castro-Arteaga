@@ -1,5 +1,5 @@
 /**
- * Technical indicators ported from the Stock Trader Bot's Python feature pipeline
+ * Technical indicators ported from the Trading Simulator's Python feature pipeline
  * (ml_model/data_collector.py). Same formulas, same windows, same conventions —
  * including pandas' sample standard deviation (ddof=1) and `ewm(adjust=False)`
  * recursion — so these numbers line up with what the bot computed.
