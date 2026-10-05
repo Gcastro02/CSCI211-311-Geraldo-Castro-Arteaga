@@ -30,6 +30,15 @@
     .lang{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px;cursor:pointer;transition:background .15s ease;}
     .lang:hover{background:rgba(255,255,255,.26);}
     .lang svg{width:16px;height:16px;}
+    .lang-wrap{position:relative;}
+    .lang .chev{width:13px;height:13px;opacity:.75;transition:transform .18s ease;}
+    .lang[aria-expanded="true"] .chev{transform:rotate(180deg);}
+    .lang-menu{position:absolute;top:calc(100% + 9px);right:0;min-width:176px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 16px 38px rgba(15,27,45,.22);padding:6px;display:none;z-index:70;}
+    .lang-menu.open{display:block;}
+    .lang-opt{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:none;border:0;color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif;font-weight:700;font-size:14.5px;text-align:left;padding:9px 11px;border-radius:9px;cursor:pointer;}
+    .lang-opt:hover{background:var(--soft);}
+    .lang-opt .tick{width:15px;height:15px;flex:none;color:var(--accent);opacity:0;}
+    .lang-opt[aria-checked="true"] .tick{opacity:1;}
 
     .btn{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:14px 24px;font-weight:700;font-size:15.5px;font-family:"Plus Jakarta Sans",sans-serif;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;border:1px solid transparent;white-space:nowrap;}
     .btn svg{width:18px;height:18px;}
@@ -164,10 +173,18 @@
     <div class="container">
       <nav>
         <div class="brand"><div class="mark">CC</div> Central&nbsp;<span style="color:#ffb59e">Cash &amp; Carry</span></div>
-        <button id="langToggle" class="lang" type="button" aria-label="Cambiar a Español">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          <span id="langLabel">Español</span>
-        </button>
+        <div class="lang-wrap" id="langSwitch">
+          <button id="langToggle" class="lang" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Change language">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span id="langLabel">English</span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="lang-menu" id="langMenu" role="menu" aria-labelledby="langToggle">
+            <button class="lang-opt" type="button" role="menuitemradio" aria-checked="true" data-lang="en" lang="en"><span>English</span><svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="lang-opt" type="button" role="menuitemradio" aria-checked="false" data-lang="es" lang="es"><span>Español</span><svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+            <button class="lang-opt" type="button" role="menuitemradio" aria-checked="false" data-lang="vi" lang="vi"><span>Tiếng Việt</span><svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button>
+          </div>
+        </div>
       </nav>
     </div>
   </header>
@@ -429,10 +446,17 @@
     })();
   </script>
 
-  <!-- Spanish / English toggle -->
+  <!-- English / Spanish / Vietnamese switcher -->
   <script>
   (function(){
-    var T={
+    /* Keys are the exact English text as it appears on the page.
+       To add a language: add a code here, a dictionary below, and an option in #langMenu. */
+    var NAMES={en:'English', es:'Español', vi:'Tiếng Việt'};
+    var ARIA={en:'Change language', es:'Cambiar idioma', vi:'Đổi ngôn ngữ'};
+
+    var DICT={};
+
+    DICT.es={
       "Open to the public · San Jose":"Tienda abierta al público · San Jose",
       "Welcome to":"Bienvenidos a",
       "One-stop wholesale & retail shop — restaurant supplies, groceries, party goods, and everyday essentials, all under one roof.":"La tienda de mayoreo y menudeo — suministros para restaurantes, abarrotes, artículos para fiestas y básicos del diario, todo bajo un mismo techo.",
@@ -483,29 +507,127 @@
       "Open 7 days a week · 1919 Monterey Rd, Ste 10, San Jose, CA":"Abierto 7 días a la semana · 1919 Monterey Rd, Ste 10, San Jose, CA",
       "Central Cash & Carry. All rights reserved.":"Central Cash & Carry. Todos los derechos reservados."
     };
+
+    DICT.vi={
+      "Open to the public · San Jose":"Mở cửa cho mọi khách hàng · San Jose",
+      "Welcome to":"Chào mừng đến với",
+      "One-stop wholesale & retail shop — restaurant supplies, groceries, party goods, and everyday essentials, all under one roof.":"Cửa hàng bán sỉ và bán lẻ một điểm đến — vật dụng nhà hàng, thực phẩm, đồ tiệc và hàng thiết yếu hằng ngày, tất cả dưới một mái nhà.",
+      "Call us":"Gọi cho chúng tôi",
+      "Get directions":"Xem đường đi",
+      "See what we carry":"Xem hàng chúng tôi bán",
+      "Come stock up with us":"Đến mua sắm cùng chúng tôi",
+      "For over 20 years, Central Cash & Carry has been where the public comes to buy in bulk and by piece. We’re open to everyone — businesses and the public alike — so come in, look around, and we’ll help you find what you need.":"Hơn 20 năm qua, Central Cash & Carry là nơi mọi người đến mua hàng số lượng lớn hoặc mua lẻ từng món. Chúng tôi mở cửa cho tất cả — cả doanh nghiệp và khách hàng cá nhân — vậy nên hãy vào xem thoải mái, chúng tôi sẽ giúp bạn tìm đúng thứ bạn cần.",
+      "What we carry":"Hàng chúng tôi bán",
+      "What you’ll find inside":"Những gì bạn sẽ thấy bên trong",
+      "A few of the departments waiting for you on our shelves.":"Một vài gian hàng đang chờ bạn trên các kệ của chúng tôi.",
+      "Foodservice & restaurant":"Nhà hàng & dịch vụ ăn uống",
+      "Dry goods & groceries":"Hàng khô & thực phẩm",
+      "Packaging & paper goods":"Bao bì & hàng giấy",
+      "Beverages":"Thức uống",
+      "Cleaning & janitorial":"Vệ sinh & tạp vụ",
+      "Party & seasonal":"Tiệc & hàng theo mùa",
+      "Everything the kitchen and counter run on, from disposables to small equipment.":"Mọi thứ cho nhà bếp và quầy hàng, từ đồ dùng một lần đến thiết bị nhỏ.",
+      "Cups & lids":"Ly & nắp","Containers":"Hộp đựng","Pizza boxes":"Hộp pizza","Food wrap":"Màng bọc thực phẩm","Glassware":"Đồ thủy tinh","Brewers & warmers":"Máy pha & máy hâm",
+      "Bulk packaging and paper products for day-to-day operations.":"Bao bì và sản phẩm giấy số lượng lớn cho hoạt động hằng ngày.",
+      "Bags":"Túi","Can liners":"Túi rác","Napkins":"Khăn giấy ăn","Tapes":"Băng keo","Plastic cutlery":"Muỗng nĩa nhựa","Table covers":"Khăn trải bàn",
+      "Pantry staples by the case — canned, jarred, dried, and bulk.":"Thực phẩm thiết yếu bán theo thùng — đồ hộp, đồ lọ, đồ khô và hàng rời.",
+      "Canned goods":"Đồ hộp","Spices":"Gia vị","Cooking oils":"Dầu ăn","Dried chiles":"Ớt khô","Rice & beans":"Gạo & đậu","Flour & sugar":"Bột & đường",
+      "Sodas, water, juice, and drinks by the case for your counter or event.":"Nước ngọt, nước suối, nước trái cây và thức uống bán theo thùng cho quầy hàng hoặc tiệc của bạn.",
+      "Sodas":"Nước ngọt","Bottled water":"Nước suối đóng chai","Juice":"Nước trái cây","Sports drinks":"Nước uống thể thao","Coffee":"Cà phê","Mixers":"Nước pha chế",
+      "Keep things spotless with bulk cleaners, liners, and supplies.":"Giữ mọi thứ sạch bóng với chất tẩy rửa, túi rác và vật dụng số lượng lớn.",
+      "Cleaners":"Chất tẩy rửa","Dispensers":"Hộp đựng giấy & xà phòng","Paper towels":"Giấy lau tay","Gloves":"Găng tay","Degreasers":"Chất tẩy dầu mỡ",
+      "Everything to throw a party — plus seasonal and everyday extras.":"Mọi thứ để tổ chức tiệc — cùng hàng theo mùa và đồ dùng hằng ngày.",
+      "Party supplies":"Đồ dùng tiệc","Piñatas":"Piñata","Tableware":"Bát đĩa dùng một lần","Balloons":"Bong bóng","Decorations":"Đồ trang trí","Barbecue":"Đồ nướng BBQ",
+      "Inside the store":"Bên trong cửa hàng",
+      "Take a look inside":"Ghé xem bên trong",
+      "Tap any photo to explore the aisles.":"Chạm vào bất kỳ ảnh nào để xem các lối đi trong cửa hàng.",
+      "Come see us":"Đến gặp chúng tôi",
+      "Visit the store":"Ghé thăm cửa hàng",
+      "Look for the blue building on Monterey Rd":"Tìm tòa nhà màu xanh trên đường Monterey Rd",
+      "Hours of operation":"Giờ mở cửa",
+      "Open 7 days a week on Monterey Road in San Jose.":"Mở cửa 7 ngày một tuần trên đường Monterey Road, San Jose.",
+      "Monday":"Thứ Hai",
+      "Tuesday":"Thứ Ba",
+      "Wednesday":"Thứ Tư",
+      "Thursday":"Thứ Năm",
+      "Friday":"Thứ Sáu",
+      "Saturday":"Thứ Bảy",
+      "Sunday":"Chủ Nhật",
+      "Payments accepted":"Hình thức thanh toán",
+      "Cash":"Tiền mặt",
+      "Debit":"Thẻ ghi nợ",
+      "Open 7 days a week · 1919 Monterey Rd, Ste 10, San Jose, CA":"Mở cửa 7 ngày một tuần · 1919 Monterey Rd, Ste 10, San Jose, CA",
+      "Central Cash & Carry. All rights reserved.":"Central Cash & Carry. Bảo lưu mọi quyền."
+    };
+
     var norm=function(s){return s.replace(/\s+/g,' ').trim();};
-    var btn=document.getElementById('langToggle'), label=document.getElementById('langLabel');
-    if(!btn||!label) return;
+    var wrap=document.getElementById('langSwitch'),
+        btn=document.getElementById('langToggle'),
+        label=document.getElementById('langLabel'),
+        menu=document.getElementById('langMenu');
+    if(!wrap||!btn||!label||!menu) return;
+    var opts=menu.querySelectorAll('.lang-opt');
+
+    /* Subtrees the translator must leave alone: the switcher itself (its
+       option names are always in their own language) and the gallery
+       counter (rewritten by the gallery script). */
+    function skip(node){
+      for(var el=node.parentNode; el && el!==document.body; el=el.parentNode){
+        if(el.id==='langSwitch'||el.id==='galPages') return true;
+        if(el.nodeName==='SCRIPT'||el.nodeName==='STYLE') return true;
+      }
+      return false;
+    }
+
     var nodes=[], w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){
       if(!n.nodeValue||!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
       var p=n.parentNode?n.parentNode.nodeName:''; if(p==='SCRIPT'||p==='STYLE') return NodeFilter.FILTER_REJECT;
       return NodeFilter.FILTER_ACCEPT;
     }});
-    var n; while(n=w.nextNode()){n.__en=n.nodeValue; nodes.push(n);}
+    var n; while(n=w.nextNode()){ if(skip(n)) continue; n.__en=n.nodeValue; nodes.push(n); }
+
     function apply(lang){
+      var d=DICT[lang];
       nodes.forEach(function(nd){
-        if(nd===label.firstChild) return;
-        var en=nd.__en;
-        if(lang==='es'){ var es=T[norm(en)]; if(es!==undefined){ var l=(en.match(/^\s*/)||[''])[0], t=(en.match(/\s*$/)||[''])[0]; nd.nodeValue=l+es+t; } }
-        else nd.nodeValue=en;
+        var en=nd.__en, tr=d?d[norm(en)]:undefined;
+        if(tr===undefined){ nd.nodeValue=en; return; }   /* fall back to English */
+        var lead=(en.match(/^\s*/)||[''])[0], tail=(en.match(/\s*$/)||[''])[0];
+        nd.nodeValue=lead+tr+tail;
       });
-      document.documentElement.lang=lang; label.textContent=(lang==='es')?'English':'Español';
-      btn.setAttribute('aria-label', lang==='es'?'Switch to English':'Cambiar a Español');
+      document.documentElement.lang=lang;
+      label.textContent=NAMES[lang];
+      label.setAttribute('lang',lang);
+      btn.setAttribute('aria-label',ARIA[lang]);
+      for(var i=0;i<opts.length;i++) opts[i].setAttribute('aria-checked', opts[i].getAttribute('data-lang')===lang?'true':'false');
       try{localStorage.setItem('ccc-lang',lang);}catch(e){}
     }
-    var cur='en'; try{ if(localStorage.getItem('ccc-lang')==='es') cur='es'; }catch(e){}
-    if(cur==='es') apply('es'); else label.textContent='Español';
-    btn.addEventListener('click',function(){ cur=(cur==='es')?'en':'es'; apply(cur); });
+
+    function openMenu(open){
+      menu.classList.toggle('open',open);
+      btn.setAttribute('aria-expanded',open?'true':'false');
+    }
+
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      openMenu(!menu.classList.contains('open'));
+    });
+    for(var i=0;i<opts.length;i++){
+      opts[i].addEventListener('click',function(){
+        apply(this.getAttribute('data-lang'));
+        openMenu(false);
+        btn.focus();
+      });
+    }
+    document.addEventListener('click',function(e){
+      if(menu.classList.contains('open') && !wrap.contains(e.target)) openMenu(false);
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape' && menu.classList.contains('open')){ openMenu(false); btn.focus(); }
+    });
+
+    var saved='en';
+    try{ var s=localStorage.getItem('ccc-lang'); if(s && (s==='en'||DICT[s])) saved=s; }catch(e){}
+    apply(saved);
   })();
   </script>
 </body>
