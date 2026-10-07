@@ -8,6 +8,10 @@ analysis, and optional AI research.
 All portfolio data lives in the browser's `localStorage`. Nothing is stored
 server-side.
 
+This app is being expanded with a fake-money practice mode and level-based
+guidance, absorbing the sibling `Trading Simulator` bot. See
+[DESIGN.md](DESIGN.md) for the plan.
+
 ## Running it
 
 ```bash

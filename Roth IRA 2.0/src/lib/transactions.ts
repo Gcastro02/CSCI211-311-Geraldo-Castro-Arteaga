@@ -10,7 +10,7 @@
  * event, so this exists to measure performance, not to prepare a return.
  */
 
-import { PortfolioData, RealizedGain, StockHolding, Transaction } from '../types';
+import { AccountType, PortfolioData, RealizedGain, StockHolding, Transaction } from '../types';
 
 /** Share quantities below this are treated as zero (float residue). */
 const SHARE_EPSILON = 1e-9;
@@ -309,8 +309,12 @@ export const applyTransaction = (portfolio: PortfolioData, tx: Transaction): Por
 };
 
 /** Human-readable label for a transaction type. */
-export const transactionLabel = (type: Transaction['type']): string => ({
-  CONTRIBUTION: 'Contribution',
+/**
+ * Display name for a transaction type. New money is a "contribution" in a Roth
+ * IRA, where the word has a legal meaning, and a "deposit" anywhere else.
+ */
+export const transactionLabel = (type: Transaction['type'], accountType: AccountType = 'ROTH_IRA'): string => ({
+  CONTRIBUTION: accountType === 'ROTH_IRA' ? 'Contribution' : 'Deposit',
   WITHDRAWAL: 'Withdrawal',
   BUY: 'Buy',
   SELL: 'Sell',

@@ -12,7 +12,8 @@
     "lint": "tsc --noEmit",
     "verify:indicators": "tsx scripts/verify-indicators.ts",
     "verify:transactions": "tsx scripts/verify-transactions.ts",
-    "verify": "npm run verify:indicators && npm run verify:transactions"
+    "verify:history": "tsx scripts/verify-portfolio-history.ts",
+    "verify": "npm run verify:indicators && npm run verify:transactions && npm run verify:history"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",

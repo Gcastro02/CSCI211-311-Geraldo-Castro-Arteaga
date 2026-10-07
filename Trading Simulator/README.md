@@ -1,10 +1,11 @@
 # Trading Simulator
 
-> **This folder is mid-transition.** The goal is a fake-money trading simulator
-> for learning — historical replay to teach, live paper trading to practise. What
-> is documented below is the autonomous bot that exists today; under the new plan
-> it becomes one *strategy* inside the simulator, the opponent you play against.
-> See `DESIGN.md` for where this is heading.
+> **This folder is mid-transition.** It is being merged with `Roth IRA 2.0/`
+> into one app: real-portfolio tracking, a fake-money practice mode on
+> historical prices, and guidance scaled to the user's experience. What is
+> documented below is the autonomous bot that exists today; under the new plan
+> its rules are ported into the app as the opponent you play against in practice
+> mode. See [`../Roth IRA 2.0/DESIGN.md`](../Roth%20IRA%202.0/DESIGN.md).
 
 ## The bot (current contents)
 

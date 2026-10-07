@@ -1,134 +1,201 @@
 @import "tailwindcss";
 
+/*
+ * Theme tokens. Every color in the app comes from one of these, defined once
+ * per theme below, so switching themes swaps values instead of overriding
+ * classes. Use them through the utilities this block generates:
+ * `bg-canvas`, `text-ink`, `text-muted`, `border-line`, `text-up`, …
+ */
+@theme inline {
+	--font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+	--color-canvas: var(--canvas);
+	--color-surface: var(--surface);
+	--color-chip: var(--chip);
+	--color-ink: var(--ink);
+	--color-ink-2: var(--ink-2);
+	--color-muted: var(--muted);
+	--color-line: var(--line);
+	--color-line-soft: var(--line-soft);
+	--color-edge: var(--edge);
+	--color-grid: var(--grid);
+	--color-accent: var(--accent);
+	--color-accent-strong: var(--accent-strong);
+	--color-accent-tint: var(--accent-tint);
+	--color-on-accent: var(--on-accent);
+	--color-up: var(--up);
+	--color-down: var(--down);
+	--color-warn: var(--warn);
+	--color-warn-ink: var(--warn-ink);
+	--color-note: var(--note);
+	--color-note-ink: var(--note-ink);
+}
+
+/* Dark is the default; light applies when <html data-theme="light">. */
+:root,
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--canvas: #0f1115;
+	--surface: #171a20;
+	--chip: #20242c;
+	--ink: #e6e8eb;
+	--ink-2: #b9bfc8;
+	--muted: #8f97a3;
+	--line: #2a2f38;
+	--line-soft: #20252d;
+	--edge: #3a404b;
+	--grid: #4a515c;
+	--accent: #8ab4f8;
+	--accent-strong: #aecbfa;
+	--accent-tint: #1c2b45;
+	--on-accent: #0f1115;
+	--up: #5bb974;
+	--down: #f28b82;
+	--warn: #f29b62;
+	--warn-ink: #f5b98c;
+	--note: #3a2618;
+	--note-ink: #f5b98c;
+}
+
+:root[data-theme="light"] {
+	color-scheme: light;
+	--canvas: #ffffff;
+	--surface: #f6f7f9;
+	--chip: #f0f2f5;
+	--ink: #1b1f24;
+	--ink-2: #3d444d;
+	--muted: #5d6570;
+	--line: #e3e6ea;
+	--line-soft: #eef0f3;
+	--edge: #d5d9df;
+	--grid: #c4c9d0;
+	--accent: #1a4fd6;
+	--accent-strong: #123a9e;
+	--accent-tint: #eaf0fd;
+	--on-accent: #ffffff;
+	--up: #137333;
+	--down: #b3261e;
+	--warn: #c2410c;
+	--warn-ink: #9a3412;
+	--note: #fff1e6;
+	--note-ink: #8a3b00;
+}
+
 html,
 body,
 #root {
 	min-height: 100%;
 }
 
-html.dark body {
-	background-color: #020617;
-	color: #e2e8f0;
-}
-
-html.dark .bg-slate-50 {
-	background-color: #0b1220 !important;
-}
-
-html.dark .bg-white {
-	background-color: #111827 !important;
-}
-
-html.dark .bg-white\/95 {
-	background-color: rgba(17, 24, 39, 0.95) !important;
-}
-
-html.dark .text-slate-900 {
-	color: #f3f4f6 !important;
-}
-
-html.dark .text-slate-800 {
-	color: #e5e7eb !important;
-}
-
-html.dark .text-slate-700 {
-	color: #d1d5db !important;
-}
-
-html.dark .text-slate-600 {
-	color: #9ca3af !important;
-}
-
-html.dark .text-slate-500,
-html.dark .text-slate-400 {
-	color: #94a3b8 !important;
-}
-
-html.dark .border-slate-100,
-html.dark .border-slate-200,
-html.dark .border-slate-300 {
-	border-color: #334155 !important;
-}
-
-html.dark .shadow-slate-200\/50,
-html.dark .shadow-slate-200,
-html.dark .shadow-slate-100 {
-	--tw-shadow-color: rgba(0, 0, 0, 0.45) !important;
+body {
+	background-color: var(--canvas);
+	color: var(--ink);
+	font-family: var(--font-sans);
+	/* Figures line up in columns across tables and stat lists. */
+	font-variant-numeric: tabular-nums;
 }
 
 /*
- * Dark mode works by overriding the light utility classes rather than adding
- * `dark:` variants throughout the markup. Any surface class used in the app
- * therefore needs an entry here, or it stays light while everything around it
- * turns dark. The rules below cover the shades the original set missed.
+ * Legacy dark mode, for screens not yet rebuilt on the tokens above. They use
+ * light Tailwind classes, so in dark mode those classes are remapped here.
+ * Scoped to `.legacy` so it cannot leak into rebuilt screens; delete each rule
+ * once nothing inside `.legacy` uses its class, and the whole block once the
+ * wrapper is gone.
  */
-
-html.dark .bg-slate-100 {
-	background-color: #1e293b !important;
+html.dark .legacy .bg-slate-50 {
+	background-color: var(--canvas) !important;
 }
 
-html.dark .bg-slate-50\/50,
-html.dark .bg-slate-50\/30 {
-	background-color: rgba(15, 23, 42, 0.5) !important;
+html.dark .legacy .bg-white,
+html.dark .legacy .bg-white\/95 {
+	background-color: var(--surface) !important;
 }
 
-html.dark .bg-slate-900 {
-	background-color: #0f172a !important;
+html.dark .legacy .text-slate-900,
+html.dark .legacy .text-slate-800 {
+	color: var(--ink) !important;
 }
 
-html.dark .border-slate-50 {
-	border-color: #1e293b !important;
+html.dark .legacy .text-slate-700,
+html.dark .legacy .text-slate-600 {
+	color: var(--ink-2) !important;
 }
 
-html.dark .text-slate-300 {
-	color: #64748b !important;
+html.dark .legacy .text-slate-500,
+html.dark .legacy .text-slate-400,
+html.dark .legacy .text-slate-300 {
+	color: var(--muted) !important;
+}
+
+html.dark .legacy .border-slate-100,
+html.dark .legacy .border-slate-200,
+html.dark .legacy .border-slate-300 {
+	border-color: var(--line) !important;
+}
+
+html.dark .legacy .border-slate-50 {
+	border-color: var(--line-soft) !important;
+}
+
+html.dark .legacy .shadow-slate-200\/50,
+html.dark .legacy .shadow-slate-200,
+html.dark .legacy .shadow-slate-100 {
+	--tw-shadow-color: rgba(0, 0, 0, 0.45) !important;
+}
+
+html.dark .legacy .bg-slate-100,
+html.dark .legacy .bg-slate-50\/50,
+html.dark .legacy .bg-slate-50\/30,
+html.dark .legacy .bg-slate-900 {
+	background-color: var(--chip) !important;
 }
 
 /* Tinted callouts: keep the hue, drop the brightness so text stays readable. */
-html.dark .bg-blue-50 {
-	background-color: rgba(37, 99, 235, 0.16) !important;
+html.dark .legacy .bg-blue-50 {
+	background-color: var(--accent-tint) !important;
 }
 
-html.dark .bg-amber-50,
-html.dark .bg-amber-50\/50 {
+html.dark .legacy .bg-amber-50,
+html.dark .legacy .bg-amber-50\/50 {
 	background-color: rgba(217, 119, 6, 0.16) !important;
 }
 
-html.dark .bg-emerald-50,
-html.dark .bg-emerald-50\/95 {
+html.dark .legacy .bg-emerald-50,
+html.dark .legacy .bg-emerald-50\/95 {
 	background-color: rgba(16, 185, 129, 0.16) !important;
 }
 
-html.dark .bg-rose-50 {
+html.dark .legacy .bg-rose-50 {
 	background-color: rgba(225, 29, 72, 0.16) !important;
 }
 
-html.dark .text-blue-900,
-html.dark .text-blue-800 {
+html.dark .legacy .text-blue-900,
+html.dark .legacy .text-blue-800 {
 	color: #bfdbfe !important;
 }
 
-html.dark .text-amber-900,
-html.dark .text-amber-800 {
+html.dark .legacy .text-amber-900,
+html.dark .legacy .text-amber-800 {
 	color: #fcd34d !important;
 }
 
-html.dark .border-blue-100,
-html.dark .border-amber-100,
-html.dark .border-amber-100\/50,
-html.dark .border-emerald-200,
-html.dark .border-rose-200 {
-	border-color: rgba(148, 163, 184, 0.25) !important;
+html.dark .legacy .border-blue-100,
+html.dark .legacy .border-amber-100,
+html.dark .legacy .border-amber-100\/50,
+html.dark .legacy .border-emerald-200,
+html.dark .legacy .border-rose-200 {
+	border-color: var(--line) !important;
 }
 
 /* Form controls do not inherit the surface overrides on their own. */
-html.dark input,
-html.dark select {
-	background-color: #1e293b !important;
-	border-color: #334155 !important;
-	color: #e2e8f0 !important;
+html.dark .legacy input,
+html.dark .legacy select {
+	background-color: var(--chip) !important;
+	border-color: var(--edge) !important;
+	color: var(--ink) !important;
 }
 
-html.dark input::placeholder {
-	color: #64748b !important;
+html.dark .legacy input::placeholder {
+	color: var(--muted) !important;
 }

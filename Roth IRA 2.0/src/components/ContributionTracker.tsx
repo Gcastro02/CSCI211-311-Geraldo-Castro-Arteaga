@@ -1,4 +1,4 @@
-import { AlertTriangle, PiggyBank, Info, Check } from 'lucide-react';
+import { AlertTriangle, Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { ContributionSummary } from '../lib/contributions';
 
@@ -32,22 +32,16 @@ export function ContributionTracker({
   const { limit, contributed, remaining, excess, progress, overLimit, taxYear } = summary;
 
   return (
-    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
-      <div className="flex flex-wrap justify-between items-start gap-4 mb-8">
+    <section aria-labelledby="contributions-heading">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="contributions-heading" className="text-lg font-semibold">Roth IRA contributions</h2>
         <div className="flex items-center gap-2">
-          <PiggyBank className="w-5 h-5 text-blue-600" />
-          <h3 className="font-bold text-lg">Contributions</h3>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <label htmlFor="tax-year" className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-            Tax year
-          </label>
+          <label htmlFor="tax-year" className="text-sm text-ink-2">Tax year</label>
           <select
             id="tax-year"
             value={taxYear}
             onChange={e => onYearChange(Number(e.target.value))}
-            className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="h-11 rounded-lg border border-edge bg-surface px-3 text-sm text-ink focus:border-accent focus:outline-none"
           >
             {years.map(year => (
               <option key={year} value={year}>{year}</option>
@@ -56,47 +50,44 @@ export function ContributionTracker({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-end gap-x-3 gap-y-1 mb-4">
-        <span className="text-4xl font-bold text-slate-900 tabular-nums">{formatCurrency(contributed)}</span>
-        <span className="text-lg text-slate-400 mb-1">of {formatCurrency(limit.amount)}</span>
+      <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span className="text-[34px] font-medium tracking-tight">{formatCurrency(contributed)}</span>
+        <span className="text-base text-muted">of {formatCurrency(limit.amount)}</span>
       </div>
 
-      <div className="relative h-3 rounded-full bg-slate-100 overflow-hidden mb-3">
+      <div className="mt-2 h-2 overflow-hidden rounded-full bg-line-soft">
         <div
-          className={cn(
-            'absolute inset-y-0 left-0 rounded-full transition-all duration-500',
-            overLimit ? 'bg-rose-500' : progress >= 0.999 ? 'bg-emerald-500' : 'bg-blue-500',
-          )}
+          className={cn('h-full rounded-full transition-all', overLimit ? 'bg-down' : progress >= 0.999 ? 'bg-up' : 'bg-accent')}
           style={{ width: `${Math.max(progress * 100, contributed > 0 ? 2 : 0)}%` }}
         />
       </div>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm mb-6">
+      <p className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm">
         {overLimit ? (
-          <span className="font-bold text-rose-600">{formatCurrency(excess)} over the limit</span>
+          <span className="font-semibold text-down">{formatCurrency(excess)} over the limit</span>
         ) : remaining === 0 ? (
-          <span className="font-bold text-emerald-600 flex items-center gap-1.5">
-            <Check className="w-4 h-4" /> Limit reached for {taxYear}
+          <span className="flex items-center gap-1.5 font-semibold text-up">
+            <Check className="h-4 w-4" aria-hidden="true" /> Limit reached for {taxYear}
           </span>
         ) : (
-          <span className="text-slate-600">
-            <strong className="text-slate-900">{formatCurrency(remaining)}</strong> remaining for {taxYear}
+          <span className="text-ink-2">
+            <strong className="font-semibold text-ink">{formatCurrency(remaining)}</strong> left for {taxYear}
           </span>
         )}
-        <span className="text-slate-400">
+        <span className="text-muted">
           {summary.contributionCount} contribution{summary.contributionCount === 1 ? '' : 's'} recorded
         </span>
-      </div>
+      </p>
 
       {overLimit && (
-        <div className="flex items-start gap-3 p-4 mb-4 bg-rose-50 border border-rose-200 rounded-2xl">
-          <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-          <div className="text-sm text-rose-900 leading-relaxed">
-            <p className="font-bold mb-1">Excess contribution</p>
-            <p>
-              An excess contribution is generally subject to a 6% excise tax for each year it stays
-              in the account. It can usually be corrected by withdrawing the excess (and what it
-              earned) before the tax filing deadline. Record that as a withdrawal tagged to {taxYear}.
+        <div className="mt-4 flex items-start gap-3 rounded-lg border border-down/40 px-4 py-3">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-down" aria-hidden="true" />
+          <div className="text-sm leading-relaxed">
+            <p className="font-semibold">Excess contribution</p>
+            <p className="mt-1 text-ink-2">
+              An excess contribution is generally subject to a 6% excise tax for each year it stays in the
+              account. It can usually be corrected by withdrawing the excess (and what it earned) before the tax
+              filing deadline. Record that as a withdrawal tagged to {taxYear}.
             </p>
           </div>
         </div>
@@ -105,23 +96,22 @@ export function ContributionTracker({
       {/* The IRS adjusts the limit annually, so a table baked into the app goes
           stale. Say so rather than showing a stale figure as fact. */}
       {!limit.verified && (
-        <div className="flex items-start gap-3 p-4 mb-4 bg-amber-50 border border-amber-200 rounded-2xl">
-          <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-          <div className="text-sm text-amber-900 leading-relaxed flex-1">
-            <p className="font-bold mb-1">Unverified limit for {taxYear}</p>
-            <p className="mb-3">
-              This app only has published figures through {limit.carriedFromYear}, so it is showing
-              that year's {formatCurrency(limit.amount)}. Confirm the {taxYear} limit in IRS
-              Publication 590-A and set it here.
+        <div className="mt-4 flex items-start gap-3 rounded-lg bg-note px-4 py-3">
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-note-ink" aria-hidden="true" />
+          <div className="flex-1 text-sm leading-relaxed">
+            <p className="font-semibold text-note-ink">Unverified limit for {taxYear}</p>
+            <p className="mt-1 text-ink-2">
+              This app only has published figures through {limit.carriedFromYear}, so it is showing that year's{' '}
+              {formatCurrency(limit.amount)}. Confirm the {taxYear} limit in IRS Publication 590-A and set it here.
             </p>
             <form
               onSubmit={e => {
                 e.preventDefault();
-                const input = (e.currentTarget.elements.namedItem('limit') as HTMLInputElement);
+                const input = e.currentTarget.elements.namedItem('limit') as HTMLInputElement;
                 const value = parseFloat(input.value);
                 if (Number.isFinite(value) && value > 0) onSetLimit(taxYear, value);
               }}
-              className="flex gap-2"
+              className="mt-3 flex flex-wrap gap-2"
             >
               <input
                 name="limit"
@@ -130,11 +120,11 @@ export function ContributionTracker({
                 step={100}
                 defaultValue={limit.amount}
                 aria-label={`Contribution limit for ${taxYear}`}
-                className="w-32 px-3 py-1.5 bg-white border border-amber-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="h-11 w-32 rounded-lg border border-edge bg-canvas px-3 text-sm text-ink focus:border-accent focus:outline-none"
               />
               <button
                 type="submit"
-                className="px-4 py-1.5 bg-amber-500 text-white text-sm font-bold rounded-lg hover:bg-amber-600 transition-colors"
+                className="h-11 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong"
               >
                 Set {taxYear} limit
               </button>
@@ -143,40 +133,32 @@ export function ContributionTracker({
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-slate-100">
-        <div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Contribution basis
-          </p>
-          <p className="text-xl font-bold text-slate-900 tabular-nums">{formatCurrency(basis)}</p>
-          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Lifetime contributions less withdrawals. This portion can generally be withdrawn at any
-            time without tax or penalty — earnings cannot.
+      <dl className="mt-5 grid gap-x-8 sm:grid-cols-2">
+        <div className="border-t border-line py-3">
+          <dt className="text-sm text-ink-2">Contribution basis</dt>
+          <dd className="mt-0.5 text-lg font-medium">{formatCurrency(basis)}</dd>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Lifetime contributions less withdrawals. This part can generally be withdrawn at any time without tax
+            or penalty — earnings can't.
           </p>
         </div>
-        <div>
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">
-            Limit source
-          </p>
-          <p className="text-xl font-bold text-slate-900">
-            {limit.source === 'user-override' ? 'You set this'
-              : limit.source === 'table' ? 'Published figure'
+        <div className="border-t border-line py-3">
+          <dt className="text-sm text-ink-2">Where the limit comes from</dt>
+          <dd className="mt-0.5 text-lg font-medium">
+            {limit.source === 'user-override' ? 'You set it'
+              : limit.source === 'table' ? 'Published IRS figure'
                 : `Carried from ${limit.carriedFromYear}`}
-          </p>
-          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Eligibility also phases out above certain income levels, which this app does not track.
+          </dd>
+          <p className="mt-1 text-xs leading-relaxed text-muted">
+            Eligibility also phases out above certain incomes, which this app doesn't track.
           </p>
         </div>
-      </div>
+      </dl>
 
-      <div className="flex items-start gap-2 mt-6 pt-4 border-t border-slate-100">
-        <Info className="w-3.5 h-3.5 text-slate-300 shrink-0 mt-0.5" />
-        <p className="text-[10px] text-slate-400 leading-relaxed">
-          Contributions made between January 1 and the filing deadline may count toward the prior
-          tax year — set the tax year explicitly when recording one. Dividends and growth inside the
-          account never count toward the limit.
-        </p>
-      </div>
-    </div>
+      <p className="mt-2 text-xs leading-relaxed text-muted">
+        Contributions made between January 1 and the filing deadline may count toward the prior tax year — set the
+        tax year when recording one. Dividends and growth inside the account never count toward the limit.
+      </p>
+    </section>
   );
 }

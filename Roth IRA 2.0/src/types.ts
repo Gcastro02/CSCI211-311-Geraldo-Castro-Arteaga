@@ -106,7 +106,14 @@ export interface PriceData {
   volume?: number;
 }
 
+/**
+ * ROTH_IRA turns on contribution-limit tracking and tax-year tagging, and
+ * tells the AI the account's tax rules. BROKERAGE is a regular taxable account.
+ */
+export type AccountType = 'BROKERAGE' | 'ROTH_IRA';
+
 export interface UserSettings {
+  accountType: AccountType;
   currency: string;
   dateFormat: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
   investmentHorizon: 'LONG_TERM' | 'SHORT_TERM' | 'BOTH';

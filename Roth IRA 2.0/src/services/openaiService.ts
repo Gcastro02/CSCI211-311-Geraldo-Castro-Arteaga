@@ -21,13 +21,22 @@ const ROTH_CONTEXT = [
   "Do not raise tax considerations that do not apply to this account type.",
 ].join(" ");
 
-const SYSTEM_PROMPT = [
-  "You are a financial analysis assistant for a Roth IRA planning app.",
+const BROKERAGE_CONTEXT = [
+  "This is a regular taxable US brokerage account.",
+  "Do not give personalized tax advice; where taxes could plausibly matter to a decision, say so briefly and suggest checking with a tax professional.",
+].join(" ");
+
+const systemPrompt = (settings: UserSettings) => [
+  "You are a financial analysis assistant for a portfolio tracking and learning app.",
   "Return valid JSON only and no markdown.",
-  ROTH_CONTEXT,
+  settings.accountType === "ROTH_IRA" ? ROTH_CONTEXT : BROKERAGE_CONTEXT,
   "When measured indicator values are supplied, reason from those numbers rather than from recalled figures, and refer to them explicitly in your reasoning.",
   "Leave any field blank rather than guessing. Never invent a URL, a date, or a specific figure you were not given.",
 ].join(" ");
+
+/** How the account is named inside prompts. */
+const accountPhrase = (settings: UserSettings) =>
+  settings.accountType === "ROTH_IRA" ? "a Roth IRA" : "a brokerage account";
 
 // Always same-origin. In dev this is Vite's proxy (vite.config.ts); in
 // production it is the Express proxy in server.ts. Calling
@@ -92,7 +101,7 @@ const sampleEvenly = (rows: PriceData[], maxPoints: number): PriceData[] => {
 const getYahooRangeAndInterval = (range: string): { range: string; interval: string } => {
   switch (range) {
     case "1D":
-      return { range: "1d", interval: "1h" };
+      return { range: "1d", interval: "5m" };
     case "5D":
       return { range: "1mo", interval: "1d" };
     case "1M":
@@ -216,7 +225,7 @@ export const AI_MODE: 'client' | 'server' | 'disabled' =
 
 export const isAiConfigured = AI_MODE !== 'disabled';
 
-const chatJson = async <T>(prompt: string): Promise<T> => {
+const chatJson = async <T>(prompt: string, settings: UserSettings): Promise<T> => {
   if (AI_MODE === 'disabled') {
     throw new Error("Missing OpenAI API key. Set VITE_OPENAI_API_KEY in .env and restart the app.");
   }
@@ -225,7 +234,7 @@ const chatJson = async <T>(prompt: string): Promise<T> => {
     const response = await fetch("/api/ai/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ system: SYSTEM_PROMPT, prompt }),
+      body: JSON.stringify({ system: systemPrompt(settings), prompt }),
     });
 
     const payload = await response.json().catch(() => ({}));
@@ -246,7 +255,7 @@ const chatJson = async <T>(prompt: string): Promise<T> => {
       model: OPENAI_MODEL,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt(settings) },
         { role: "user", content: prompt },
       ],
       temperature: 0.2,
@@ -263,11 +272,34 @@ const chatJson = async <T>(prompt: string): Promise<T> => {
   return extractJson<T>(content);
 };
 
+export interface Quote {
+  price: number;
+  /** The prior session's close, for "today" change. Null when Yahoo omits it. */
+  previousClose: number | null;
+  name?: string;
+  exchange?: string;
+  currency?: string;
+  dayHigh?: number;
+  dayLow?: number;
+  yearHigh?: number;
+  yearLow?: number;
+  volume?: number;
+  /** ISO time of the last regular-session trade. */
+  marketTime?: string;
+}
+
+/** A positive finite number, or undefined. */
+const positive = (value: unknown): number | undefined => {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+};
+
 /**
  * Live quote from the Yahoo chart endpoint's metadata, which carries
- * `regularMarketPrice` alongside the bars.
+ * `regularMarketPrice` alongside the bars. For a one-day range,
+ * `chartPreviousClose` is the close of the session before it.
  */
-const fetchYahooCurrentPrice = async (symbol: string): Promise<number | null> => {
+const fetchYahooQuote = async (symbol: string): Promise<Quote | null> => {
   const yahooSymbol = normalizeToYahooSymbol(symbol);
   if (!yahooSymbol) return null;
 
@@ -279,8 +311,31 @@ const fetchYahooCurrentPrice = async (symbol: string): Promise<number | null> =>
   const payload = await response.json();
   const meta = payload?.chart?.result?.[0]?.meta;
   const price = Number(meta?.regularMarketPrice ?? meta?.previousClose);
+  if (!Number.isFinite(price) || price <= 0) return null;
 
-  return Number.isFinite(price) && price > 0 ? price : null;
+  const marketSeconds = positive(meta?.regularMarketTime);
+  return {
+    price,
+    previousClose: positive(meta?.chartPreviousClose ?? meta?.previousClose) ?? null,
+    name: meta?.longName || meta?.shortName || undefined,
+    exchange: meta?.fullExchangeName || meta?.exchangeName || undefined,
+    currency: meta?.currency || undefined,
+    dayHigh: positive(meta?.regularMarketDayHigh),
+    dayLow: positive(meta?.regularMarketDayLow),
+    yearHigh: positive(meta?.fiftyTwoWeekHigh),
+    yearLow: positive(meta?.fiftyTwoWeekLow),
+    volume: positive(meta?.regularMarketVolume),
+    marketTime: marketSeconds ? new Date(marketSeconds * 1000).toISOString() : undefined,
+  };
+};
+
+/** Price plus previous close, or null when unavailable. */
+export const getQuote = async (symbol: string): Promise<Quote | null> => {
+  try {
+    return await fetchYahooQuote(symbol);
+  } catch {
+    return null;
+  }
 };
 
 /**
@@ -292,16 +347,19 @@ const fetchYahooCurrentPrice = async (symbol: string): Promise<number | null> =>
  * back to average cost. Yahoo serves a real-time quote from the same host
  * already supplying chart data.
  */
-export const getCurrentPrice = async (symbol: string): Promise<number> => {
-  try {
-    return (await fetchYahooCurrentPrice(symbol)) || 0;
-  } catch {
-    return 0;
-  }
-};
+export const getCurrentPrice = async (symbol: string): Promise<number> =>
+  (await getQuote(symbol))?.price || 0;
 
-export const getStockPriceHistory = async (symbol: string, range: string): Promise<PriceData[]> => {
-  return fetchYahooPriceHistory(symbol, range);
+/**
+ * Price bars for charting. Thinned to ~30 points unless `sample: false`, which
+ * the stock page uses so its full-width chart shows every bar.
+ */
+export const getStockPriceHistory = async (
+  symbol: string,
+  range: string,
+  options: { sample?: boolean } = {},
+): Promise<PriceData[]> => {
+  return fetchYahooPriceHistory(symbol, range, options);
 };
 
 /**
@@ -419,9 +477,9 @@ export const analyzePortfolio = async (holdings: StockHolding[], settings: UserS
   const symbols = Array.from(new Set(holdings.map((h) => h.symbol.trim().toUpperCase()).filter(Boolean)));
   const snapshots = await collectTechnicals(symbols);
 
-  const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","recommendation":"BUY|SELL|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}]}.\nAnalyze these holdings for a Roth IRA (${horizonText}): ${JSON.stringify(holdings)}.${technicalsPromptBlock(snapshots)}`;
+  const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","recommendation":"BUY|SELL|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}]}.\nAnalyze these holdings for ${accountPhrase(settings)} (${horizonText}): ${JSON.stringify(holdings)}.${technicalsPromptBlock(snapshots)}`;
 
-  const data = await chatJson<{ items?: StockAnalysis[] }>(prompt);
+  const data = await chatJson<{ items?: StockAnalysis[] }>(prompt, settings);
   return Array.isArray(data.items) ? data.items : [];
 };
 
@@ -430,8 +488,8 @@ export const getMarketSuggestions = async (settings: UserSettings): Promise<Mark
     ? "both short-term and long-term"
     : settings.investmentHorizon.toLowerCase().replace("_", "-");
 
-  const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","name":"","reason":"","trend":"","keyFactors":["",""]}]}.\nSuggest 5 stocks or ETFs for Roth IRA growth for ${horizonText}.`;
-  const data = await chatJson<{ items?: MarketSuggestion[] }>(prompt);
+  const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","name":"","reason":"","trend":"","keyFactors":["",""]}]}.\nSuggest 5 stocks or ETFs for growth in ${accountPhrase(settings)} for ${horizonText}.`;
+  const data = await chatJson<{ items?: MarketSuggestion[] }>(prompt, settings);
   return Array.isArray(data.items) ? data.items : [];
 };
 
@@ -442,8 +500,8 @@ export const analyzeWatchlistStock = async (symbol: string, settings: UserSettin
 
   const snapshots = await collectTechnicals([symbol]);
 
-  const prompt = `Return ONLY JSON in this format: {"item": {"symbol":"","recommendation":"BUY|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}}.\nAnalyze ${symbol} for a potential Roth IRA addition for ${horizonText}.${technicalsPromptBlock(snapshots)}`;
-  const data = await chatJson<{ item?: StockAnalysis }>(prompt);
+  const prompt = `Return ONLY JSON in this format: {"item": {"symbol":"","recommendation":"BUY|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}}.\nAnalyze ${symbol} as a potential addition to ${accountPhrase(settings)} for ${horizonText}.${technicalsPromptBlock(snapshots)}`;
+  const data = await chatJson<{ item?: StockAnalysis }>(prompt, settings);
 
   return data.item || {
     symbol,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { Transaction, TransactionType } from '../types';
+import { cn, localIsoDate } from '../lib/utils';
+import { AccountType, Transaction, TransactionType } from '../types';
 import { transactionLabel } from '../lib/transactions';
 
 interface TransactionFormProps {
@@ -9,6 +9,7 @@ interface TransactionFormProps {
   /** Suggestions for the symbol field. */
   symbols: string[];
   defaultTaxYear: number;
+  accountType: AccountType;
 }
 
 const TYPES: TransactionType[] = ['CONTRIBUTION', 'BUY', 'SELL', 'DIVIDEND', 'WITHDRAWAL'];
@@ -16,13 +17,17 @@ const TYPES: TransactionType[] = ['CONTRIBUTION', 'BUY', 'SELL', 'DIVIDEND', 'WI
 /** Which fields each type needs. */
 const needsSymbol = (type: TransactionType) => type !== 'CONTRIBUTION' && type !== 'WITHDRAWAL';
 const needsShares = (type: TransactionType) => type === 'BUY' || type === 'SELL';
-const needsTaxYear = (type: TransactionType) => type === 'CONTRIBUTION' || type === 'WITHDRAWAL';
+/** Tax years only mean something for Roth contributions and their corrections. */
+const needsTaxYear = (type: TransactionType, accountType: AccountType) =>
+  accountType === 'ROTH_IRA' && (type === 'CONTRIBUTION' || type === 'WITHDRAWAL');
 
-const todayIso = () => new Date().toISOString().slice(0, 10);
+const fieldClass =
+  'mt-1 h-11 w-full rounded-lg border border-edge bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none';
+const labelClass = 'text-sm text-ink-2';
 
-export function TransactionForm({ onSubmit, symbols, defaultTaxYear }: TransactionFormProps) {
+export function TransactionForm({ onSubmit, symbols, defaultTaxYear, accountType }: TransactionFormProps) {
   const [type, setType] = useState<TransactionType>('CONTRIBUTION');
-  const [date, setDate] = useState(todayIso);
+  const [date, setDate] = useState(() => localIsoDate());
   const [symbol, setSymbol] = useState('');
   const [shares, setShares] = useState('');
   const [price, setPrice] = useState('');
@@ -33,6 +38,8 @@ export function TransactionForm({ onSubmit, symbols, defaultTaxYear }: Transacti
 
   const sharesNum = parseFloat(shares);
   const priceNum = parseFloat(price);
+  const label = (t: TransactionType) => transactionLabel(t, accountType);
+  const withTaxYear = needsTaxYear(type, accountType);
 
   // For trades the total follows from shares x price, so it is derived rather
   // than asked for — one less place for the two to disagree.
@@ -71,48 +78,46 @@ export function TransactionForm({ onSubmit, symbols, defaultTaxYear }: Transacti
       amount: effectiveAmount,
       ...(needsSymbol(type) ? { symbol: symbol.trim().toUpperCase() } : {}),
       ...(needsShares(type) ? { shares: sharesNum, pricePerShare: priceNum } : {}),
-      ...(needsTaxYear(type) && Number.isFinite(parsedTaxYear) ? { taxYear: parsedTaxYear } : {}),
+      ...(withTaxYear && Number.isFinite(parsedTaxYear) ? { taxYear: parsedTaxYear } : {}),
       ...(note.trim() ? { note: note.trim() } : {}),
     });
 
     reset();
   };
 
-  const inputClass =
-    'w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all';
-  const labelClass = 'text-xs font-bold text-slate-400 uppercase';
-
   return (
-    <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100">
-      <h3 className="font-bold text-lg mb-6">Record Activity</h3>
+    <section aria-labelledby="record-heading">
+      <h2 id="record-heading" className="text-lg font-semibold">Record activity</h2>
+      <p className="mt-1 text-sm text-ink-2">
+        Log what happened at your broker. Buys and sells also update your holdings and cash.
+      </p>
 
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div role="group" aria-label="Activity type" className="mt-4 flex flex-wrap gap-2">
         {TYPES.map(option => (
           <button
             key={option}
             type="button"
             onClick={() => { setType(option); setError(null); }}
+            aria-pressed={type === option}
             className={cn(
-              'px-4 py-2 rounded-xl text-sm font-medium border transition-all',
-              type === option
-                ? 'bg-slate-900 text-white border-slate-900'
-                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300',
+              'h-10 rounded-full border px-4 text-sm font-medium transition-colors',
+              type === option ? 'border-accent bg-accent-tint text-accent' : 'border-edge text-ink-2 hover:text-ink',
             )}
           >
-            {transactionLabel(option)}
+            {label(option)}
           </button>
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="space-y-1">
+      <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
             <label htmlFor="tx-date" className={labelClass}>Date</label>
-            <input id="tx-date" type="date" value={date} onChange={e => setDate(e.target.value)} className={inputClass} />
+            <input id="tx-date" type="date" value={date} onChange={e => setDate(e.target.value)} className={fieldClass} />
           </div>
 
           {needsSymbol(type) && (
-            <div className="space-y-1">
+            <div>
               <label htmlFor="tx-symbol" className={labelClass}>Symbol</label>
               <input
                 id="tx-symbol"
@@ -120,7 +125,7 @@ export function TransactionForm({ onSubmit, symbols, defaultTaxYear }: Transacti
                 value={symbol}
                 onChange={e => setSymbol(e.target.value)}
                 placeholder="e.g. VOO"
-                className={inputClass}
+                className={cn(fieldClass, 'uppercase placeholder:normal-case')}
               />
               <datalist id="tx-symbol-options">
                 {symbols.map(s => <option key={s} value={s} />)}
@@ -130,100 +135,60 @@ export function TransactionForm({ onSubmit, symbols, defaultTaxYear }: Transacti
 
           {needsShares(type) ? (
             <>
-              <div className="space-y-1">
+              <div>
                 <label htmlFor="tx-shares" className={labelClass}>Shares</label>
-                <input
-                  id="tx-shares"
-                  type="number"
-                  step="any"
-                  min="0"
-                  value={shares}
-                  onChange={e => setShares(e.target.value)}
-                  placeholder="0.00"
-                  className={inputClass}
-                />
+                <input id="tx-shares" type="number" step="any" min="0" value={shares} onChange={e => setShares(e.target.value)} placeholder="0" className={fieldClass} />
               </div>
-              <div className="space-y-1">
-                <label htmlFor="tx-price" className={labelClass}>Price / share</label>
-                <input
-                  id="tx-price"
-                  type="number"
-                  step="any"
-                  min="0"
-                  value={price}
-                  onChange={e => setPrice(e.target.value)}
-                  placeholder="0.00"
-                  className={inputClass}
-                />
+              <div>
+                <label htmlFor="tx-price" className={labelClass}>Price per share</label>
+                <input id="tx-price" type="number" step="any" min="0" value={price} onChange={e => setPrice(e.target.value)} placeholder="0.00" className={fieldClass} />
               </div>
             </>
           ) : (
-            <div className="space-y-1">
+            <div>
               <label htmlFor="tx-amount" className={labelClass}>Amount</label>
-              <input
-                id="tx-amount"
-                type="number"
-                step="any"
-                min="0"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-                placeholder="0.00"
-                className={inputClass}
-              />
+              <input id="tx-amount" type="number" step="any" min="0" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" className={fieldClass} />
             </div>
           )}
 
-          {needsTaxYear(type) && (
-            <div className="space-y-1">
+          {withTaxYear && (
+            <div>
               <label htmlFor="tx-tax-year" className={labelClass}>Tax year</label>
-              <input
-                id="tx-tax-year"
-                type="number"
-                value={taxYear}
-                onChange={e => setTaxYear(e.target.value)}
-                className={inputClass}
-              />
+              <input id="tx-tax-year" type="number" value={taxYear} onChange={e => setTaxYear(e.target.value)} className={fieldClass} />
             </div>
           )}
         </div>
 
-        {needsTaxYear(type) && (
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+        {withTaxYear && (
+          <p className="text-xs leading-relaxed text-muted">
             {type === 'CONTRIBUTION'
-              ? 'Set this to the prior year if the contribution is designated for it — allowed up to that year\'s filing deadline.'
+              ? 'Set this to the prior year if the contribution is designated for it — allowed up to that year’s filing deadline.'
               : 'Tag a withdrawal to a tax year only when correcting an excess contribution for it.'}
           </p>
         )}
 
-        <div className="flex flex-col md:flex-row gap-4 md:items-end">
-          <div className="space-y-1 flex-1">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end">
+          <div className="flex-1">
             <label htmlFor="tx-note" className={labelClass}>Note (optional)</label>
-            <input
-              id="tx-note"
-              value={note}
-              onChange={e => setNote(e.target.value)}
-              placeholder="e.g. payroll transfer"
-              className={inputClass}
-            />
+            <input id="tx-note" value={note} onChange={e => setNote(e.target.value)} placeholder="e.g. payroll transfer" className={fieldClass} />
           </div>
-
           <button
             type="submit"
-            className="bg-blue-600 text-white font-bold px-6 py-2 rounded-xl hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shrink-0"
+            className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong"
           >
-            <Plus className="w-5 h-5" />
-            Record {transactionLabel(type)}
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            Record {label(type).toLowerCase()}
           </button>
         </div>
 
         {derivedAmount !== null && (
-          <p className="text-xs text-slate-500">
-            Total: <strong className="text-slate-900">{derivedAmount.toFixed(2)}</strong> ({shares} x {price})
+          <p className="text-sm text-ink-2">
+            Total: <strong className="font-semibold text-ink">{derivedAmount.toFixed(2)}</strong> ({shares} × {price})
           </p>
         )}
 
-        {error && <p className="text-xs font-medium text-rose-600">{error}</p>}
+        {error && <p role="alert" className="text-sm font-medium text-down">{error}</p>}
       </form>
-    </div>
+    </section>
   );
 }
