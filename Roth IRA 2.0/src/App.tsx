@@ -5,24 +5,8 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  Plus,
-  Sparkles,
-  AlertCircle,
-  ArrowUpRight,
-  RefreshCw,
-  Info,
-  Moon,
-  Sun,
-  Globe,
-  Calendar,
-  Clock,
-  Newspaper,
-  X,
-  CheckCircle2,
-  PiggyBank
-} from 'lucide-react';
-import { cn, localIsoDate, parseDay } from './lib/utils';
+import { Info, X, CheckCircle2 } from 'lucide-react';
+import { localIsoDate, parseDay } from './lib/utils';
 import {
   PortfolioData,
   StockHolding,
@@ -47,12 +31,14 @@ import { TechnicalSnapshot } from './lib/indicators';
 import { auditRisk, DEFAULT_RISK_THRESHOLD } from './lib/portfolioMath';
 import { applyTransaction, reconcile, replayTransactions } from './lib/transactions';
 import { contributionBasis, contributionYears, summarizeContributions } from './lib/contributions';
-import { AppHeader, TAB_LABELS, type Tab } from './components/layout/AppHeader';
+import { AppHeader, type Tab } from './components/layout/AppHeader';
 import { HomeScreen } from './components/home/HomeScreen';
 import { StockScreen, type StockChartMode } from './components/stock/StockScreen';
 import { PortfolioScreen } from './components/portfolio/PortfolioScreen';
 import { WatchlistScreen } from './components/watchlist/WatchlistScreen';
 import { ActivityScreen } from './components/activity/ActivityScreen';
+import { DiscoverScreen } from './components/discover/DiscoverScreen';
+import { SettingsScreen } from './components/settings/SettingsScreen';
 
 /** 'BOTH' (line over candles) was an option on the old stock page; it now shows as candles. */
 type ChartMode = 'LINE' | 'CANDLES' | 'BOTH';
@@ -221,10 +207,8 @@ export default function App() {
 
   useEffect(() => {
     const root = document.documentElement;
-    // data-theme selects the token set in index.css; the `dark` class drives
-    // the legacy overrides for screens not yet rebuilt on those tokens.
+    // data-theme selects the token set in index.css.
     root.dataset.theme = settings.themeMode === 'DARK' ? 'dark' : 'light';
-    root.classList.toggle('dark', settings.themeMode === 'DARK');
   }, [settings.themeMode]);
 
   useEffect(() => {
@@ -892,368 +876,23 @@ export default function App() {
             formatCurrency={formatCurrency}
             formatDate={formatDate}
           />
+        ) : activeTab === 'suggestions' ? (
+          <DiscoverScreen
+            suggestions={suggestions}
+            isLoading={isSuggesting}
+            onGenerate={isAiConfigured ? fetchSuggestions : undefined}
+            watchlistSymbols={watchlist.map(item => item.symbol)}
+            onAddToWatchlist={handleAddWatchlist}
+            onOpenStock={openStock}
+            accountType={settings.accountType}
+          />
         ) : (
-          // Screens below still use the old styling; `.legacy` scopes the
-          // dark-mode overrides in index.css to them until each is rebuilt.
-          <div className="legacy">
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-semibold">{TAB_LABELS[activeTab]}</h1>
-          <button
-            onClick={() => updateAllPrices(true)}
-            disabled={isUpdatingPrices || (portfolio.holdings.length === 0 && watchlist.length === 0)}
-            className="flex h-11 items-center gap-2 rounded-full px-3 text-sm text-ink-2 transition-colors hover:bg-surface hover:text-ink disabled:opacity-50"
-          >
-            <RefreshCw className={cn('h-4 w-4', isUpdatingPrices && 'animate-spin')} aria-hidden="true" />
-            Refresh prices
-          </button>
-        </div>
-
-        <AnimatePresence mode="wait">
-          {activeTab === 'suggestions' && (
-            <motion.div
-              key="suggestions"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="space-y-8"
-            >
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 text-white relative overflow-hidden">
-                <div className="relative z-10">
-                  <h3 className="text-3xl font-bold mb-2">Market Discovery</h3>
-                  <p className="text-blue-100 max-w-md mb-6">
-                    Our AI scans current news, economic trends, and global events to find assets perfectly suited for a Roth IRA's long-term horizon.
-                  </p>
-                  <button 
-                    onClick={fetchSuggestions}
-                    disabled={isSuggesting}
-                    className="bg-white text-blue-600 font-bold px-6 py-3 rounded-2xl hover:bg-blue-50 transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20"
-                  >
-                    <RefreshCw className={cn("w-5 h-5", isSuggesting && "animate-spin")} />
-                    {isSuggesting ? 'Scanning Markets...' : 'Generate New Suggestions'}
-                  </button>
-                </div>
-                <Sparkles className="absolute right-[-20px] bottom-[-20px] w-64 h-64 text-white/10 rotate-12" />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {suggestions.map((s, idx) => (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.1 }}
-                    key={s.symbol}
-                    className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 hover:shadow-xl hover:shadow-slate-200/50 transition-all group"
-                  >
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-2xl font-black text-slate-900">{s.symbol}</span>
-                          <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md">TRENDING</span>
-                        </div>
-                        <h4 className="text-slate-500 font-medium">{s.name}</h4>
-                      </div>
-                      <button 
-                        onClick={() => handleAddWatchlist(s.symbol)}
-                        aria-label={`Add ${s.symbol} to watchlist`}
-                        className="p-3 bg-slate-50 rounded-2xl text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all"
-                      >
-                        <Plus className="w-6 h-6" />
-                      </button>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">The Trend</p>
-                        <div className="flex items-center gap-2 text-slate-700 font-medium">
-                          <ArrowUpRight className="w-5 h-5 text-emerald-500" />
-                          {s.trend}
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">AI Thesis</p>
-                        <p className="text-sm text-slate-600 leading-relaxed">
-                          {s.reason}
-                        </p>
-                      </div>
-                      {s.keyFactors && s.keyFactors.length > 0 && (
-                        <div className="flex flex-wrap gap-1 pt-2">
-                          {s.keyFactors.map((factor, i) => (
-                            <span key={i} className="px-2 py-1 bg-blue-50 text-blue-700 border border-blue-100 text-[9px] font-bold rounded-md uppercase tracking-wider">
-                              {factor}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
-                {!isSuggesting && suggestions.length === 0 && (
-                  <div className="col-span-full py-20 flex flex-col items-center justify-center text-slate-400">
-                    <Sparkles className="w-16 h-16 mb-4 opacity-10" />
-                    <p className="text-lg font-medium">Click the button above to discover opportunities</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {activeTab === 'settings' && (
-            <motion.div
-              key="settings"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="max-w-2xl space-y-6"
-            >
-              <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-                <div className="space-y-8">
-                  {/* Currency */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-blue-50 rounded-2xl text-blue-600">
-                      <Globe className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-1">Display Currency</h4>
-                      <p className="text-sm text-slate-500 mb-4">Which currency symbol and number format to display.</p>
-                      <select
-                        value={settings.currency}
-                        onChange={e => setSettings(prev => ({ ...prev, currency: e.target.value }))}
-                        className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                      >
-                        <option value="USD">USD - US Dollar</option>
-                        <option value="EUR">EUR - Euro</option>
-                        <option value="GBP">GBP - British Pound</option>
-                        <option value="JPY">JPY - Japanese Yen</option>
-                        <option value="CAD">CAD - Canadian Dollar</option>
-                        <option value="AUD">AUD - Australian Dollar</option>
-                      </select>
-                      {/* Market data arrives in USD and there is no FX conversion,
-                          so any other choice relabels the same numbers. */}
-                      {settings.currency !== 'USD' && (
-                        <div className="mt-3 flex items-start gap-2 p-3 bg-amber-50 border border-amber-100 rounded-xl">
-                          <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                          <p className="text-xs text-amber-800 leading-relaxed">
-                            Prices are quoted in USD and are <strong>not converted</strong>. Selecting
-                            {' '}{settings.currency} changes the symbol and formatting only — the
-                            underlying values are still US dollars.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Theme Mode */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-slate-100 rounded-2xl text-slate-700">
-                      {settings.themeMode === 'DARK' ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-1">Theme</h4>
-                      <p className="text-sm text-slate-500 mb-4">Switch between light and dark mode.</p>
-                      <div className="flex gap-2">
-                        {[
-                          { id: 'LIGHT', label: 'Light', icon: Sun },
-                          { id: 'DARK', label: 'Dark', icon: Moon },
-                        ].map(option => {
-                          const Icon = option.icon;
-                          return (
-                            <button
-                              key={option.id}
-                              onClick={() => setSettings(prev => ({ ...prev, themeMode: option.id as 'LIGHT' | 'DARK' }))}
-                              className={cn(
-                                'px-4 py-2 rounded-xl text-sm font-medium border transition-all inline-flex items-center gap-2',
-                                settings.themeMode === option.id
-                                  ? 'bg-slate-900 text-white border-slate-900'
-                                  : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
-                              )}
-                            >
-                              <Icon className="w-4 h-4" />
-                              {option.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Date Format */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-amber-50 rounded-2xl text-amber-600">
-                      <Calendar className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-1">Date Format</h4>
-                      <p className="text-sm text-slate-500 mb-4">How dates should be displayed across the app.</p>
-                      <div className="flex gap-2">
-                        {['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'].map(format => (
-                          <button
-                            key={format}
-                            onClick={() => setSettings(prev => ({ ...prev, dateFormat: format as any }))}
-                            className={cn(
-                              "px-4 py-2 rounded-xl text-sm font-medium border transition-all",
-                              settings.dateFormat === format 
-                                ? "bg-slate-900 text-white border-slate-900" 
-                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
-                            )}
-                          >
-                            {format}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Investment Horizon */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-600">
-                      <Clock className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-1">Investment Horizon</h4>
-                      <p className="text-sm text-slate-500 mb-4">
-                        This helps AI tailor recommendations for your goals. A Roth IRA is a
-                        retirement account, so long term is usually the fitting choice.
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                        {[
-                          { id: 'LONG_TERM', label: 'Long Term' },
-                          { id: 'BOTH', label: 'Balanced' },
-                          { id: 'SHORT_TERM', label: 'Short Term' }
-                        ].map(horizon => (
-                          <button
-                            key={horizon.id}
-                            onClick={() => setSettings(prev => ({ ...prev, investmentHorizon: horizon.id as any }))}
-                            className={cn(
-                              "px-4 py-2 rounded-xl text-sm font-medium border transition-all",
-                              settings.investmentHorizon === horizon.id 
-                                ? "bg-slate-900 text-white border-slate-900" 
-                                : "bg-white text-slate-600 border-slate-200 hover:border-slate-300"
-                            )}
-                          >
-                            {horizon.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Catch-up contributions — Roth only */}
-                  {settings.accountType === 'ROTH_IRA' && (
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-blue-50 rounded-2xl text-blue-600">
-                      <PiggyBank className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-1">Catch-Up Contributions</h4>
-                      <p className="text-sm text-slate-500 mb-4">
-                        Account holders aged 50 and over may contribute an additional catch-up
-                        amount each year. This raises the limit used on the Activity tab.
-                      </p>
-                      <div className="flex gap-2">
-                        {[
-                          { value: false, label: 'Under 50' },
-                          { value: true, label: '50 or over' },
-                        ].map(option => (
-                          <button
-                            key={String(option.value)}
-                            onClick={() => setSettings(prev => ({ ...prev, catchUpEligible: option.value }))}
-                            className={cn(
-                              'px-4 py-2 rounded-xl text-sm font-medium border transition-all',
-                              settings.catchUpEligible === option.value
-                                ? 'bg-slate-900 text-white border-slate-900'
-                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300',
-                            )}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      {Object.keys(settings.contributionLimitOverrides).length > 0 && (
-                        <div className="mt-4 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                            Your limit overrides
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {Object.entries(settings.contributionLimitOverrides)
-                              .sort(([a], [b]) => Number(b) - Number(a))
-                              .map(([year, amount]) => (
-                                <span
-                                  key={year}
-                                  className="inline-flex items-center gap-2 text-xs font-medium bg-white border border-slate-200 rounded-lg px-2 py-1"
-                                >
-                                  {year}: {formatCurrency(amount)}
-                                  <button
-                                    onClick={() => setSettings(prev => {
-                                      const next = { ...prev.contributionLimitOverrides };
-                                      delete next[Number(year)];
-                                      return { ...prev, contributionLimitOverrides: next };
-                                    })}
-                                    className="text-slate-300 hover:text-rose-500 transition-colors"
-                                    aria-label={`Remove the ${year} override`}
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </span>
-                              ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  )}
-
-                  {/* News Sources */}
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-rose-50 rounded-2xl text-rose-600">
-                      <Newspaper className="w-6 h-6" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-1">Preferred News Sources</h4>
-                      <p className="text-sm text-slate-500 mb-4">AI will prioritize these sources when fetching news.</p>
-                      <div className="flex flex-wrap gap-2">
-                        {['Bloomberg', 'Reuters', 'CNBC', 'WSJ', 'Financial Times', 'Yahoo Finance'].map(source => {
-                          const isSelected = settings.preferredNewsSources.includes(source);
-                          return (
-                            <button
-                              key={source}
-                              onClick={() => {
-                                setSettings(prev => ({
-                                  ...prev,
-                                  preferredNewsSources: isSelected 
-                                    ? prev.preferredNewsSources.filter(s => s !== source)
-                                    : [...prev.preferredNewsSources, source]
-                                }));
-                              }}
-                              className={cn(
-                                "px-3 py-1.5 rounded-full text-xs font-bold border transition-all",
-                                isSelected 
-                                  ? "bg-rose-600 text-white border-rose-600" 
-                                  : "bg-white text-slate-400 border-slate-200 hover:border-slate-300"
-                              )}
-                            >
-                              {source}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-slate-900 text-white rounded-3xl p-8 shadow-xl shadow-slate-200">
-                <h4 className="font-bold text-lg mb-2">Data Privacy</h4>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  All your portfolio data, watchlist items, and settings are stored locally in your browser's storage. 
-                  We do not store your financial data on our servers. AI analysis is performed on-demand using the 
-                  symbols and amounts you provide.
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-          </div>
+          <SettingsScreen
+            settings={settings}
+            onUpdate={patch => setSettings(prev => ({ ...prev, ...patch }))}
+            aiEnabled={isAiConfigured}
+            formatCurrency={formatCurrency}
+          />
         )}
       </main>
     </div>

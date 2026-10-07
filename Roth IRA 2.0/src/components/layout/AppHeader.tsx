@@ -15,16 +15,6 @@ export const NAV_ITEMS: { id: Tab; label: string }[] = [
   { id: 'suggestions', label: 'Discover' },
 ];
 
-export const TAB_LABELS: Record<Tab, string> = {
-  home: 'Home',
-  holdings: 'Portfolio',
-  activity: 'Activity',
-  watchlist: 'Watchlist',
-  detailed: 'Stock',
-  suggestions: 'Discover',
-  settings: 'Settings',
-};
-
 interface AppHeaderProps {
   activeTab: Tab;
   onNavigate: (tab: Tab) => void;
