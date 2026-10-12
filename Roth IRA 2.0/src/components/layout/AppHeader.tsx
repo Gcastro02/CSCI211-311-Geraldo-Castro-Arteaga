@@ -23,9 +23,11 @@ interface AppHeaderProps {
   onSearch: (symbol: string) => void;
   theme: 'LIGHT' | 'DARK';
   onToggleTheme: () => void;
+  /** The experience level's name, shown as a chip that opens Settings. */
+  levelLabel: string;
 }
 
-export function AppHeader({ activeTab, onNavigate, onSearch, theme, onToggleTheme }: AppHeaderProps) {
+export function AppHeader({ activeTab, onNavigate, onSearch, theme, onToggleTheme, levelLabel }: AppHeaderProps) {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (event: FormEvent) => {
@@ -85,6 +87,14 @@ export function AppHeader({ activeTab, onNavigate, onSearch, theme, onToggleThem
         </form>
 
         <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => onNavigate('settings')}
+            title="Experience level — change it in Settings"
+            className="mr-1 h-8 rounded-full bg-accent-tint px-3 text-xs font-medium text-accent hover:underline"
+          >
+            {levelLabel}
+          </button>
           <button
             type="button"
             onClick={onToggleTheme}

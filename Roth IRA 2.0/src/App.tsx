@@ -40,6 +40,8 @@ import { ActivityScreen } from './components/activity/ActivityScreen';
 import { DiscoverScreen } from './components/discover/DiscoverScreen';
 import { SettingsScreen } from './components/settings/SettingsScreen';
 import { PracticeScreen } from './components/practice/PracticeScreen';
+import { OnboardingScreen } from './components/onboarding/OnboardingScreen';
+import { levelLabel } from './lib/level';
 
 /** 'BOTH' (line over candles) was an option on the old stock page; it now shows as candles. */
 type ChartMode = 'LINE' | 'CANDLES' | 'BOTH';
@@ -78,6 +80,10 @@ const normalizeSettings = (raw: unknown): UserSettings => {
     // Settings saved before account types existed came from the Roth-only
     // version of the app, so those accounts are Roth IRAs.
     accountType: candidate.accountType === 'BROKERAGE' ? 'BROKERAGE' : 'ROTH_IRA',
+    // Anything but a known level stays unset, so onboarding asks the question.
+    experienceLevel: (['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const).includes(candidate.experienceLevel as never)
+      ? candidate.experienceLevel
+      : undefined,
     preferredNewsSources: Array.isArray(candidate.preferredNewsSources)
       ? candidate.preferredNewsSources
       : [],
@@ -737,6 +743,12 @@ export default function App() {
     setActiveTab('detailed');
   };
 
+  // First launch, or settings saved before levels existed: ask before anything else.
+  if (!settings.experienceLevel) {
+    return <OnboardingScreen onChoose={level => setSettings(prev => ({ ...prev, experienceLevel: level }))} />;
+  }
+  const level = settings.experienceLevel;
+
   return (
     <div className="min-h-screen">
       {/* Notifications */}
@@ -772,11 +784,13 @@ export default function App() {
         onSearch={openStock}
         theme={settings.themeMode}
         onToggleTheme={() => setSettings(prev => ({ ...prev, themeMode: prev.themeMode === 'DARK' ? 'LIGHT' : 'DARK' }))}
+        levelLabel={levelLabel(level)}
       />
 
       <main className="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6">
         {activeTab === 'home' ? (
           <HomeScreen
+            level={level}
             holdings={portfolio.holdings}
             audit={riskAudit}
             unrealized={unrealized}
@@ -798,6 +812,7 @@ export default function App() {
         ) : activeTab === 'detailed' ? (
           <StockScreen
             key={detailedSymbol}
+            level={level}
             symbol={detailedSymbol}
             holdings={portfolio.holdings}
             inWatchlist={watchlist.some(item => item.symbol === detailedSymbol)}
@@ -878,7 +893,7 @@ export default function App() {
             formatDate={formatDate}
           />
         ) : activeTab === 'practice' ? (
-          <PracticeScreen formatCurrency={formatCurrency} />
+          <PracticeScreen formatCurrency={formatCurrency} level={level} />
         ) : activeTab === 'suggestions' ? (
           <DiscoverScreen
             suggestions={suggestions}

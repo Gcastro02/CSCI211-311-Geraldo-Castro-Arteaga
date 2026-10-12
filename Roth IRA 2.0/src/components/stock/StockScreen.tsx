@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Check, Plus, RefreshCw, Sparkles } from 'lucide-react';
-import { NewsItem, PriceData, StockAnalysis, StockHolding, UserSettings } from '../../types';
+import { ExperienceLevel, NewsItem, PriceData, StockAnalysis, StockHolding, UserSettings } from '../../types';
 import { TechnicalSnapshot } from '../../lib/indicators';
 import { getQuote, getStockNews, getStockPriceHistory, getTechnicals, type Quote } from '../../services/openaiService';
 import { cn, parseDay } from '../../lib/utils';
 import { Change } from '../ui/Change';
 import { LineChart, type LinePoint } from '../ui/LineChart';
 import { TechnicalsPanel } from '../TechnicalsPanel';
+import { explainMode, showsPlainSummary, type ExplainMode } from '../../lib/level';
 import type { Tab } from '../layout/AppHeader';
 
 export type StockChartMode = 'LINE' | 'CANDLES';
@@ -42,6 +43,7 @@ interface StockScreenProps {
   onNavigate: (tab: Tab) => void;
   formatCurrency: (amount: number) => string;
   formatDate: (date?: string) => string;
+  level: ExperienceLevel;
 }
 
 /**
@@ -65,6 +67,7 @@ export function StockScreen({
   onNavigate,
   formatCurrency,
   formatDate,
+  level,
 }: StockScreenProps) {
   const [range, setRange] = useState<StockRange>('6M');
   /** undefined while loading, null when the lookup failed. */
@@ -72,7 +75,9 @@ export function StockScreen({
   const [bars, setBars] = useState<PriceData[] | null>(null);
   const [ownTechnicals, setOwnTechnicals] = useState<TechnicalSnapshot | null | undefined>(undefined);
   const [news, setNews] = useState<NewsItem[] | null>(null);
-  const [explain, setExplain] = useState(true);
+  // Starts from the level; the "Explain terms" toggle overrides it either way.
+  const [explainInline, setExplainInline] = useState(() => explainMode(level) === 'inline');
+  const explain: ExplainMode = explainInline ? 'inline' : explainMode(level) === 'hover' ? 'hover' : 'off';
 
   useEffect(() => {
     let cancelled = false;
@@ -354,11 +359,11 @@ export function StockScreen({
               <h2 id="stats-heading" className="text-lg font-semibold">Key stats</h2>
               <button
                 type="button"
-                onClick={() => setExplain(prev => !prev)}
-                aria-pressed={explain}
+                onClick={() => setExplainInline(prev => !prev)}
+                aria-pressed={explainInline}
                 className="text-sm text-accent hover:underline"
               >
-                {explain ? 'Hide explanations' : 'Explain terms'}
+                {explainInline ? 'Hide explanations' : 'Explain terms'}
               </button>
             </div>
             <dl className="mt-2">
@@ -366,7 +371,12 @@ export function StockScreen({
                 <div key={stat.label} className="border-b border-line-soft py-3">
                   <div className="flex justify-between gap-3">
                     <dt className="flex items-center gap-1.5 text-sm text-ink-2">
-                      {stat.label}
+                      <span
+                        className={cn(explain === 'hover' && 'cursor-help underline decoration-muted decoration-dotted underline-offset-4')}
+                        title={explain === 'hover' ? stat.tip : undefined}
+                      >
+                        {stat.label}
+                      </span>
                       {stat.estimated && (
                         <span
                           className="rounded bg-note px-1 py-px text-[10px] font-medium text-note-ink"
@@ -378,7 +388,7 @@ export function StockScreen({
                     </dt>
                     <dd className="text-right text-sm font-medium">{stat.value}</dd>
                   </div>
-                  {explain && <p className="mt-1 text-xs leading-relaxed text-muted">{stat.tip}</p>}
+                  {explain === 'inline' && <p className="mt-1 text-xs leading-relaxed text-muted">{stat.tip}</p>}
                 </div>
               ))}
             </dl>
@@ -394,6 +404,7 @@ export function StockScreen({
               snapshot={snapshot}
               loading={technicalsLoading || (!technicals && ownTechnicals === undefined)}
               explain={explain}
+              summary={showsPlainSummary(level)}
             />
           </div>
         </section>

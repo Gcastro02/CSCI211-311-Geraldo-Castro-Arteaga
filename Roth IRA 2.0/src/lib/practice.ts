@@ -22,6 +22,11 @@ export interface PracticeScenario {
   /** The one symbol tradable in this scenario. */
   symbol: string;
   symbolName: string;
+  /**
+   * A fund holding many companies. Single-position concentration limits are
+   * about individual companies, so they don't apply to a fund.
+   */
+  isFund: boolean;
   /** First bar fetched, shown as context before trading starts. */
   historyStart: string;
   /** Trading starts on the first bar on or after this date. */
@@ -39,6 +44,7 @@ export const SCENARIOS: PracticeScenario[] = [
       'You see each day as it happens, and nothing after it.',
     symbol: 'SPY',
     symbolName: 'SPDR S&P 500 ETF — a fund holding the 500 largest US companies',
+    isFund: true,
     historyStart: '2020-01-02',
     start: '2020-02-03',
     end: '2020-06-30',
@@ -167,6 +173,42 @@ export const placeOrder = (
     amount,
   };
   return { session: { ...session, transactions: [...session.transactions, transaction] } };
+};
+
+export interface OrderImpact {
+  amount: number;
+  price: number;
+  cashAfter: number;
+  sharesAfter: number;
+  /** The position's share of the account after the order, 0–1. */
+  weightAfter: number;
+  /** Gain (or loss, negative) this sale locks in; null for a buy. */
+  realizedGain: number | null;
+}
+
+/**
+ * What an order would do, worked out by actually applying it — so the numbers
+ * shown before confirming match what gets recorded. Null if it would be refused.
+ */
+export const orderImpact = (
+  session: PracticeSession,
+  bars: PriceData[],
+  scenario: PracticeScenario,
+  side: OrderSide,
+  shares: number,
+): OrderImpact | null => {
+  const result = placeOrder(session, bars, scenario, side, shares);
+  if (!result.session) return null;
+  const before = accountState(session, bars, scenario);
+  const after = accountState(result.session, bars, scenario);
+  return {
+    amount: shares * after.price,
+    price: after.price,
+    cashAfter: after.cash,
+    sharesAfter: after.shares,
+    weightAfter: after.value > 0 ? (after.shares * after.price) / after.value : 0,
+    realizedGain: side === 'SELL' ? after.realized - before.realized : null,
+  };
 };
 
 /**

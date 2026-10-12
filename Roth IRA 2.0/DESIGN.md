@@ -14,7 +14,7 @@ and use this to monitor, learn and rehearse.
 | --- | --- | --- |
 | **Track** | Enter real holdings and transactions; monitor prices, charts, news, risk | Built (this app) |
 | **Practice** | Trade fake money against historical prices, at any speed | MVP built (one scenario) |
-| **Learn** | Guidance scaled to a trading level chosen at onboarding | Not started |
+| **Learn** | Guidance scaled to a trading level chosen at onboarding | Levels built; lessons not started |
 | **Roth IRA** | Contribution limits, contribution basis | Built; optional via account type |
 
 ## Track (existing)
@@ -159,8 +159,19 @@ https://claude.ai/artifact/EspVbjVyVu7YYn9BYr1BxV):
    (split-adjusted, not dividend-adjusted), so a learner sees the prices people
    saw at the time. The session lives under its own `practice_session` storage
    key and resumes after a refresh.
-3. **Levels** — onboarding question, `experienceLevel` setting, term
+3. ✅ **Levels** — onboarding question, `experienceLevel` setting, term
    explanations and trade confirmations scaled by level.
+   The rules live in `src/lib/level.ts`; screens ask it rather than checking
+   the level themselves. Built: onboarding (also shown to existing users once),
+   the Settings choice and header chip, inline/hover/off term explanations on
+   the stock page, a plain-language indicator summary for beginners, the
+   Home weight tip and practice market notes (hidden for advanced), practice
+   order confirmations, and the AI writing at the reader's level.
+   Deferred: the "Practice scenarios" and "Default view" rows of the table
+   below, which need step 4 and a decision on what a simplified dashboard
+   hides. Single-company concentration warnings don't apply to funds, so in
+   the SPY-only scenario intermediates aren't prompted; they will be once
+   scenarios include individual stocks.
 4. **Scenarios** — more presets, play-at-speed, mystery mode, guided goals for
    beginners.
 5. **Bot opponent** — port the Trading Simulator rules; three-way results.
