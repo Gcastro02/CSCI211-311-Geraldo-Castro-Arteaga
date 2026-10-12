@@ -112,8 +112,13 @@ export interface PriceData {
  */
 export type AccountType = 'BROKERAGE' | 'ROTH_IRA';
 
+/** Chosen at onboarding; decides how much the app explains. See `lib/level.ts`. */
+export type ExperienceLevel = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+
 export interface UserSettings {
   accountType: AccountType;
+  /** Unset until the user answers the onboarding question. */
+  experienceLevel?: ExperienceLevel;
   currency: string;
   dateFormat: 'MM/DD/YYYY' | 'DD/MM/YYYY' | 'YYYY-MM-DD';
   investmentHorizon: 'LONG_TERM' | 'SHORT_TERM' | 'BOTH';

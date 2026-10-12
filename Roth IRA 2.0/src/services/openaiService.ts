@@ -1,5 +1,6 @@
 import { StockAnalysis, MarketSuggestion, StockHolding, NewsItem, UserSettings, PriceData } from "../types";
 import { TechnicalSnapshot, computeIndicators, describeTechnicals } from "../lib/indicators";
+import { readingLevelInstruction } from "../lib/level";
 
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
 const OPENAI_MODEL = import.meta.env.VITE_OPENAI_MODEL || "gpt-4.1-mini";
@@ -32,7 +33,8 @@ const systemPrompt = (settings: UserSettings) => [
   settings.accountType === "ROTH_IRA" ? ROTH_CONTEXT : BROKERAGE_CONTEXT,
   "When measured indicator values are supplied, reason from those numbers rather than from recalled figures, and refer to them explicitly in your reasoning.",
   "Leave any field blank rather than guessing. Never invent a URL, a date, or a specific figure you were not given.",
-].join(" ");
+  readingLevelInstruction(settings.experienceLevel),
+].filter(Boolean).join(" ");
 
 /** How the account is named inside prompts. */
 const accountPhrase = (settings: UserSettings) =>

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { BellRing, Info, RefreshCw } from 'lucide-react';
-import { NewsItem, PriceData, StockHolding, WatchlistItem } from '../../types';
+import { ExperienceLevel, NewsItem, PriceData, StockHolding, WatchlistItem } from '../../types';
+import { showsContextNotes } from '../../lib/level';
 import { RiskAudit } from '../../lib/portfolioMath';
 import { buildHoldingsValueHistory } from '../../lib/portfolioHistory';
 import { getStockPriceHistory } from '../../services/openaiService';
@@ -42,6 +43,7 @@ interface HomeScreenProps {
   onSetCash: (amount: number) => void;
   formatCurrency: (amount: number) => string;
   formatDate: (date?: string) => string;
+  level: ExperienceLevel;
 }
 
 export function HomeScreen({
@@ -62,6 +64,7 @@ export function HomeScreen({
   onSetCash,
   formatCurrency,
   formatDate,
+  level,
 }: HomeScreenProps) {
   const [range, setRange] = useState<ChartRange>('6M');
   const [histories, setHistories] = useState<Partial<Record<ChartRange, Record<string, PriceData[]>>>>({});
@@ -371,7 +374,7 @@ export function HomeScreen({
                 </table>
               </div>
 
-              {audit.overLimit.length > 0 && (
+              {audit.overLimit.length > 0 && showsContextNotes(level) && (
                 <aside aria-label="Concentration note" className="mt-4 flex items-start gap-3.5 rounded-lg bg-surface px-[18px] py-4">
                   <Info className="mt-0.5 h-5 w-5 shrink-0 text-accent" aria-hidden="true" />
                   <p className="text-sm leading-relaxed">

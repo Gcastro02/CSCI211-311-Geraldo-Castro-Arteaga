@@ -1,6 +1,7 @@
 import { Info, RefreshCw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { TechnicalSnapshot, scoreTechnicals } from '../lib/indicators';
+import type { ExplainMode } from '../lib/level';
 
 const formatPct = (value: number | null, digits = 1) =>
   value === null ? '—' : `${value >= 0 ? '+' : '−'}${Math.abs(value * 100).toFixed(digits)}%`;
@@ -21,11 +22,42 @@ const BIAS_COPY: Record<'BULLISH' | 'NEUTRAL' | 'BEARISH', string> = {
   BEARISH: 'Lean negative',
 };
 
+/**
+ * The indicators in everyday words, for beginners. Describes the recent past
+ * only — no "buy", "sell" or forecast.
+ */
+const plainSummary = (snapshot: TechnicalSnapshot): string => {
+  const parts: string[] = [];
+  if (snapshot.return20d !== null) {
+    const pct = Math.abs(snapshot.return20d * 100).toFixed(1);
+    parts.push(`Over the last month the price is ${snapshot.return20d >= 0 ? 'up' : 'down'} ${pct}%.`);
+  }
+  if (snapshot.closeVsSma20 !== null) {
+    const pct = snapshot.closeVsSma20 * 100;
+    parts.push(Math.abs(pct) < 1
+      ? 'It’s close to its average price for the month.'
+      : `It’s ${Math.abs(pct).toFixed(1)}% ${pct > 0 ? 'above' : 'below'} its average price for the month.`);
+  }
+  if (snapshot.rsi14 !== null) {
+    parts.push(snapshot.rsi14 > 70
+      ? 'It has risen unusually fast lately.'
+      : snapshot.rsi14 < 30
+        ? 'It has fallen unusually fast lately.'
+        : 'It hasn’t moved unusually fast in either direction.');
+  }
+  if (snapshot.annualizedVolatility !== null) {
+    parts.push(`Its price typically swings about ${(snapshot.annualizedVolatility * 100).toFixed(0)}% over a year.`);
+  }
+  return parts.join(' ');
+};
+
 interface TechnicalsPanelProps {
   snapshot?: TechnicalSnapshot;
   loading?: boolean;
-  /** Show a one-line meaning under each indicator. */
-  explain?: boolean;
+  /** How each indicator's meaning is shown: written out, on hover, or not at all. */
+  explain?: ExplainMode;
+  /** Lead with a plain-language summary (beginners). */
+  summary?: boolean;
 }
 
 /**
@@ -34,7 +66,7 @@ interface TechnicalsPanelProps {
  * Everything shown here is computed locally from OHLCV bars — no model and no
  * language model involved — so it stays accurate even with AI features off.
  */
-export function TechnicalsPanel({ snapshot, loading = false, explain = false }: TechnicalsPanelProps) {
+export function TechnicalsPanel({ snapshot, loading = false, explain = 'off', summary = false }: TechnicalsPanelProps) {
   if (loading) {
     return (
       <p className="flex items-center gap-2 py-4 text-sm text-muted">
@@ -68,6 +100,12 @@ export function TechnicalsPanel({ snapshot, loading = false, explain = false }: 
 
   return (
     <div>
+      {summary && (
+        <p className="mb-4 rounded-lg bg-surface px-4 py-3 text-sm leading-relaxed">
+          <span className="font-semibold">In plain terms: </span>
+          <span className="text-ink-2">{plainSummary(snapshot)}</span>
+        </p>
+      )}
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="text-sm text-ink-2">
           Overall:{' '}
@@ -101,10 +139,15 @@ export function TechnicalsPanel({ snapshot, loading = false, explain = false }: 
         {metrics.map(metric => (
           <div key={metric.label} className="border-t border-line py-3">
             <div className="flex items-baseline justify-between gap-2">
-              <dt className="text-sm text-ink-2">{metric.label}</dt>
+              <dt
+                className={cn('text-sm text-ink-2', explain === 'hover' && 'cursor-help underline decoration-muted decoration-dotted underline-offset-4')}
+                title={explain === 'hover' ? metric.meaning : undefined}
+              >
+                {metric.label}
+              </dt>
               <dd className="text-[15px] font-medium">{metric.value}</dd>
             </div>
-            {explain && <p className="mt-1 text-xs leading-relaxed text-muted">{metric.meaning}</p>}
+            {explain === 'inline' && <p className="mt-1 text-xs leading-relaxed text-muted">{metric.meaning}</p>}
           </div>
         ))}
       </dl>

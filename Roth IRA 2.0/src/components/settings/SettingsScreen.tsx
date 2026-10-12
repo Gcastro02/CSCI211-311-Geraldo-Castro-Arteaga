@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { UserSettings } from '../../types';
 import { cn } from '../../lib/utils';
+import { LEVELS } from '../../lib/level';
 
 const NEWS_SOURCES = ['Bloomberg', 'Reuters', 'CNBC', 'WSJ', 'Financial Times', 'Yahoo Finance'];
 
@@ -60,7 +61,29 @@ export function SettingsScreen({ settings, onUpdate, aiEnabled, formatCurrency }
     <div className="max-w-4xl">
       <h1 className="text-2xl font-semibold">Settings</h1>
 
-      <section aria-labelledby="settings-account" className="mt-8">
+      <section aria-labelledby="settings-learning" className="mt-8">
+        <h2 id="settings-learning" className="text-lg font-semibold">Learning</h2>
+        <div className="mt-3">
+          <Setting
+            title="Experience level"
+            description={LEVELS.find(l => l.id === settings.experienceLevel)?.description ?? 'How much the app explains as you go.'}
+          >
+            <Choice
+              label="Experience level"
+              value={settings.experienceLevel ?? 'INTERMEDIATE'}
+              onChange={experienceLevel => onUpdate({ experienceLevel })}
+              options={LEVELS.map(l => ({ value: l.id, label: l.label }))}
+            />
+            <p className="mt-2 text-sm text-muted">
+              {settings.experienceLevel === 'BEGINNER' && 'Terms are explained inline, indicators get a plain-language summary, and practice trades are explained before they go through.'}
+              {settings.experienceLevel === 'INTERMEDIATE' && 'Explanations appear on hover, and practice warns only when a trade puts too much in one place.'}
+              {settings.experienceLevel === 'ADVANCED' && 'Numbers and tools only — no explanations or prompts. Screens with an “Explain terms” toggle still offer it.'}
+            </p>
+          </Setting>
+        </div>
+      </section>
+
+      <section aria-labelledby="settings-account" className="mt-10">
         <h2 id="settings-account" className="text-lg font-semibold">Account</h2>
         <div className="mt-3">
           <Setting

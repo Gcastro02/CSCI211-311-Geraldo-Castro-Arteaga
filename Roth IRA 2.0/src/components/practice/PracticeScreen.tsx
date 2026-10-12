@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Info, Pause, Play, RefreshCw, RotateCcw, SkipForward } from 'lucide-react';
-import { PriceData } from '../../types';
+import { ExperienceLevel, PriceData } from '../../types';
 import {
   PracticeScenario,
   PracticeSession,
@@ -14,11 +14,16 @@ import {
   isFinished,
   isValidSession,
   maxBuyShares,
+  orderImpact,
   placeOrder,
+  type OrderImpact,
+  type OrderSide,
   startSession,
   visibleBars,
 } from '../../lib/practice';
 import { getDailyBars } from '../../services/openaiService';
+import { DEFAULT_RISK_THRESHOLD } from '../../lib/portfolioMath';
+import { needsOrderConfirmation, showsContextNotes } from '../../lib/level';
 import { cn, parseDay } from '../../lib/utils';
 import { Change } from '../ui/Change';
 import { LineChart } from '../ui/LineChart';
@@ -67,9 +72,18 @@ const signedPct = (fraction: number) => `${fraction >= 0 ? '+' : '−'}${Math.ab
 
 interface PracticeScreenProps {
   formatCurrency: (amount: number) => string;
+  level: ExperienceLevel;
 }
 
-export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
+interface PendingOrder {
+  side: OrderSide;
+  shares: number;
+  impact: OrderImpact;
+  /** Over the single-company limit — the only reason an intermediate is asked. */
+  overLimit: boolean;
+}
+
+export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
   const [saved] = useState(readSaved);
   const savedScenario = findScenario((saved as PracticeSession | null)?.scenarioId ?? '');
   const [scenario] = useState<PracticeScenario>(savedScenario ?? SCENARIOS[0]);
@@ -82,7 +96,9 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
   const [playing, setPlaying] = useState(false);
   const [sharesInput, setSharesInput] = useState('');
   const [orderError, setOrderError] = useState<string | null>(null);
-  const [showTips, setShowTips] = useState(true);
+  const [showTips, setShowTips] = useState(() => showsContextNotes(level));
+  /** An order waiting for the player to confirm it, per their level. */
+  const [pending, setPending] = useState<PendingOrder | null>(null);
 
   // Load the scenario's bars once.
   useEffect(() => {
@@ -161,6 +177,7 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
   const step = (days: number) => {
     if (!session || !bars) return;
     setOrderError(null);
+    setPending(null);
     setSession(advance(session, bars, days));
   };
 
@@ -237,9 +254,11 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
   const sharesNum = Number(sharesInput);
   const preview = sharesInput && Number.isFinite(sharesNum) && sharesNum > 0 ? sharesNum * account.price : null;
 
-  const submit = (side: 'BUY' | 'SELL') => (event?: FormEvent) => {
-    event?.preventDefault();
-    const result = placeOrder(session, bars, scenario, side, Number(sharesInput));
+  // Concentration limits are about single companies; a fund is exempt.
+  const riskLimit = scenario.isFund ? Infinity : DEFAULT_RISK_THRESHOLD;
+
+  const execute = (side: OrderSide, shares: number) => {
+    const result = placeOrder(session, bars, scenario, side, shares);
     if (result.error) {
       setOrderError(result.error);
       return;
@@ -247,6 +266,24 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
     setSession(result.session!);
     setSharesInput('');
     setOrderError(null);
+    setPending(null);
+  };
+
+  const submit = (side: OrderSide) => (event?: FormEvent) => {
+    event?.preventDefault();
+    const shares = Number(sharesInput);
+    const impact = orderImpact(session, bars, scenario, side, shares);
+    if (!impact) {
+      setOrderError(placeOrder(session, bars, scenario, side, shares).error ?? 'That order can’t be placed.');
+      return;
+    }
+    const overLimit = side === 'BUY' && impact.weightAfter > riskLimit;
+    if (needsOrderConfirmation(level, { side, weightAfter: impact.weightAfter }, riskLimit)) {
+      setPending({ side, shares, impact, overLimit });
+      setOrderError(null);
+      return;
+    }
+    execute(side, shares);
   };
 
   const controlClass =
@@ -266,7 +303,7 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
           </p>
         </div>
         <div role="group" aria-label="Time controls" className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => setPlaying(p => !p)} disabled={finished} className={controlClass}>
+          <button type="button" onClick={() => { setPending(null); setPlaying(p => !p); }} disabled={finished} className={controlClass}>
             {playing ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
             {playing ? 'Pause' : 'Play'}
           </button>
@@ -310,6 +347,11 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
             </div>
           </section>
 
+          {!showTips && (
+            <button type="button" onClick={() => setShowTips(true)} className="self-start text-sm text-accent hover:underline">
+              Show market notes
+            </button>
+          )}
           {showTips && (
             <aside aria-label="What’s happening" className="flex items-start gap-3.5 rounded-lg bg-surface px-[18px] py-4">
               <Info className="mt-0.5 h-5 w-5 shrink-0 text-accent" aria-hidden="true" />
@@ -412,7 +454,7 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
                       step="1"
                       inputMode="numeric"
                       value={sharesInput}
-                      onChange={e => { setSharesInput(e.target.value); setOrderError(null); }}
+                      onChange={e => { setSharesInput(e.target.value); setOrderError(null); setPending(null); }}
                       placeholder="0"
                       className="mt-1 h-11 w-full rounded-lg border border-edge bg-surface px-3 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none"
                     />
@@ -436,6 +478,66 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
                 <p className="mt-2 min-h-5 text-xs text-muted">
                   {preview != null && `≈ ${formatCurrency(preview)} at today’s close of ${formatCurrency(account.price)}`}
                 </p>
+                {pending ? (
+                  <div role="region" aria-label="Confirm order" className="mt-2 rounded-lg bg-surface p-4 text-sm leading-relaxed">
+                    <p className="font-semibold">{pending.overLimit && level !== 'BEGINNER' ? 'Heads up' : 'Check this order'}</p>
+                    <ul className="mt-2 space-y-1.5 text-ink-2">
+                      {pending.side === 'BUY' ? (
+                        <>
+                          <li>
+                            Buy {pending.shares} {scenario.symbol} at today’s closing price of {formatCurrency(pending.impact.price)},
+                            for {formatCurrency(pending.impact.amount)}.
+                          </li>
+                          <li>
+                            Afterwards {scenario.symbol} will be {(pending.impact.weightAfter * 100).toFixed(0)}% of your account,
+                            with {formatCurrency(pending.impact.cashAfter)} left in cash.
+                          </li>
+                          {pending.overLimit && (
+                            <li className="text-warn-ink">
+                              That’s above the {(DEFAULT_RISK_THRESHOLD * 100).toFixed(0)}% the app treats as a lot to have in one company.
+                            </li>
+                          )}
+                          {level === 'BEGINNER' && scenario.isFund && (
+                            <li>{scenario.symbol} is a fund, so one share spreads your money across many companies.</li>
+                          )}
+                          {level === 'BEGINNER' && (
+                            <li>If {scenario.symbol} fell 10% from here, these shares would lose {formatCurrency(pending.impact.amount * 0.1)}.</li>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <li>
+                            Sell {pending.shares} {scenario.symbol} at today’s closing price of {formatCurrency(pending.impact.price)},
+                            for {formatCurrency(pending.impact.amount)}.
+                          </li>
+                          <li>
+                            {(pending.impact.realizedGain ?? 0) > 0.005
+                              ? `That locks in a gain of ${formatCurrency(pending.impact.realizedGain!)} on these shares.`
+                              : (pending.impact.realizedGain ?? 0) < -0.005
+                                ? `That locks in a loss of ${formatCurrency(-pending.impact.realizedGain!)} on these shares — once sold, they can’t recover it.`
+                                : 'You break even on these shares.'}
+                          </li>
+                          <li>
+                            Afterwards you’ll hold {pending.impact.sharesAfter} share{pending.impact.sharesAfter === 1 ? '' : 's'} and{' '}
+                            {formatCurrency(pending.impact.cashAfter)} in cash.
+                          </li>
+                        </>
+                      )}
+                    </ul>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => execute(pending.side, pending.shares)}
+                        className="h-11 rounded-full bg-accent text-sm font-medium text-on-accent hover:bg-accent-strong"
+                      >
+                        Confirm {pending.side === 'BUY' ? 'buy' : 'sale'}
+                      </button>
+                      <button type="button" onClick={() => setPending(null)} className="h-11 rounded-full border border-edge text-sm font-medium text-ink hover:bg-canvas">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   <button type="submit" disabled={playing} className="h-11 rounded-full bg-accent text-sm font-medium text-on-accent hover:bg-accent-strong disabled:opacity-50">
                     Buy
@@ -444,6 +546,7 @@ export function PracticeScreen({ formatCurrency }: PracticeScreenProps) {
                     Sell
                   </button>
                 </div>
+                )}
                 {playing && <p className="mt-2 text-xs text-muted">Pause to trade.</p>}
                 {orderError && <p role="alert" className="mt-2 text-sm font-medium text-down">{orderError}</p>}
               </form>

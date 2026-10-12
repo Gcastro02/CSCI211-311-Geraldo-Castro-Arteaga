@@ -13,10 +13,12 @@ import {
   isFinished,
   isValidSession,
   maxBuyShares,
+  orderImpact,
   placeOrder,
   startSession,
   visibleBars,
 } from '../src/lib/practice';
+import { needsOrderConfirmation } from '../src/lib/level';
 import { PriceData } from '../src/types';
 
 let passed = 0;
@@ -55,6 +57,7 @@ const scenario: PracticeScenario = {
   summary: '',
   symbol: 'TEST',
   symbolName: 'Test',
+  isFund: false,
   historyStart: '2026-01-02',
   start: '2026-01-06',
   end: '2026-01-12',
@@ -124,6 +127,34 @@ const session = startSession(scenario, series)!;
   check('fractional shares are refused', Boolean(placeOrder(session, series, scenario, 'BUY', 1.5).error));
   check('zero shares are refused', Boolean(placeOrder(session, series, scenario, 'BUY', 0).error));
   check('max buy is whole shares the cash covers', maxBuyShares(1000, 100) === 10 && maxBuyShares(999.99, 100) === 9 && maxBuyShares(1000, 0) === 0);
+}
+
+// ---------------------------------------------------------------------------
+// Order impact (shown before confirming) matches what gets recorded
+{
+  const buy = orderImpact(session, series, scenario, 'BUY', 4)!;
+  check('buy impact: cost, cash and weight after', near(buy.amount, 400) && near(buy.cashAfter, 600) && buy.sharesAfter === 4 && near(buy.weightAfter, 0.4) && buy.realizedGain === null);
+  check('impact of a refused order is null', orderImpact(session, series, scenario, 'BUY', 11) === null);
+  check('working out the impact doesn’t place the order', session.transactions.length === 1);
+
+  // Buy 4 at 100 (Jan 6), 4 more at 90 (Jan 7), then sell 5 at 80 (Jan 8):
+  // FIFO sells 4 @100 and 1 @90 -> basis 490, proceeds 400, loss 90.
+  let s2 = placeOrder(session, series, scenario, 'BUY', 4).session!;
+  s2 = placeOrder(advance(s2, series, 1), series, scenario, 'BUY', 4).session!;
+  const sell = orderImpact(advance(s2, series, 1), series, scenario, 'SELL', 5)!;
+  check('sell impact locks in the FIFO gain the log will record', near(sell.realizedGain!, -90) && sell.sharesAfter === 3);
+}
+
+// ---------------------------------------------------------------------------
+// When a practice order stops for confirmation
+{
+  const big = { side: 'BUY' as const, weightAfter: 0.4 };
+  const small = { side: 'BUY' as const, weightAfter: 0.1 };
+  const sale = { side: 'SELL' as const, weightAfter: 0.4 };
+  check('beginners confirm every order', needsOrderConfirmation('BEGINNER', small, 0.25) && needsOrderConfirmation('BEGINNER', sale, 0.25));
+  check('intermediates confirm only buys over the limit', needsOrderConfirmation('INTERMEDIATE', big, 0.25) && !needsOrderConfirmation('INTERMEDIATE', small, 0.25) && !needsOrderConfirmation('INTERMEDIATE', sale, 0.25));
+  check('no limit (a fund) means no intermediate prompt', !needsOrderConfirmation('INTERMEDIATE', big, Infinity));
+  check('advanced users are never prompted', !needsOrderConfirmation('ADVANCED', big, 0.25));
 }
 
 // ---------------------------------------------------------------------------
