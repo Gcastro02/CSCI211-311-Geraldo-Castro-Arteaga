@@ -39,6 +39,7 @@ import { WatchlistScreen } from './components/watchlist/WatchlistScreen';
 import { ActivityScreen } from './components/activity/ActivityScreen';
 import { DiscoverScreen } from './components/discover/DiscoverScreen';
 import { SettingsScreen } from './components/settings/SettingsScreen';
+import { PracticeScreen } from './components/practice/PracticeScreen';
 
 /** 'BOTH' (line over candles) was an option on the old stock page; it now shows as candles. */
 type ChartMode = 'LINE' | 'CANDLES' | 'BOTH';
@@ -876,6 +877,8 @@ export default function App() {
             formatCurrency={formatCurrency}
             formatDate={formatDate}
           />
+        ) : activeTab === 'practice' ? (
+          <PracticeScreen formatCurrency={formatCurrency} />
         ) : activeTab === 'suggestions' ? (
           <DiscoverScreen
             suggestions={suggestions}

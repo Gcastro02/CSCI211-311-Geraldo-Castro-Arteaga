@@ -13,9 +13,9 @@ and use this to monitor, learn and rehearse.
 | Part | What it does | Status |
 | --- | --- | --- |
 | **Track** | Enter real holdings and transactions; monitor prices, charts, news, risk | Built (this app) |
-| **Practice** | Trade fake money against historical prices, at any speed | Not started |
+| **Practice** | Trade fake money against historical prices, at any speed | MVP built (one scenario) |
 | **Learn** | Guidance scaled to a trading level chosen at onboarding | Not started |
-| **Roth IRA** | Contribution limits, contribution basis | Built; becomes an optional bonus |
+| **Roth IRA** | Contribution limits, contribution basis | Built; optional via account type |
 
 ## Track (existing)
 
@@ -146,12 +146,19 @@ https://claude.ai/artifact/EspVbjVyVu7YYn9BYr1BxV):
 
 ## Build order
 
-1. **Restructure and restyle** — set up the theme variables, then rebuild each
+1. ✅ **Restructure and restyle** — set up the theme variables, then rebuild each
    screen as its own component in the new look (Home first), replacing the
    matching section of `App.tsx` as it goes; add the account type setting and
    gate the Roth features behind it.
-2. **Practice mode MVP** — daily-bar fetcher, simulated clock, buy/sell, next
+2. ✅ **Practice mode MVP** — daily-bar fetcher, simulated clock, buy/sell, next
    day/week controls, results vs. buy-and-hold. One preset. No-look-ahead tests.
+   Built as `src/lib/practice.ts` (pure engine, checked by
+   `npm run verify:practice`) and `src/components/practice/PracticeScreen.tsx`.
+   MVP choices, to revisit in step 4: one tradable symbol per scenario; whole
+   shares only; play runs at a fixed speed. Prices are Yahoo's actual closes
+   (split-adjusted, not dividend-adjusted), so a learner sees the prices people
+   saw at the time. The session lives under its own `practice_session` storage
+   key and resumes after a refresh.
 3. **Levels** — onboarding question, `experienceLevel` setting, term
    explanations and trade confirmations scaled by level.
 4. **Scenarios** — more presets, play-at-speed, mystery mode, guided goals for
