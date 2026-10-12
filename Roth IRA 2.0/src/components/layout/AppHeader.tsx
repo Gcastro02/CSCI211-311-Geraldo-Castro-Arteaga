@@ -4,7 +4,7 @@ import { cn } from '../../lib/utils';
 
 export const APP_NAME = 'Trading Simulator';
 
-export type Tab = 'home' | 'holdings' | 'activity' | 'watchlist' | 'detailed' | 'suggestions' | 'settings';
+export type Tab = 'home' | 'holdings' | 'activity' | 'watchlist' | 'practice' | 'detailed' | 'suggestions' | 'settings';
 
 /** Top-level destinations. The stock page ('detailed') is reached by search or by clicking a ticker. */
 export const NAV_ITEMS: { id: Tab; label: string }[] = [
@@ -12,6 +12,7 @@ export const NAV_ITEMS: { id: Tab; label: string }[] = [
   { id: 'holdings', label: 'Portfolio' },
   { id: 'activity', label: 'Activity' },
   { id: 'watchlist', label: 'Watchlist' },
+  { id: 'practice', label: 'Practice' },
   { id: 'suggestions', label: 'Discover' },
 ];
 

@@ -118,24 +118,14 @@ const getYahooRangeAndInterval = (range: string): { range: string; interval: str
   }
 };
 
-const fetchYahooPriceHistory = async (
-  symbol: string,
-  selectedRange: string,
-  { sample = true }: { sample?: boolean } = {},
-): Promise<PriceData[]> => {
-  const yahooSymbol = normalizeToYahooSymbol(symbol);
-  if (!yahooSymbol) return [];
-
-  const startDate = getRangeStartDate(selectedRange);
-  const { range, interval } = getYahooRangeAndInterval(selectedRange);
-  const isIntraday = selectedRange === "1D";
-
-  const response = await fetch(
-    getYahooUrl(`/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=${range}&interval=${interval}`),
-  );
-  if (!response.ok) return [];
-
-  const payload = await response.json();
+/**
+ * Bars from a Yahoo chart response. Rows without a usable close are skipped;
+ * missing open/high/low fall back to the close. Unsorted, may hold duplicates.
+ */
+const parseChartBars = (
+  payload: any,
+  { startDate = null, isIntraday = false }: { startDate?: Date | null; isIntraday?: boolean } = {},
+): PriceData[] => {
   const result = payload?.chart?.result?.[0];
   const timestamps: number[] = Array.isArray(result?.timestamp) ? result.timestamp : [];
   const quote = result?.indicators?.quote?.[0] || {};
@@ -144,7 +134,6 @@ const fetchYahooPriceHistory = async (
   const lows: Array<number | null> = quote.low || [];
   const closes: Array<number | null> = quote.close || [];
   const volumes: Array<number | null> = quote.volume || [];
-  if (timestamps.length === 0 || closes.length === 0) return [];
 
   const rows: PriceData[] = [];
   const maxLen = Math.min(timestamps.length, closes.length);
@@ -176,6 +165,32 @@ const fetchYahooPriceHistory = async (
     });
   }
 
+  return rows;
+};
+
+/** One row per date, oldest first. */
+const dedupeByDate = (rows: PriceData[]): PriceData[] =>
+  Array.from(new Map(rows.map((row) => [row.date, row])).values())
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+const fetchYahooPriceHistory = async (
+  symbol: string,
+  selectedRange: string,
+  { sample = true }: { sample?: boolean } = {},
+): Promise<PriceData[]> => {
+  const yahooSymbol = normalizeToYahooSymbol(symbol);
+  if (!yahooSymbol) return [];
+
+  const startDate = getRangeStartDate(selectedRange);
+  const { range, interval } = getYahooRangeAndInterval(selectedRange);
+  const isIntraday = selectedRange === "1D";
+
+  const response = await fetch(
+    getYahooUrl(`/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=${range}&interval=${interval}`),
+  );
+  if (!response.ok) return [];
+
+  const rows = parseChartBars(await response.json(), { startDate, isIntraday });
   if (rows.length === 0) return [];
 
   if (isIntraday) {
@@ -183,10 +198,32 @@ const fetchYahooPriceHistory = async (
     return sample ? sampleEvenly(sorted, 24) : sorted;
   }
 
-  const deduped = Array.from(new Map(rows.map((row) => [row.date, row])).values())
-    .sort((a, b) => a.date.localeCompare(b.date));
-
+  const deduped = dedupeByDate(rows);
   return sample ? sampleEvenly(deduped, 30) : deduped;
+};
+
+/**
+ * Every daily bar between two calendar dates ('YYYY-MM-DD', both inclusive),
+ * for practice scenarios set in the past. Unsampled.
+ *
+ * Uses absolute period1/period2 timestamps: the relative `range` values the
+ * charts use come back weekly or monthly beyond a year.
+ */
+export const getDailyBars = async (symbol: string, startDate: string, endDate: string): Promise<PriceData[]> => {
+  const yahooSymbol = normalizeToYahooSymbol(symbol);
+  if (!yahooSymbol) return [];
+
+  const period1 = Math.floor(Date.parse(`${startDate}T00:00:00Z`) / 1000);
+  // period2 is exclusive, so run it to the end of the last day.
+  const period2 = Math.floor(Date.parse(`${endDate}T23:59:59Z`) / 1000);
+
+  const response = await fetch(
+    getYahooUrl(`/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?period1=${period1}&period2=${period2}&interval=1d`),
+  );
+  if (!response.ok) return [];
+
+  return dedupeByDate(parseChartBars(await response.json()))
+    .filter((row) => row.date >= startDate && row.date <= endDate);
 };
 
 const extractJson = <T>(content: string): T => {

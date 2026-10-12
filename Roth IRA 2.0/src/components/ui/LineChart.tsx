@@ -24,6 +24,17 @@ interface LineChartProps {
    * Defaults to the first point; an intraday chart passes the previous close.
    */
   baseline?: number;
+  /**
+   * Total positions on the x-axis. When larger than `points.length` the points
+   * fill the left part and the rest stays empty — practice mode uses this to
+   * show the whole scenario's length without revealing what happens later.
+   */
+  slots?: number;
+  /** Draw a labeled vertical marker at this point index. */
+  markerIndex?: number;
+  markerLabel?: string;
+  /** Shown over the empty part of the timeline when `slots` leaves room. */
+  futureCaption?: string;
 }
 
 const WIDTH = 1000;
@@ -37,7 +48,19 @@ const AXIS_LABELS = 4;
  * Plain SVG rather than Recharts so colors come straight from the theme
  * tokens and follow a theme switch without re-rendering.
  */
-export function LineChart({ points, ariaLabel, formatValue, formatDate, height = 260, mode = 'line', baseline }: LineChartProps) {
+export function LineChart({
+  points,
+  ariaLabel,
+  formatValue,
+  formatDate,
+  height = 260,
+  mode = 'line',
+  baseline,
+  slots,
+  markerIndex,
+  markerLabel,
+  futureCaption,
+}: LineChartProps) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const candles = mode === 'candles' && points.some(p => p.open != null && p.high != null && p.low != null);
 
@@ -53,23 +76,27 @@ export function LineChart({ points, ariaLabel, formatValue, formatDate, height =
     lo -= pad;
     hi += pad;
 
-    const step = WIDTH / points.length;
+    const total = Math.max(slots ?? points.length, points.length);
+    const step = WIDTH / total;
     // Lines run edge to edge; candles sit in the middle of equal slots so the
     // first and last bodies are not cut in half.
-    const x = (i: number) => (candles ? step * (i + 0.5) : (i / (points.length - 1)) * WIDTH);
+    const x = (i: number) => (candles ? step * (i + 0.5) : (i / (total - 1)) * WIDTH);
     const y = (v: number) => height - ((v - lo) / (hi - lo)) * height;
     const line = points.map((p, i) => `${x(i).toFixed(1)},${y(p.value).toFixed(1)}`).join(' ');
+    const lastX = x(points.length - 1);
 
     return {
       x,
       y,
       line,
-      area: `0,${height} ${line} ${WIDTH},${height}`,
+      total,
+      lastX,
+      area: `0,${height} ${line} ${lastX.toFixed(1)},${height}`,
       baseY: y(reference),
       bodyWidth: Math.max(step * 0.6, 0.5),
       up: points[points.length - 1].value >= reference,
     };
-  }, [points, height, candles, baseline]);
+  }, [points, height, candles, baseline, slots]);
 
   if (!geometry) {
     return (
@@ -89,11 +116,9 @@ export function LineChart({ points, ariaLabel, formatValue, formatDate, height =
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const ratio = Math.min(Math.max((event.clientX - rect.left) / rect.width, 0), 1);
-    setHoverIndex(
-      candles
-        ? Math.min(Math.floor(ratio * points.length), points.length - 1)
-        : Math.round(ratio * (points.length - 1)),
-    );
+    // Positions past the last point (the empty future) snap to the last point.
+    const index = candles ? Math.floor(ratio * geometry.total) : Math.round(ratio * (geometry.total - 1));
+    setHoverIndex(Math.min(index, points.length - 1));
   };
 
   return (
@@ -111,6 +136,21 @@ export function LineChart({ points, ariaLabel, formatValue, formatDate, height =
           aria-label={ariaLabel}
           className="block h-full w-full overflow-visible"
         >
+          {geometry.lastX < WIDTH - 1 && (
+            <rect x={geometry.lastX} y={0} width={WIDTH - geometry.lastX} height={height} style={{ fill: 'var(--surface)' }} />
+          )}
+          {markerIndex != null && markerIndex < points.length && (
+            <line
+              x1={geometry.x(markerIndex)}
+              x2={geometry.x(markerIndex)}
+              y1={0}
+              y2={height}
+              strokeWidth={1}
+              strokeDasharray="3 4"
+              vectorEffect="non-scaling-stroke"
+              style={{ stroke: 'var(--muted)' }}
+            />
+          )}
           <line
             x1={0}
             x2={WIDTH}
@@ -157,6 +197,15 @@ export function LineChart({ points, ariaLabel, formatValue, formatDate, height =
           )}
         </svg>
 
+        {futureCaption && geometry.lastX < WIDTH * 0.85 && (
+          <span
+            className="pointer-events-none absolute top-1/2 -translate-y-1/2 px-3 text-xs italic text-muted"
+            style={{ left: `${(geometry.lastX / WIDTH) * 100}%` }}
+          >
+            {futureCaption}
+          </span>
+        )}
+
         {hovered && (
           <>
             <div
@@ -190,11 +239,32 @@ export function LineChart({ points, ariaLabel, formatValue, formatDate, height =
         )}
       </div>
 
-      <div className="mt-1.5 flex justify-between text-xs text-muted">
-        {labelIndexes.map(i => (
-          <span key={i}>{formatDate(points[i].date)}</span>
-        ))}
-      </div>
+      {slots ? (
+        // Timeline mode: label the first point, the marker and today where they sit.
+        <div className="relative mt-1.5 h-4 text-xs text-muted">
+          {[0, markerIndex, points.length - 1]
+            .filter((i, k, all): i is number => i != null && i < points.length && all.indexOf(i) === k)
+            .map(i => {
+              const leftPct = (geometry.x(i) / WIDTH) * 100;
+              return (
+                <span
+                  key={i}
+                  className="absolute whitespace-nowrap"
+                  style={{ left: `${leftPct}%`, transform: i === 0 ? undefined : 'translateX(-50%)' }}
+                >
+                  {formatDate(points[i].date)}
+                  {i === markerIndex && markerLabel ? ` · ${markerLabel}` : ''}
+                </span>
+              );
+            })}
+        </div>
+      ) : (
+        <div className="mt-1.5 flex justify-between text-xs text-muted">
+          {labelIndexes.map(i => (
+            <span key={i}>{formatDate(points[i].date)}</span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
