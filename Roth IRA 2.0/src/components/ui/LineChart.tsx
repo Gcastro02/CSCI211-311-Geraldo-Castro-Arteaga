@@ -39,6 +39,8 @@ interface LineChartProps {
 
 const WIDTH = 1000;
 const AXIS_LABELS = 4;
+/** Timeline labels closer than this fraction of the width would overlap. */
+const MIN_LABEL_GAP = 0.15;
 
 /**
  * Price-style chart: green when the period ended up, red when down, with a
@@ -240,10 +242,15 @@ export function LineChart({
       </div>
 
       {slots ? (
-        // Timeline mode: label the first point, the marker and today where they sit.
+        // Timeline mode: label the marker, today and the first point where they
+        // sit, in that priority, skipping any too close to one already placed.
         <div className="relative mt-1.5 h-4 text-xs text-muted">
-          {[0, markerIndex, points.length - 1]
-            .filter((i, k, all): i is number => i != null && i < points.length && all.indexOf(i) === k)
+          {[markerIndex, points.length - 1, 0]
+            .reduce<number[]>((kept, i) => {
+              if (i == null || i >= points.length || kept.includes(i)) return kept;
+              const at = geometry.x(i) / WIDTH;
+              return kept.some(k => Math.abs(geometry.x(k) / WIDTH - at) < MIN_LABEL_GAP) ? kept : [...kept, i];
+            }, [])
             .map(i => {
               const leftPct = (geometry.x(i) / WIDTH) * 100;
               return (
