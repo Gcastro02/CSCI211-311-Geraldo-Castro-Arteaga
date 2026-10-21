@@ -119,7 +119,7 @@ app.get('*', (_req: Request, res: Response) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Roth IRA Portfolio Strategist listening on http://localhost:${PORT}`);
+  console.log(`Paper Trail listening on http://localhost:${PORT}`);
   console.log(`  market data proxies: /stooq-api, /yahoo-api`);
   console.log(`  AI relay: ${OPENAI_API_KEY ? 'enabled' : 'disabled (set OPENAI_API_KEY)'}`);
 });
