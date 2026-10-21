@@ -30,6 +30,7 @@ import {
   type OrderImpact,
   type OrderSide,
 } from '../../lib/practice';
+import { BOT_RULES, BotDecision, runBot } from '../../lib/practiceBot';
 import { getDailyBars } from '../../services/openaiService';
 import { DEFAULT_RISK_THRESHOLD } from '../../lib/portfolioMath';
 import { needsOrderConfirmation, showsContextNotes } from '../../lib/level';
@@ -136,6 +137,36 @@ const goalText = (goal: ScenarioGoal, startingCash: number, formatCurrency: (n: 
   }
 };
 
+/** One line on how the player did against each rival; `lead` is the player's value minus theirs. */
+const standingsSentence = (rivals: Array<{ name: string; lead: number }>) => {
+  const beat = rivals.filter(r => r.lead > 0.005).map(r => r.name);
+  const behind = rivals.filter(r => r.lead < -0.005).map(r => r.name);
+  const matched = rivals.filter(r => Math.abs(r.lead) <= 0.005).map(r => r.name);
+  if (beat.length === 2) return `You beat both ${listJoin(beat)}.`;
+  if (behind.length === 2) return `${listJoin(behind).replace(/^t/, 'T')} both finished ahead of you this time.`;
+  if (matched.length === 2) return 'You matched both.';
+  const first = beat.length ? `You beat ${beat[0]}` : `You matched ${matched[0]}`;
+  return behind.length ? `${first}, but ${behind[0]} came out ahead.` : `${first} and matched ${matched[0]}.`;
+};
+
+const pct = (fraction: number) => `${(fraction * 100).toFixed(0)}%`;
+
+/** "MACD above…" stays as is; "Trading above…" becomes "trading above…". */
+const lowerFirst = (text: string) => (/^[A-Z][a-z]/.test(text) ? text.charAt(0).toLowerCase() + text.slice(1) : text);
+
+const botReason = (decision: BotDecision, formatCurrency: (n: number) => string) => {
+  if (decision.kind === 'BUY') {
+    const why = listJoin((decision.reasons ?? []).slice(0, 2).map(lowerFirst));
+    return `Indicators leaned positive (${pct(decision.confidence ?? 0)} confidence)${why ? `: ${why}` : ''}.`
+      + (decision.capped ? ` Kept to ${pct(BOT_RULES.riskLimit)} of the account.` : '');
+  }
+  const move = Math.abs((decision.returnPct ?? 0) * 100).toFixed(1);
+  const cost = formatCurrency(decision.averageCost ?? 0);
+  return decision.kind === 'STOP_LOSS'
+    ? `Stop-loss: down ${move}% from its average cost of ${cost}.`
+    : `Take-profit: up ${move}% from its average cost of ${cost}.`;
+};
+
 // ---------------------------------------------------------------------------
 
 interface PracticeScreenProps {
@@ -171,6 +202,7 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
   /** An order waiting for the player to confirm it, per their level. */
   const [pending, setPending] = useState<PendingOrder | null>(null);
   const [custom, setCustom] = useState({ symbols: 'AAPL, MSFT', start: '2019-01-02', end: '2019-12-31', startingCash: '10000' });
+  const [allBotTrades, setAllBotTrades] = useState(false);
 
   // Resume a saved session: fetch its prices, then check it still fits them.
   useEffect(() => {
@@ -207,6 +239,10 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
     [baseMarket, mystery, startDay],
   );
   const finished = Boolean(session && market && isFinished(session, market));
+  // The bot is replayed once per market rather than on every tick. Each of its
+  // decisions sees only bars up to that day (checked by verify:bot), and the
+  // screen shows its account and trades only as of the simulated today.
+  const bot = useMemo(() => (market && scenario ? runBot(market, scenario) : null), [market, scenario]);
 
   // Auto-advance one day per tick while playing.
   useEffect(() => {
@@ -244,6 +280,7 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
     setOrderError(null);
     setPending(null);
     setPlaying(false);
+    setAllBotTrades(false);
     setRestored(true);
   };
 
@@ -303,7 +340,7 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
           <ul className="mt-4 space-y-2 text-sm text-ink-2">
             <li>• You see each day as it happened — and nothing after it, so hindsight can’t help you.</li>
             <li>• Orders fill at that day’s closing price.</li>
-            <li>• At the end, you’re compared with buying on day one and holding.</li>
+            <li>• A bot trades the same days by fixed rules. At the end, you’re compared with it and with buying on day one and holding.</li>
           </ul>
         </div>
 
@@ -405,10 +442,22 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
   const dayMove = price - previousClose;
   const trades = session.transactions.filter(tx => tx.type === 'BUY' || tx.type === 'SELL');
   const note = coachNote(drawdownFromHigh(market.bars[asset.symbol], session.day), label, asset.isFund);
-  const lead = account.value - holdValue;
   const held = account.positions.filter(p => p.shares > 0);
   const goal = level === 'BEGINNER' ? scenario.goal : undefined;
   const goalState = goal ? goalStatus(goal, session, market, scenario) : null;
+  const botAccount = accountState(bot!.session, market, scenario, session.day);
+  const botTrades = bot!.session.transactions.filter(tx => (tx.type === 'BUY' || tx.type === 'SELL') && tx.date <= today);
+  const botDecisions = new Map(bot!.decisions.map(d => [d.txId, d]));
+  const shownBotTrades = allBotTrades ? botTrades : botTrades.slice(0, 8);
+  const standings = [
+    { name: 'You', value: account.value },
+    { name: 'The bot', value: botAccount.value },
+    { name: 'Buy and hold', value: holdValue },
+  ].sort((a, b) => b.value - a.value);
+  const rivals = [
+    { name: 'the bot', lead: account.value - botAccount.value },
+    { name: 'buy-and-hold', lead: account.value - holdValue },
+  ];
   const sharesNum = Number(sharesInput);
   const preview = sharesInput && Number.isFinite(sharesNum) && sharesNum > 0 ? sharesNum * price : null;
 
@@ -605,21 +654,67 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
               </ul>
             )}
           </section>
+
+          {finished && (
+            <section aria-labelledby="practice-bot-trades">
+              <h2 id="practice-bot-trades" className="text-lg font-semibold">The bot’s trades</h2>
+              {botTrades.length === 0 ? (
+                <p className="mt-2 text-sm text-muted">The bot never saw a reason to trade, so it held cash the whole time.</p>
+              ) : (
+                <>
+                  <ul className="mt-2">
+                    {shownBotTrades.map(tx => {
+                      const decision = botDecisions.get(tx.id);
+                      return (
+                        <li key={tx.id} className="border-b border-line-soft py-2.5 text-sm">
+                          <div className="flex flex-wrap justify-between gap-3">
+                            <span>
+                              <span className={cn('font-semibold', tx.type === 'BUY' ? 'text-up' : 'text-down')}>
+                                {tx.type === 'BUY' ? 'Bought' : 'Sold'}
+                              </span>{' '}
+                              {tx.shares} <span className="font-mono">{labels[tx.symbol ?? ''] ?? tx.symbol}</span>
+                            </span>
+                            <span className="text-muted">
+                              {showDate(tx.date)} · {formatCurrency(tx.pricePerShare ?? 0)} · {formatCurrency(tx.amount)}
+                            </span>
+                          </div>
+                          {decision && <p className="mt-0.5 text-ink-2">{botReason(decision, formatCurrency)}</p>}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {botTrades.length > shownBotTrades.length && (
+                    <button type="button" onClick={() => setAllBotTrades(true)} className="mt-2 text-sm text-accent hover:underline">
+                      Show all {botTrades.length} trades
+                    </button>
+                  )}
+                </>
+              )}
+            </section>
+          )}
         </div>
 
         <aside className="flex min-w-0 flex-col gap-6 self-start">
           {finished && (
             <section aria-labelledby="practice-results" className="rounded-lg border border-accent p-5">
               <h2 id="practice-results" className="text-lg font-semibold">Scenario complete</h2>
-              <p className="mt-2 text-sm leading-relaxed text-ink-2">
-                You finished at <strong className="text-ink">{formatCurrency(account.value)}</strong> ({signedPct(account.returnPct)}).
-                Buy-and-hold would have ended at <strong className="text-ink">{formatCurrency(holdValue)}</strong> ({signedPct(holdReturn)}).{' '}
-                {Math.abs(lead) < 0.005
-                  ? 'You matched it.'
-                  : lead > 0
-                    ? `You beat it by ${formatCurrency(lead)}.`
-                    : `It came out ${formatCurrency(-lead)} ahead this time.`}
-              </p>
+              <ol aria-label="Final standings" className="mt-3 text-sm">
+                {standings.map((s, i) => (
+                  <li
+                    key={s.name}
+                    className={cn('flex justify-between gap-3 border-t border-line-soft py-2', s.name === 'You' && 'font-semibold text-ink')}
+                  >
+                    <span className={s.name === 'You' ? undefined : 'text-ink-2'}>{i + 1}. {s.name}</span>
+                    <span className="text-right">
+                      {formatCurrency(s.value)}{' '}
+                      <span className={s.value >= scenario.startingCash ? 'text-up' : 'text-down'}>
+                        ({signedPct(s.value / scenario.startingCash - 1)})
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-2 text-sm leading-relaxed text-ink-2">{standingsSentence(rivals)}</p>
               {goal && goalState && (
                 <p className={cn('mt-2 text-sm font-medium', goalState.met ? 'text-up' : 'text-down')}>
                   {goalState.met ? 'Goal met' : 'Goal missed'}: {goalText(goal, scenario.startingCash, formatCurrency)}
@@ -690,9 +785,44 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
                   <span className={holdReturn >= 0 ? 'text-up' : 'text-down'}>({signedPct(holdReturn)})</span>
                 </dd>
               </div>
+              <div className="flex justify-between gap-3 border-t border-line-soft py-2">
+                <dt className="text-ink-2">Bot</dt>
+                <dd className="text-right">
+                  {formatCurrency(botAccount.value)}{' '}
+                  <span className={botAccount.returnPct >= 0 ? 'text-up' : 'text-down'}>({signedPct(botAccount.returnPct)})</span>
+                </dd>
+              </div>
             </dl>
             <p className="mt-1 text-xs text-muted">Buy and hold = {yardstick}.</p>
           </section>
+
+          <details open={level === 'BEGINNER'} className="rounded-lg border border-line p-5">
+            <summary className="cursor-pointer text-sm font-medium text-muted hover:text-ink">How the bot trades</summary>
+            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-ink-2">
+              {level === 'BEGINNER' ? (
+                <li>
+                  Each day it looks at the same price history you see — which way prices are trending, and whether they’ve
+                  risen or fallen unusually fast — and buys when those signs lean at least {pct(BOT_RULES.minConfidence)} positive.
+                </li>
+              ) : (
+                <li>
+                  Each day it scores RSI, MACD, the 20-day average, Bollinger position and the 5/20-day trend from −100 to +100,
+                  reads that as a probability, and buys at {pct(BOT_RULES.minConfidence)} or more.
+                </li>
+              )}
+              <li>
+                The surer it is, the more it buys. It always keeps {pct(BOT_RULES.cashBuffer)} of its cash, and never puts more
+                than {pct(BOT_RULES.riskLimit)} of the account into one company.
+              </li>
+              <li>
+                It sells a whole holding once it’s {pct(BOT_RULES.stopLoss)} below what it paid (a stop-loss) or{' '}
+                {pct(BOT_RULES.takeProfit)} above it (taking profit).
+              </li>
+              <li>
+                Like you, it sees nothing after today. Its trades, and why it made each one, are shown at the end.
+              </li>
+            </ul>
+          </details>
 
           {!finished && (
             <section aria-labelledby="practice-order" className="rounded-lg border border-line p-5">

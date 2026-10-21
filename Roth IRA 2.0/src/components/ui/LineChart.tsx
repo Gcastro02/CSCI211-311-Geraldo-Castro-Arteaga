@@ -257,7 +257,8 @@ export function LineChart({
                 <span
                   key={i}
                   className="absolute whitespace-nowrap"
-                  style={{ left: `${leftPct}%`, transform: i === 0 ? undefined : 'translateX(-50%)' }}
+                  // Labels near either edge align to it rather than centering past it.
+                  style={{ left: `${leftPct}%`, transform: leftPct < 10 ? undefined : leftPct > 90 ? 'translateX(-100%)' : 'translateX(-50%)' }}
                 >
                   {formatDate(points[i].date)}
                   {i === markerIndex && markerLabel ? ` · ${markerLabel}` : ''}

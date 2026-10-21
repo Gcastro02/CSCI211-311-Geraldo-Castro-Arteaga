@@ -183,7 +183,18 @@ https://claude.ai/artifact/EspVbjVyVu7YYn9BYr1BxV):
    against the starting cash split evenly across them on day one and held; a
    scenario's calendar is only the days every asset traded, so no price is
    ever filled in or interpolated.
-5. **Bot opponent** — port the Trading Simulator rules; three-way results.
+5. ✅ **Bot opponent** — port the Trading Simulator rules; three-way results.
+   Built as `src/lib/practiceBot.ts` (checked by `npm run verify:bot`). The
+   exit and sizing rules are trader.cpp's: sell everything at −15% (checked
+   first) or +30% from the average cost; buy at 55% confidence or more,
+   sized as confidence × cash after a 5% buffer, with at most 25% of the
+   account in one company. The buy signal is not the Random Forest: it was
+   trained on years that overlap the scenarios and needs Python, so the bot
+   uses `scoreTechnicals` (the same indicators the model was fed) over the
+   last 120 visible bars, read as a probability. Like the player it trades
+   whole shares only, and funds are exempt from the 25% cap. Its account
+   shows beside yours while you play; its trades, each with its reason, are
+   revealed at the end with three-way standings.
 6. **Name** — the app outgrew "Roth IRA Portfolio Strategist"; pick a new name
    once the shape is settled.
 
