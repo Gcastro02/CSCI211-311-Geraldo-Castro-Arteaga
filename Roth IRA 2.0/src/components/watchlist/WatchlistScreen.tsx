@@ -11,9 +11,10 @@ interface WatchlistScreenProps {
   prices: Record<string, number>;
   previousCloses: Record<string, number>;
   analyses: Record<string, StockAnalysis>;
-  /** True while saved watchlist symbols are being analyzed by the AI. */
-  isAutoAnalyzing: boolean;
-  aiEnabled: boolean;
+  /** Symbol whose AI view is being written, if any. */
+  analyzingSymbol: string | null;
+  /** Absent when no AI key is configured; each call is a paid request. */
+  onRequestAnalysis?: (symbol: string) => void;
   onAdd: (symbol: string) => void;
   onRemove: (symbol: string) => void;
   onSaveAlert: (symbol: string, price: number, direction: AlertDirection) => void;
@@ -34,8 +35,8 @@ export function WatchlistScreen({
   prices,
   previousCloses,
   analyses,
-  isAutoAnalyzing,
-  aiEnabled,
+  analyzingSymbol,
+  onRequestAnalysis,
   onAdd,
   onRemove,
   onSaveAlert,
@@ -52,6 +53,7 @@ export function WatchlistScreen({
   const [alertDirection, setAlertDirection] = useState<AlertDirection>('ABOVE');
   const [alertError, setAlertError] = useState<string | null>(null);
 
+  const aiEnabled = Boolean(onRequestAnalysis);
   const columnCount = aiEnabled ? 6 : 5;
   const hasAlerts = watchlist.some(item => item.targetPrice);
 
@@ -163,15 +165,24 @@ export function WatchlistScreen({
                         {aiEnabled && (
                           <td className="border-b border-line-soft py-3 text-left">
                             {analysis ? (
-                              <button type="button" onClick={() => onOpenStock(item.symbol)} title={analysis.reasoning} className="text-ink-2 hover:text-accent">
+                              <button type="button" onClick={() => onOpenStock(item.symbol)} title={analysis.reasoning} className="text-left text-ink-2 hover:text-accent">
                                 {analysis.recommendation.toLowerCase()} · risk {analysis.riskLevel.toLowerCase()}
+                                {analysis.analyzedAt && <span className="block text-xs text-muted">{formatDate(analysis.analyzedAt)}</span>}
                               </button>
-                            ) : isAutoAnalyzing ? (
+                            ) : analyzingSymbol === item.symbol ? (
                               <span className="flex items-center gap-1.5 text-muted">
                                 <RefreshCw className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Analyzing
                               </span>
                             ) : (
-                              <span className="text-muted">—</span>
+                              <button
+                                type="button"
+                                onClick={() => onRequestAnalysis!(item.symbol)}
+                                disabled={analyzingSymbol !== null}
+                                aria-label={`Get AI view of ${item.symbol}`}
+                                className="text-accent hover:underline disabled:text-muted disabled:no-underline"
+                              >
+                                Get AI view
+                              </button>
                             )}
                           </td>
                         )}

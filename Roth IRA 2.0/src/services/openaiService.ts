@@ -464,6 +464,7 @@ export const getStockNews = async (
         date: Number.isFinite(publishedSeconds) && publishedSeconds > 0
           ? new Date(publishedSeconds * 1000).toISOString()
           : undefined,
+        relatedTickers: Array.isArray(item.relatedTickers) ? item.relatedTickers.map(String) : undefined,
       };
     });
 

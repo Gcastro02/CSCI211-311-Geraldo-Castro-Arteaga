@@ -78,6 +78,8 @@ export interface StockAnalysis {
   };
   projectedGrowth?: string;
   keyFactors?: string[];
+  /** When the research was written (ISO). Older saved research is dropped on load. */
+  analyzedAt?: string;
 }
 
 export interface MarketSuggestion {
@@ -94,6 +96,8 @@ export interface NewsItem {
   source: string;
   snippet: string;
   date?: string;
+  /** Tickers the source tags the article with, most relevant first. */
+  relatedTickers?: string[];
 }
 
 export interface PriceData {
