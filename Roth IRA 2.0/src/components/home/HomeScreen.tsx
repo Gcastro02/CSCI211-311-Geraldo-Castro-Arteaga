@@ -444,9 +444,9 @@ export function HomeScreen({
           {/* Practice */}
           <section aria-labelledby="practice-teaser-heading" className="rounded-lg border border-line p-5">
             <p className="text-xs font-medium text-accent">Practice · play money</p>
-            <h2 id="practice-teaser-heading" className="mt-1.5 text-lg font-semibold">Trade through the 2020 crash</h2>
+            <h2 id="practice-teaser-heading" className="mt-1.5 text-lg font-semibold">Trade through real market history</h2>
             <p className="mt-2 text-sm leading-relaxed text-ink-2">
-              Start with $10,000 in February 2020 and move day by day. See if you beat simply holding SPY.
+              Start with $10,000 in the 2008 crisis, the 2020 crash and more, and move day by day. See if you beat simply buying and holding.
             </p>
             <button
               type="button"

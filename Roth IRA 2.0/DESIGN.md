@@ -167,13 +167,22 @@ https://claude.ai/artifact/EspVbjVyVu7YYn9BYr1BxV):
    the stock page, a plain-language indicator summary for beginners, the
    Home weight tip and practice market notes (hidden for advanced), practice
    order confirmations, and the AI writing at the reader's level.
-   Deferred: the "Practice scenarios" and "Default view" rows of the table
-   below, which need step 4 and a decision on what a simplified dashboard
-   hides. Single-company concentration warnings don't apply to funds, so in
-   the SPY-only scenario intermediates aren't prompted; they will be once
-   scenarios include individual stocks.
-4. **Scenarios** — more presets, play-at-speed, mystery mode, guided goals for
+   Deferred: the "Default view" row of the table below, which needs a
+   decision on what a simplified dashboard hides. ("Practice scenarios" was
+   done in step 4.) Single-company concentration warnings don't apply to
+   funds, only to individual stocks.
+4. ✅ **Scenarios** — more presets, play-at-speed, mystery mode, guided goals for
    beginners.
+   Four presets (2020 crash; 2008 crisis with SPY, JPM, GLD; 2022 bear market
+   with SPY, QQQ, AAPL; sideways 2015 with SPY, AAPL, KO), each with a goal
+   shown to beginners and judged only on days already played. Play at 1×, 2×
+   or 5×. Mystery mode picks a preset at random, hides its name, dates and
+   tickers, rescales prices to start at 100 (returns unchanged) and reveals the
+   answer at the end. Advanced users can build their own scenario: up to three
+   tickers over up to three years. Scenarios with several assets compare
+   against the starting cash split evenly across them on day one and held; a
+   scenario's calendar is only the days every asset traded, so no price is
+   ever filled in or interpolated.
 5. **Bot opponent** — port the Trading Simulator rules; three-way results.
 6. **Name** — the app outgrew "Roth IRA Portfolio Strategist"; pick a new name
    once the shape is settled.
