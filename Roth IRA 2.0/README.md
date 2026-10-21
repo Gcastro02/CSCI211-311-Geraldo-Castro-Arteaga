@@ -1,16 +1,23 @@
-# Roth IRA Portfolio Strategist 2.0
+# Paper Trail
 
-Portfolio tracking for a Roth IRA: contributions against the annual limit, a
-transaction log with FIFO cost basis, holdings and cash, a watchlist with price
-alerts, price charts, measured technical indicators, position-concentration
-analysis, and optional AI research.
+Track the investments you really hold, practice trading with play money on real
+market history, and get guidance pitched at your experience level. No real
+money moves through the app: you trade at your own broker and use this to
+monitor, learn and rehearse.
+
+- **Track:** a transaction log with FIFO cost basis, holdings and cash, a
+  watchlist with price alerts, price charts, measured technical indicators,
+  position-concentration analysis, and optional AI research.
+- **Practice:** replay past markets (the 2008 crisis, the 2020 crash and more)
+  one day at a time, against buy-and-hold and a rule-following bot.
+- **Learn:** explanations, confirmations and AI answers scaled to beginner,
+  intermediate or advanced.
+- **Roth IRA (optional):** contributions against the annual limit and tax-year
+  tagging, for users who set their account type to Roth IRA.
 
 All portfolio data lives in the browser's `localStorage`. Nothing is stored
-server-side.
-
-This app is being expanded with a fake-money practice mode and level-based
-guidance, absorbing the sibling `Trading Simulator` bot. See
-[DESIGN.md](DESIGN.md) for the plan.
+server-side. This app absorbed the sibling `Trading Simulator` bot; see
+[DESIGN.md](DESIGN.md) for how it fits together.
 
 ## Running it
 

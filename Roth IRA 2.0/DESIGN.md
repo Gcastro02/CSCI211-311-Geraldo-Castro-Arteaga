@@ -195,8 +195,9 @@ https://claude.ai/artifact/EspVbjVyVu7YYn9BYr1BxV):
    whole shares only, and funds are exempt from the 25% cap. Its account
    shows beside yours while you play; its trades, each with its reason, are
    revealed at the end with three-way standings.
-6. **Name** — the app outgrew "Roth IRA Portfolio Strategist"; pick a new name
-   once the shape is settled.
+6. ✅ **Name** — the app outgrew "Roth IRA Portfolio Strategist"; it is now
+   **Paper Trail** (paper trading, plus a record of your real holdings). The
+   storage keys keep their `roth_ira_*` names so existing data still loads.
 
 ## Open questions
 

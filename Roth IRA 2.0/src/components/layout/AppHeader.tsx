@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Moon, Search, Settings, Sun } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-export const APP_NAME = 'Trading Simulator';
+export const APP_NAME = 'Paper Trail';
 
 export type Tab = 'home' | 'holdings' | 'activity' | 'watchlist' | 'practice' | 'detailed' | 'suggestions' | 'settings';
 
