@@ -97,6 +97,9 @@ const normalizeSettings = (raw: unknown): UserSettings => {
   };
 };
 
+/** Saved AI research older than this is dropped rather than shown as current. */
+const ANALYSIS_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
 /** Stable id for a new transaction. */
 const createTransactionId = () =>
   `tx_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
@@ -126,7 +129,19 @@ export default function App() {
 
   const [selectedTaxYear, setSelectedTaxYear] = useState(() => new Date().getFullYear());
 
-  const [analyses, setAnalyses] = useState<Record<string, StockAnalysis>>({});
+  // Each analysis is a paid AI call, so results are kept for a week instead of
+  // being requested again on every visit.
+  const [analyses, setAnalyses] = useState<Record<string, StockAnalysis>>(() => {
+    try {
+      const saved: Record<string, StockAnalysis> = JSON.parse(localStorage.getItem('roth_ira_analyses') || '{}');
+      const cutoff = Date.now() - ANALYSIS_MAX_AGE_MS;
+      return Object.fromEntries(
+        Object.entries(saved).filter(([, a]) => a?.analyzedAt && Date.parse(a.analyzedAt) > cutoff),
+      );
+    } catch {
+      return {};
+    }
+  });
   const [suggestions, setSuggestions] = useState<MarketSuggestion[]>([]);
   const [chartMode, setChartMode] = useState<Record<string, ChartMode>>(() => {
     const saved = localStorage.getItem('roth_ira_chart_mode');
@@ -147,7 +162,6 @@ export default function App() {
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [generalNews, setGeneralNews] = useState<NewsItem[]>([]);
   const [loadingGeneralNews, setLoadingGeneralNews] = useState(false);
-  const [isAutoAnalyzingWatchlist, setIsAutoAnalyzingWatchlist] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>('home');
 
   // Alert states
@@ -187,10 +201,6 @@ export default function App() {
       || 'AAPL';
   });
   const priceRefreshKey = trackedSymbols.join('|');
-
-  // Symbols already sent for analysis, so a failure is not retried forever by
-  // the auto-analyze effect below (which re-runs whenever `analyses` changes).
-  const attemptedAnalysis = useRef<Set<string>>(new Set());
 
   // Same guard for indicator fetches: a symbol with too little history never
   // lands in `technicals`, so without this it would be re-fetched every render.
@@ -271,59 +281,12 @@ export default function App() {
   }, [settings.preferredNewsSources]);
 
   useEffect(() => {
-    if (!isAiConfigured) return;
-
-    // Skip anything already analyzed *or already tried*. Without the second
-    // check a symbol that errors out gets re-requested every time `analyses`
-    // changes, which burns API calls in a loop that never resolves.
-    const missingSymbols = watchlist
-      .map(item => item.symbol.trim().toUpperCase())
-      .filter(symbol => symbol && !analyses[symbol] && !attemptedAnalysis.current.has(symbol));
-
-    if (missingSymbols.length === 0) {
-      setIsAutoAnalyzingWatchlist(false);
-      return;
+    try {
+      localStorage.setItem('roth_ira_analyses', JSON.stringify(analyses));
+    } catch {
+      // Storage full or blocked: research still shows, it just isn't kept.
     }
-
-    missingSymbols.forEach(symbol => attemptedAnalysis.current.add(symbol));
-
-    // No cancellation, for the same reason as the indicator effect below: the
-    // results are per symbol, and discarding them threw away paid API calls
-    // that `attemptedAnalysis` then stopped from ever being retried.
-    setIsAutoAnalyzingWatchlist(true);
-
-    const analyzeMissingWatchlist = async () => {
-      try {
-        const results = await Promise.all(
-          missingSymbols.map(async (symbol) => {
-            try {
-              const analysis = await analyzeWatchlistStock(symbol, settings);
-              return { symbol, analysis };
-            } catch (error) {
-              console.error(`Failed to analyze watchlist stock ${symbol}`, error);
-              return null;
-            }
-          })
-        );
-
-        setAnalyses(prev => {
-          const next = { ...prev };
-          results.forEach(result => {
-            if (result?.analysis) {
-              next[result.symbol] = result.analysis;
-            }
-          });
-          return next;
-        });
-      } catch (error) {
-        console.error('Failed to auto-analyze watchlist on startup', error);
-      } finally {
-        setIsAutoAnalyzingWatchlist(false);
-      }
-    };
-
-    analyzeMissingWatchlist();
-  }, [watchlist, analyses, settings, isAiConfigured]);
+  }, [analyses]);
 
   // Measured indicators for every tracked symbol. Independent of the AI path —
   // these work with no API key at all.
@@ -581,21 +544,12 @@ export default function App() {
       return;
     }
 
-    // Analysis is left to the auto-analyze effect. Doing it here as well fired
-    // two identical requests for every symbol added through this form.
     setWatchlist(prev => [...prev, { symbol, addedAt: new Date().toISOString() }]);
     addNotification(`Added ${symbol} to your watchlist.`, 'success');
   };
 
   const handleRemoveWatchlist = (symbol: string) => {
     setWatchlist(prev => prev.filter(item => item.symbol !== symbol));
-    setAnalyses(prev => {
-      const next = { ...prev };
-      delete next[symbol];
-      return next;
-    });
-    // Forget the attempt so re-adding the symbol analyzes it again.
-    attemptedAnalysis.current.delete(symbol);
     attemptedTechnicals.current.delete(symbol);
   };
 
@@ -608,13 +562,12 @@ export default function App() {
     }
   };
 
-  /** AI research for one symbol, on request from its stock page. */
+  /** AI research for one symbol, only ever on request (stock page or watchlist). */
   const requestStockAnalysis = async (symbol: string) => {
     setAnalyzingSymbol(symbol);
-    attemptedAnalysis.current.add(symbol);
     try {
       const analysis = await analyzeWatchlistStock(symbol, settings);
-      setAnalyses(prev => ({ ...prev, [symbol]: analysis }));
+      setAnalyses(prev => ({ ...prev, [symbol]: { ...analysis, analyzedAt: new Date().toISOString() } }));
     } catch (error) {
       console.error(`Failed to analyze ${symbol}`, error);
       addNotification(getErrorMessage(error, `AI research for ${symbol} failed.`), 'info');
@@ -628,9 +581,10 @@ export default function App() {
     setIsAnalyzing(true);
     try {
       const results = await analyzePortfolio(portfolio.holdings, settings);
+      const analyzedAt = new Date().toISOString();
       const analysisMap: Record<string, StockAnalysis> = {};
       results.forEach(res => {
-        analysisMap[res.symbol] = res;
+        analysisMap[res.symbol] = { ...res, analyzedAt };
       });
       setAnalyses(prev => ({ ...prev, ...analysisMap }));
     } catch (error) {
@@ -820,7 +774,7 @@ export default function App() {
             technicals={technicals[detailedSymbol]}
             technicalsLoading={loadingTechnicals[detailedSymbol]}
             analysis={analyses[detailedSymbol]}
-            analyzing={analyzingSymbol === detailedSymbol || (isAutoAnalyzingWatchlist && !analyses[detailedSymbol] && watchlist.some(item => item.symbol === detailedSymbol))}
+            analyzing={analyzingSymbol === detailedSymbol}
             onRequestAnalysis={isAiConfigured ? requestStockAnalysis : undefined}
             chartMode={(chartMode[detailedSymbol] ?? 'LINE') === 'LINE' ? 'LINE' : 'CANDLES'}
             onChartModeChange={(mode: StockChartMode) => setChartMode(prev => ({ ...prev, [detailedSymbol]: mode }))}
@@ -859,8 +813,8 @@ export default function App() {
             prices={currentPrices}
             previousCloses={previousCloses}
             analyses={analyses}
-            isAutoAnalyzing={isAutoAnalyzingWatchlist}
-            aiEnabled={isAiConfigured}
+            analyzingSymbol={analyzingSymbol}
+            onRequestAnalysis={isAiConfigured ? requestStockAnalysis : undefined}
             onAdd={handleAddWatchlist}
             onRemove={handleRemoveWatchlist}
             onSaveAlert={handleSaveAlert}

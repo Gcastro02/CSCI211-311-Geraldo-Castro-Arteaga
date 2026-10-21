@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { BellRing, Info, RefreshCw } from 'lucide-react';
 import { ExperienceLevel, NewsItem, PriceData, StockHolding, WatchlistItem } from '../../types';
-import { showsContextNotes } from '../../lib/level';
+import { showsContextNotes, showsSimplifiedHome } from '../../lib/level';
 import { RiskAudit } from '../../lib/portfolioMath';
 import { buildHoldingsValueHistory } from '../../lib/portfolioHistory';
 import { getStockPriceHistory } from '../../services/openaiService';
@@ -24,6 +24,15 @@ const CHART_RANGES = [
 ] as const;
 type ChartRange = (typeof CHART_RANGES)[number]['id'];
 
+/** A beginner who chose the full dashboard keeps it. Per browser, like the theme. */
+const FULL_VIEW_KEY = 'roth_ira_home_full_view';
+const readFullView = () => {
+  try {
+    return localStorage.getItem(FULL_VIEW_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
 
 interface HomeScreenProps {
   holdings: StockHolding[];
@@ -71,6 +80,17 @@ export function HomeScreen({
   const [loadingChart, setLoadingChart] = useState(false);
   const [editingCash, setEditingCash] = useState(false);
   const [cashDraft, setCashDraft] = useState('');
+  const [fullView, setFullView] = useState(readFullView);
+  const simple = showsSimplifiedHome(level) && !fullView;
+
+  const chooseFullView = (full: boolean) => {
+    setFullView(full);
+    try {
+      localStorage.setItem(FULL_VIEW_KEY, full ? '1' : '0');
+    } catch {
+      // Blocked storage: the choice just lasts until the page reloads.
+    }
+  };
 
   const symbols = audit.positions.map(p => p.symbol);
   const symbolKey = symbols.join('|');
@@ -153,26 +173,47 @@ export function HomeScreen({
   const limitPct = Math.round(audit.riskThreshold * 100);
   const hasHoldings = positions.length > 0;
 
+  const practiceTeaser = (
+    <section aria-labelledby="practice-teaser-heading" className="rounded-lg border border-line p-5">
+      <p className="text-xs font-medium text-accent">Practice · play money</p>
+      <h2 id="practice-teaser-heading" className="mt-1.5 text-lg font-semibold">Trade through real market history</h2>
+      <p className="mt-2 text-sm leading-relaxed text-ink-2">
+        Start with $10,000 in the 2008 crisis, the 2020 crash and more, and move day by day. See if you beat simply buying and holding.
+      </p>
+      <button
+        type="button"
+        onClick={() => onNavigate('practice')}
+        className="mt-4 h-11 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong"
+      >
+        Open practice
+      </button>
+    </section>
+  );
+
   return (
     <div className="flex flex-col gap-8">
+      {simple && practiceTeaser}
+
       {/* Market strip */}
-      <section aria-label="Markets" className="-mt-2 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border-b border-line">
-        {indices.map(index => (
-          <div key={index.key} className="flex flex-col gap-0.5 py-3 pr-4">
-            <span className="text-[13px] text-muted">
-              {index.key} <span className="font-mono text-xs">· {index.symbol}</span>
-            </span>
-            {index.snapshot ? (
-              <span className="flex items-baseline gap-2.5">
-                <span className="text-[15px] font-medium">{formatCurrency(index.snapshot.value)}</span>
-                <Change percent={index.snapshot.changePercent} amount={index.snapshot.change} className="text-[13px]" />
+      {!simple && (
+        <section aria-label="Markets" className="-mt-2 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border-b border-line">
+          {indices.map(index => (
+            <div key={index.key} className="flex flex-col gap-0.5 py-3 pr-4">
+              <span className="text-[13px] text-muted">
+                {index.key} <span className="font-mono text-xs">· {index.symbol}</span>
               </span>
-            ) : (
-              <span className="text-[15px] text-muted">—</span>
-            )}
-          </div>
-        ))}
-      </section>
+              {index.snapshot ? (
+                <span className="flex items-baseline gap-2.5">
+                  <span className="text-[15px] font-medium">{formatCurrency(index.snapshot.value)}</span>
+                  <Change percent={index.snapshot.changePercent} amount={index.snapshot.change} className="text-[13px]" />
+                </span>
+              ) : (
+                <span className="text-[15px] text-muted">—</span>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
 
       <div className="flex flex-wrap gap-10">
         <div className="flex min-w-0 flex-[999_1_560px] flex-col gap-8">
@@ -276,12 +317,12 @@ export function HomeScreen({
                 </button>
               </div>
               <div className="relative mt-3 overflow-x-auto">
-                <table className="w-full min-w-[640px] border-collapse text-sm">
+                <table className={cn('w-full border-collapse text-sm', simple ? 'min-w-[420px]' : 'min-w-[640px]')}>
                   <thead>
                     <tr className="text-right text-xs text-muted">
                       <th scope="col" className="border-b border-line py-2 text-left font-medium">Symbol</th>
-                      <th scope="col" className="border-b border-line py-2 font-medium">Price</th>
-                      <th scope="col" className="border-b border-line py-2 font-medium">Today</th>
+                      {!simple && <th scope="col" className="border-b border-line py-2 font-medium">Price</th>}
+                      {!simple && <th scope="col" className="border-b border-line py-2 font-medium">Today</th>}
                       <th scope="col" className="border-b border-line py-2 font-medium">Shares</th>
                       <th scope="col" className="border-b border-line py-2 font-medium">Value</th>
                       <th scope="col" className="border-b border-line py-2 pl-4 text-left font-medium">Weight</th>
@@ -302,15 +343,19 @@ export function HomeScreen({
                               {position.symbol}
                             </button>
                           </td>
-                          <td className="border-b border-line-soft py-3">
-                            {formatCurrency(position.price)}
-                            {position.estimated && (
-                              <span className="ml-1 text-xs text-muted" title="No live quote — valued at your average cost">est.</span>
-                            )}
-                          </td>
-                          <td className="border-b border-line-soft py-3">
-                            {today ? <Change percent={today.percent} /> : <span className="text-muted">—</span>}
-                          </td>
+                          {!simple && (
+                            <td className="border-b border-line-soft py-3">
+                              {formatCurrency(position.price)}
+                              {position.estimated && (
+                                <span className="ml-1 text-xs text-muted" title="No live quote — valued at your average cost">est.</span>
+                              )}
+                            </td>
+                          )}
+                          {!simple && (
+                            <td className="border-b border-line-soft py-3">
+                              {today ? <Change percent={today.percent} /> : <span className="text-muted">—</span>}
+                            </td>
+                          )}
                           <td className="border-b border-line-soft py-3 text-ink-2">
                             {Number.isInteger(position.shares) ? position.shares : position.shares.toFixed(4)}
                           </td>
@@ -333,7 +378,7 @@ export function HomeScreen({
                     })}
                     <tr className="text-right text-muted">
                       <td className="py-3 text-left">Cash</td>
-                      <td colSpan={3} className="py-3">
+                      <td colSpan={simple ? 1 : 3} className="py-3">
                         {!editingCash && (
                           <button
                             type="button"
@@ -441,63 +486,60 @@ export function HomeScreen({
             )}
           </section>
 
-          {/* Practice */}
-          <section aria-labelledby="practice-teaser-heading" className="rounded-lg border border-line p-5">
-            <p className="text-xs font-medium text-accent">Practice · play money</p>
-            <h2 id="practice-teaser-heading" className="mt-1.5 text-lg font-semibold">Trade through real market history</h2>
-            <p className="mt-2 text-sm leading-relaxed text-ink-2">
-              Start with $10,000 in the 2008 crisis, the 2020 crash and more, and move day by day. See if you beat simply buying and holding.
-            </p>
-            <button
-              type="button"
-              onClick={() => onNavigate('practice')}
-              className="mt-4 h-11 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong"
-            >
-              Open practice
-            </button>
-          </section>
+          {!simple && practiceTeaser}
 
           {/* Market news */}
-          <section aria-labelledby="news-heading">
-            <div className="flex items-baseline justify-between">
-              <h2 id="news-heading" className="text-lg font-semibold">Market news</h2>
-              <button
-                type="button"
-                onClick={onRefreshNews}
-                disabled={loadingNews}
-                aria-label="Refresh news"
-                className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-muted hover:bg-surface hover:text-ink disabled:opacity-50"
-              >
-                <RefreshCw className={cn('h-4 w-4', loadingNews && 'animate-spin')} />
-              </button>
-            </div>
-            {loadingNews && news.length === 0 ? (
-              <p className="mt-2 text-sm text-muted">Loading headlines…</p>
-            ) : news.length === 0 ? (
-              <p className="mt-2 text-sm text-muted">No recent news available.</p>
-            ) : (
-              <ul className="mt-1">
-                {news.slice(0, 6).map((item, i) => (
-                  <li key={`${item.url}-${i}`} className="border-b border-line-soft py-3.5">
-                    <p className="text-xs text-muted">
-                      {item.source}
-                      {item.date && ` · ${formatDate(item.date)}`}
-                    </p>
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-1 block text-[15px] font-medium leading-snug text-ink hover:text-accent"
-                    >
-                      {item.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+          {!simple && (
+            <section aria-labelledby="news-heading">
+              <div className="flex items-baseline justify-between">
+                <h2 id="news-heading" className="text-lg font-semibold">Market news</h2>
+                <button
+                  type="button"
+                  onClick={onRefreshNews}
+                  disabled={loadingNews}
+                  aria-label="Refresh news"
+                  className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-muted hover:bg-surface hover:text-ink disabled:opacity-50"
+                >
+                  <RefreshCw className={cn('h-4 w-4', loadingNews && 'animate-spin')} />
+                </button>
+              </div>
+              {loadingNews && news.length === 0 ? (
+                <p className="mt-2 text-sm text-muted">Loading headlines…</p>
+              ) : news.length === 0 ? (
+                <p className="mt-2 text-sm text-muted">No recent news available.</p>
+              ) : (
+                <ul className="mt-1">
+                  {news.slice(0, 6).map((item, i) => (
+                    <li key={`${item.url}-${i}`} className="border-b border-line-soft py-3.5">
+                      <p className="text-xs text-muted">
+                        {item.source}
+                        {item.date && ` · ${formatDate(item.date)}`}
+                      </p>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1 block text-[15px] font-medium leading-snug text-ink hover:text-accent"
+                      >
+                        {item.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
         </aside>
       </div>
+
+      {showsSimplifiedHome(level) && (
+        <p className="text-sm text-muted">
+          {simple ? 'This is the simpler beginner view. ' : 'You’re seeing the full dashboard. '}
+          <button type="button" onClick={() => chooseFullView(simple)} className="text-accent hover:underline">
+            {simple ? 'Show the full dashboard, with market indexes and news' : 'Back to the simpler view'}
+          </button>
+        </p>
+      )}
     </div>
   );
 }

@@ -15,7 +15,8 @@
     "verify:history": "tsx scripts/verify-portfolio-history.ts",
     "verify:practice": "tsx scripts/verify-practice.ts",
     "verify:bot": "tsx scripts/verify-bot.ts",
-    "verify": "npm run verify:indicators && npm run verify:transactions && npm run verify:history && npm run verify:practice && npm run verify:bot"
+    "verify:news": "tsx scripts/verify-news.ts",
+    "verify": "npm run verify:indicators && npm run verify:transactions && npm run verify:history && npm run verify:practice && npm run verify:bot && npm run verify:news"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",

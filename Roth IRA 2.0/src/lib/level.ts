@@ -41,6 +41,12 @@ export const explainMode = (level: ExperienceLevel): ExplainMode =>
 /** Beginners get a plain-language summary above the indicator numbers. */
 export const showsPlainSummary = (level: ExperienceLevel) => level === 'BEGINNER';
 
+/**
+ * Beginners start on a simpler Home: no market strip or market news, practice
+ * at the top, and fewer holdings columns. One click shows the full dashboard.
+ */
+export const showsSimplifiedHome = (level: ExperienceLevel) => level === 'BEGINNER';
+
 /** Context notes (practice market notes, the portfolio-weight tip) start visible. */
 export const showsContextNotes = (level: ExperienceLevel) => level !== 'ADVANCED';
 

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Check, Plus, RefreshCw, Sparkles } from 'lucide-react';
 import { ExperienceLevel, NewsItem, PriceData, StockAnalysis, StockHolding, UserSettings } from '../../types';
 import { TechnicalSnapshot } from '../../lib/indicators';
+import { rankNewsForSymbol } from '../../lib/news';
 import { getQuote, getStockNews, getStockPriceHistory, getTechnicals, type Quote } from '../../services/openaiService';
 import { cn, parseDay } from '../../lib/utils';
 import { Change } from '../ui/Change';
@@ -106,6 +107,31 @@ export function StockScreen({
       .catch(() => { if (!cancelled) setBars([]); });
     return () => { cancelled = true; };
   }, [symbol, range]);
+
+  // Headlines about this stock first. Articles that only mention it fill in
+  // when there are few, so a quiet stock's page isn't left empty.
+  const headlines = useMemo(() => {
+    const { about, mentioning } = rankNewsForSymbol(news ?? [], symbol, quote?.name);
+    const shown = about.slice(0, 8);
+    return { about: shown, also: shown.length < 3 ? mentioning.slice(0, 5 - shown.length) : [] };
+  }, [news, symbol, quote]);
+
+  const newsRow = (item: NewsItem, i: number) => (
+    <li key={`${item.url}-${i}`} className="border-b border-line-soft py-3.5">
+      <p className="text-xs text-muted">
+        {item.source}
+        {item.date && ` · ${formatDate(item.date)}`}
+      </p>
+      <a
+        href={item.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-1 block text-[15px] font-medium leading-snug text-ink hover:text-accent"
+      >
+        {item.title}
+      </a>
+    </li>
+  );
 
   const points: LinePoint[] = useMemo(
     () => (bars ?? []).map(bar => ({
@@ -434,6 +460,18 @@ export function StockScreen({
                 <p className="text-xs text-muted">
                   Model’s overall view: {analysis.recommendation.toLowerCase()} · risk {analysis.riskLevel.toLowerCase()}
                 </p>
+                <div className="flex flex-wrap items-center gap-3 text-xs text-muted">
+                  {analysis.analyzedAt && <span>Written {formatDate(analysis.analyzedAt)}</span>}
+                  <button
+                    type="button"
+                    onClick={() => onRequestAnalysis(symbol)}
+                    disabled={analyzing}
+                    className="flex items-center gap-1.5 font-medium text-accent hover:underline disabled:text-muted disabled:no-underline"
+                  >
+                    {analyzing && <RefreshCw className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />}
+                    {analyzing ? 'Writing research…' : 'Refresh'}
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="mt-3">
@@ -459,27 +497,18 @@ export function StockScreen({
           <h2 id="stock-news-heading" className="text-lg font-semibold">News</h2>
           {news === null ? (
             <p className="mt-2 text-sm text-muted">Loading headlines…</p>
-          ) : news.length === 0 ? (
+          ) : headlines.about.length + headlines.also.length === 0 ? (
             <p className="mt-2 text-sm text-muted">No recent news found for {symbol}.</p>
           ) : (
-            <ul className="mt-1">
-              {news.slice(0, 8).map((item, i) => (
-                <li key={`${item.url}-${i}`} className="border-b border-line-soft py-3.5">
-                  <p className="text-xs text-muted">
-                    {item.source}
-                    {item.date && ` · ${formatDate(item.date)}`}
-                  </p>
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 block text-[15px] font-medium leading-snug text-ink hover:text-accent"
-                  >
-                    {item.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <>
+              {headlines.about.length > 0 && <ul className="mt-1">{headlines.about.map(newsRow)}</ul>}
+              {headlines.also.length > 0 && (
+                <>
+                  <h3 className="mt-5 text-sm font-medium text-muted">Also mentioning {symbol}</h3>
+                  <ul className="mt-1">{headlines.also.map(newsRow)}</ul>
+                </>
+              )}
+            </>
           )}
         </section>
       </div>
