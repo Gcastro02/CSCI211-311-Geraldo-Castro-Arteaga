@@ -25,11 +25,12 @@ import {
   getStockPriceHistory,
   getQuote,
   getTechnicals,
-  isAiConfigured
+  getAiStatus
 } from './services/openaiService';
 import { TechnicalSnapshot } from './lib/indicators';
 import { auditRisk, DEFAULT_RISK_THRESHOLD } from './lib/portfolioMath';
-import { applyTransaction, reconcile, replayTransactions } from './lib/transactions';
+import { isFund } from './lib/funds';
+import { applyTransaction, reconcile, replayTransactions, sharesHeld } from './lib/transactions';
 import { contributionBasis, contributionYears, summarizeContributions } from './lib/contributions';
 import { AppHeader, type Tab } from './components/layout/AppHeader';
 import { HomeScreen } from './components/home/HomeScreen';
@@ -38,7 +39,7 @@ import { PortfolioScreen } from './components/portfolio/PortfolioScreen';
 import { WatchlistScreen } from './components/watchlist/WatchlistScreen';
 import { ActivityScreen } from './components/activity/ActivityScreen';
 import { DiscoverScreen } from './components/discover/DiscoverScreen';
-import { SettingsScreen } from './components/settings/SettingsScreen';
+import { NEWS_SOURCES, SettingsScreen } from './components/settings/SettingsScreen';
 import { PracticeScreen } from './components/practice/PracticeScreen';
 import { OnboardingScreen } from './components/onboarding/OnboardingScreen';
 import { levelLabel } from './lib/level';
@@ -84,8 +85,9 @@ const normalizeSettings = (raw: unknown): UserSettings => {
     experienceLevel: (['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const).includes(candidate.experienceLevel as never)
       ? candidate.experienceLevel
       : undefined,
+    // Only sources Settings still offers, so none is hidden where it can't be turned off.
     preferredNewsSources: Array.isArray(candidate.preferredNewsSources)
-      ? candidate.preferredNewsSources
+      ? candidate.preferredNewsSources.filter(source => NEWS_SOURCES.includes(source))
       : [],
     themeMode: candidate.themeMode === 'LIGHT' ? 'LIGHT' : 'DARK',
     catchUpEligible: candidate.catchUpEligible === true,
@@ -95,6 +97,22 @@ const normalizeSettings = (raw: unknown): UserSettings => {
         ? candidate.contributionLimitOverrides
         : {},
   };
+};
+
+/**
+ * Read a saved value, falling back when it is missing, unreadable or the wrong
+ * shape. A corrupt entry would otherwise throw during the first render and
+ * leave a blank page.
+ */
+const readStored = <T,>(key: string, fallback: T, isValid: (value: any) => boolean): T => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return isValid(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
 };
 
 /** Saved AI research older than this is dropped rather than shown as current. */
@@ -107,25 +125,20 @@ const createTransactionId = () =>
 export default function App() {
 
   const [portfolio, setPortfolio] = useState<PortfolioData>(() => {
-    const saved = localStorage.getItem('roth_ira_portfolio');
-    return saved ? JSON.parse(saved) : { cashBalance: 0, holdings: [] };
+    const saved = readStored<PortfolioData>('roth_ira_portfolio', { cashBalance: 0, holdings: [] },
+      value => value && Array.isArray(value.holdings));
+    return {
+      cashBalance: Number.isFinite(saved.cashBalance) ? saved.cashBalance : 0,
+      holdings: saved.holdings.filter(h => h && typeof h.symbol === 'string' && Number.isFinite(h.shares)),
+    };
   });
 
-  const [watchlist, setWatchlist] = useState<WatchlistItem[]>(() => {
-    const saved = localStorage.getItem('roth_ira_watchlist');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [watchlist, setWatchlist] = useState<WatchlistItem[]>(() =>
+    readStored<WatchlistItem[]>('roth_ira_watchlist', [], Array.isArray)
+      .filter(item => item && typeof item.symbol === 'string'));
 
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const saved = localStorage.getItem('roth_ira_transactions');
-    if (!saved) return [];
-    try {
-      const parsed = JSON.parse(saved);
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
-  });
+  const [transactions, setTransactions] = useState<Transaction[]>(() =>
+    readStored<Transaction[]>('roth_ira_transactions', [], Array.isArray));
 
   const [selectedTaxYear, setSelectedTaxYear] = useState(() => new Date().getFullYear());
 
@@ -143,19 +156,10 @@ export default function App() {
     }
   });
   const [suggestions, setSuggestions] = useState<MarketSuggestion[]>([]);
-  const [chartMode, setChartMode] = useState<Record<string, ChartMode>>(() => {
-    const saved = localStorage.getItem('roth_ira_chart_mode');
-    return saved ? JSON.parse(saved) : {};
-  });
-  const [settings, setSettings] = useState<UserSettings>(() => {
-    const saved = localStorage.getItem('roth_ira_settings');
-    if (!saved) return defaultSettings;
-    try {
-      return normalizeSettings(JSON.parse(saved));
-    } catch {
-      return defaultSettings;
-    }
-  });
+  const [chartMode, setChartMode] = useState<Record<string, ChartMode>>(() =>
+    readStored('roth_ira_chart_mode', {}, value => value && typeof value === 'object' && !Array.isArray(value)));
+  const [settings, setSettings] = useState<UserSettings>(() =>
+    normalizeSettings(readStored('roth_ira_settings', null, () => true)));
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   /** Symbol whose AI research the stock page is waiting on. */
   const [analyzingSymbol, setAnalyzingSymbol] = useState<string | null>(null);
@@ -170,6 +174,8 @@ export default function App() {
   const [currentPrices, setCurrentPrices] = useState<Record<string, number>>({});
   /** Prior session's close per symbol, for "today" changes. */
   const [previousCloses, setPreviousCloses] = useState<Record<string, number>>({});
+  /** What each quote said the symbol is, where it said: true for a fund. */
+  const [quotedAsFund, setQuotedAsFund] = useState<Record<string, boolean>>({});
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
 
   // Form states
@@ -351,11 +357,12 @@ export default function App() {
     return fallback;
   };
 
+  // AI buttons appear only once the server confirms it has a key, so a site
+  // without one never offers a button that can only fail.
+  const [isAiConfigured, setIsAiConfigured] = useState(false);
   useEffect(() => {
-    if (!isAiConfigured) {
-      addNotification('AI features are disabled. Set VITE_OPENAI_API_KEY in .env and restart the app.', 'info');
-    }
-  }, [isAiConfigured]);
+    getAiStatus().then(setIsAiConfigured);
+  }, []);
 
   /**
    * Fire notifications for any alert whose target the given prices have crossed.
@@ -431,6 +438,7 @@ export default function App() {
     const unique = Array.from(new Set(symbols.map(s => s.trim().toUpperCase()).filter(Boolean)));
     const prices: Record<string, number> = {};
     const previous: Record<string, number> = {};
+    const funds: Record<string, boolean> = {};
 
     await Promise.all(unique.map(async (symbol) => {
       const quote = await getQuote(symbol);
@@ -440,8 +448,10 @@ export default function App() {
       }
       prices[symbol] = quote.price;
       if (quote.previousClose) previous[symbol] = quote.previousClose;
+      if (quote.isFund !== undefined) funds[symbol] = quote.isFund;
     }));
 
+    setQuotedAsFund(prev => ({ ...prev, ...funds }));
     return { prices, previous };
   };
 
@@ -477,11 +487,18 @@ export default function App() {
     }
   };
 
+  // The timer below outlives renders, so it calls through a ref. Calling the
+  // function it captured would check alerts against the watchlist as it was
+  // when the timer started: alerts set later never fired, and one that fired
+  // kept firing every five minutes because it never saw `lastAlertedAt`.
+  const updateAllPricesRef = useRef(updateAllPrices);
+  updateAllPricesRef.current = updateAllPrices;
+
   // Auto-fetch prices periodically and on mount
   useEffect(() => {
-    updateAllPrices(false);
+    updateAllPricesRef.current(false);
     const interval = setInterval(() => {
-      updateAllPrices(false);
+      updateAllPricesRef.current(false);
     }, 5 * 60 * 1000); // Every 5 minutes
     return () => clearInterval(interval);
   }, [priceRefreshKey]);
@@ -538,7 +555,10 @@ export default function App() {
     }));
   };
 
-  const handleAddWatchlist = (symbol: string) => {
+  const handleAddWatchlist = (rawSymbol: string) => {
+    // AI suggestions arrive as the model wrote them; " aapl" and "AAPL" are one stock.
+    const symbol = rawSymbol.trim().toUpperCase();
+    if (!symbol) return;
     if (watchlist.some(item => item.symbol === symbol)) {
       addNotification(`${symbol} is already on your watchlist.`, 'info');
       return;
@@ -610,9 +630,10 @@ export default function App() {
 
   // Single source of truth for portfolio valuation and concentration. Merges
   // repeated lots of the same symbol, so holding AAPL twice is one position.
+  const isFundSymbol = (symbol: string) => isFund(symbol, quotedAsFund);
   const riskAudit = useMemo(
-    () => auditRisk(portfolio.holdings, currentPrices, portfolio.cashBalance, DEFAULT_RISK_THRESHOLD),
-    [portfolio.holdings, portfolio.cashBalance, currentPrices],
+    () => auditRisk(portfolio.holdings, currentPrices, portfolio.cashBalance, DEFAULT_RISK_THRESHOLD, symbol => isFund(symbol, quotedAsFund)),
+    [portfolio.holdings, portfolio.cashBalance, currentPrices, quotedAsFund],
   );
 
   // Transaction log replayed into positions, cash and realized gains.
@@ -635,7 +656,19 @@ export default function App() {
     [transactions],
   );
 
-  const handleRecordTransaction = (draft: Omit<Transaction, 'id'>) => {
+  const handleRecordTransaction = (draft: Omit<Transaction, 'id'>): string | null => {
+    // Selling more than you hold would credit the full proceeds to cash while
+    // the shares stop at zero, leaving cash wrong. Checked against holdings,
+    // which include positions entered by hand before the log began.
+    if (draft.type === 'SELL') {
+      const held = sharesHeld(portfolio, draft.symbol);
+      if ((draft.shares ?? 0) > held + 1e-9) {
+        return held > 0
+          ? `You hold ${+held.toFixed(4)} shares of ${draft.symbol}. Add the rest under Portfolio first if you own more.`
+          : `You don’t hold any ${draft.symbol}. Add it under Portfolio first if you own it.`;
+      }
+    }
+
     const transaction: Transaction = { ...draft, id: createTransactionId() };
 
     setTransactions(prev => [...prev, transaction]);
@@ -649,6 +682,7 @@ export default function App() {
       `Recorded ${transaction.type.toLowerCase()} of ${formatCurrency(transaction.amount)}.`,
       'success',
     );
+    return null;
   };
 
   const handleDeleteTransaction = (id: string) => {
@@ -674,7 +708,7 @@ export default function App() {
     addNotification(`Set the ${year} contribution limit to ${formatCurrency(amount)}.`, 'success');
   };
 
-  /** Total unrealized gain/loss, only across positions with a live quote. */
+  /** Total unrealized gain/loss, only across positions with a live quote and a known cost. */
   const unrealized = useMemo(() => {
     let costBasis = 0;
     let marketValue = 0;
@@ -683,6 +717,8 @@ export default function App() {
       const symbol = holding.symbol.trim().toUpperCase();
       const livePrice = currentPrices[symbol];
       if (!Number.isFinite(livePrice) || livePrice <= 0) return;
+      // Entered without an average cost: its gain is unknown, not its whole value.
+      if (!(holding.averagePrice > 0)) return;
       costBasis += holding.shares * holding.averagePrice;
       marketValue += holding.shares * livePrice;
     });
@@ -804,6 +840,7 @@ export default function App() {
               onSymbolChange: setSizerSymbol,
               confidence: sizerConfidence,
               onConfidenceChange: setSizerConfidence,
+              isFund: isFundSymbol,
             }}
             formatCurrency={formatCurrency}
           />

@@ -5,7 +5,8 @@ import { AccountType, Transaction, TransactionType } from '../types';
 import { transactionLabel } from '../lib/transactions';
 
 interface TransactionFormProps {
-  onSubmit: (transaction: Omit<Transaction, 'id'>) => void;
+  /** Returns why the entry was refused, or null once it is recorded. */
+  onSubmit: (transaction: Omit<Transaction, 'id'>) => string | null;
   /** Suggestions for the symbol field. */
   symbols: string[];
   defaultTaxYear: number;
@@ -72,7 +73,7 @@ export function TransactionForm({ onSubmit, symbols, defaultTaxYear, accountType
 
     const parsedTaxYear = parseInt(taxYear, 10);
 
-    onSubmit({
+    const refused = onSubmit({
       date,
       type,
       amount: effectiveAmount,
@@ -82,6 +83,7 @@ export function TransactionForm({ onSubmit, symbols, defaultTaxYear, accountType
       ...(note.trim() ? { note: note.trim() } : {}),
     });
 
+    if (refused) return setError(refused);
     reset();
   };
 

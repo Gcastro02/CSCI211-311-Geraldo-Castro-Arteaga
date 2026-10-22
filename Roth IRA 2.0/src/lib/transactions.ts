@@ -293,10 +293,15 @@ export const applyTransaction = (portfolio: PortfolioData, tx: Transaction): Por
       if (!symbol || !tx.shares || tx.shares <= 0) return portfolio;
 
       // Average cost is unchanged by a sale, so only the share count moves.
+      // Several rows of one symbol are lots entered separately; the sale draws
+      // them down in turn rather than taking the full amount from each.
+      let remaining = tx.shares;
       const holdings = portfolio.holdings
         .map(holding => {
-          if (normalizeSymbol(holding.symbol) !== symbol) return holding;
-          return { ...holding, shares: Math.max(0, holding.shares - tx.shares!) };
+          if (normalizeSymbol(holding.symbol) !== symbol || remaining <= SHARE_EPSILON) return holding;
+          const taken = Math.min(holding.shares, remaining);
+          remaining -= taken;
+          return { ...holding, shares: holding.shares - taken };
         })
         .filter(holding => holding.shares > SHARE_EPSILON);
 
@@ -308,7 +313,12 @@ export const applyTransaction = (portfolio: PortfolioData, tx: Transaction): Por
   }
 };
 
-/** Human-readable label for a transaction type. */
+/** Shares of `symbol` across every holding row. */
+export const sharesHeld = (portfolio: PortfolioData, symbol?: string): number =>
+  portfolio.holdings
+    .filter(holding => normalizeSymbol(holding.symbol) === normalizeSymbol(symbol))
+    .reduce((sum, holding) => sum + holding.shares, 0);
+
 /**
  * Display name for a transaction type. New money is a "contribution" in a Roth
  * IRA, where the word has a legal meaning, and a "deposit" anywhere else.

@@ -523,6 +523,7 @@ export function HomeScreen({
                       >
                         {item.title}
                       </a>
+                      {item.snippet && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-ink-2">{item.snippet}</p>}
                     </li>
                   ))}
                 </ul>

@@ -9,6 +9,7 @@ import {
   replayTransactions,
   applyTransaction,
   reconcile,
+  sharesHeld,
   sortTransactions,
 } from '../src/lib/transactions';
 import {
@@ -175,6 +176,8 @@ console.log('\n--- contribution limits ---');
   const catchUp = { catchUpEligible: true, contributionLimitOverrides: {} };
   check('catch-up raises the limit', getContributionLimit(2025, catchUp).amount === 8000);
   check('standard limit for under 50', getContributionLimit(2025, settings).amount === 7000);
+  check('2026 uses the published $7,500', getContributionLimit(2026, settings).amount === 7500 && getContributionLimit(2026, settings).verified);
+  check('2026 catch-up is $8,600', getContributionLimit(2026, catchUp).amount === 8600);
 }
 
 {
@@ -238,6 +241,18 @@ console.log('\n--- applyTransaction ---');
     date: '2025-01-01', type: 'CONTRIBUTION', amount: 500, taxYear: 2025,
   }));
   check('contribution credits cash only', near(afterContribution.cashBalance, 1500) && afterContribution.holdings.length === 0);
+
+  // Two rows of one symbol, as the Portfolio form creates when a stock is added twice.
+  const twoRows: PortfolioData = {
+    cashBalance: 0,
+    holdings: [{ symbol: 'AAPL', shares: 10, averagePrice: 100 }, { symbol: 'aapl', shares: 10, averagePrice: 120 }],
+  };
+  check('shares held adds up every row', near(sharesHeld(twoRows, 'AAPL'), 20));
+  const partial = applyTransaction(twoRows, tx({ date: '2025-04-01', type: 'SELL', symbol: 'AAPL', shares: 5, pricePerShare: 150, amount: 750 }));
+  check('a sale across rows takes the shares once, not from each row', near(sharesHeld(partial, 'AAPL'), 15), `${sharesHeld(partial, 'AAPL')}`);
+  const spanning = applyTransaction(twoRows, tx({ date: '2025-04-01', type: 'SELL', symbol: 'AAPL', shares: 12, pricePerShare: 150, amount: 1800 }));
+  check('a sale larger than the first row continues into the next', spanning.holdings.length === 1 && near(spanning.holdings[0].shares, 8));
+  check('the remaining row keeps its own cost', near(spanning.holdings[0].averagePrice, 120));
 }
 
 // ---------------------------------------------------------------------------

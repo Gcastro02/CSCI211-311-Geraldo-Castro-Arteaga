@@ -138,26 +138,26 @@ call it directly. In development Vite's proxy handles this; a static production
 build has no proxy, so **every price and news request fails on CORS**.
 `server.ts` reproduces the dev proxy for production.
 
-It also offers an optional AI relay. See the security note below.
+It also runs the AI relay; see Configuration below. News comes from Yahoo
+Finance's free search and RSS feeds through the same proxy, so it needs no
+account or key.
 
 ## Configuration
 
 Copy `.env.example` to `.env`.
 
-**Local development** — set `VITE_OPENAI_API_KEY`. AI features light up
-immediately, and the app works fine without it (everything measured still
-works; only the AI panels switch off).
+Set `OPENAI_API_KEY` to turn on AI research and Discover. Everything else works
+without it. The key is read only by the server: `npm run dev` and
+`npm run serve` both relay AI requests through `aiRelay.ts`, and the page calls
+`/api/ai/chat` and `/api/ai/status`, never OpenAI itself. Don't give the key a
+`VITE_` prefix: anything with one is compiled into the page, where any visitor
+could read it and use it at your expense. (A key still under the old
+`VITE_OPENAI_API_KEY` name is read on the server only, so it isn't exposed, but
+rename it.)
 
-**Anything hosted** — leave `VITE_OPENAI_API_KEY` unset and set
-`OPENAI_API_KEY` instead. Anything prefixed with `VITE_` is compiled into the
-client bundle, so a `VITE_OPENAI_API_KEY` on a public page can be read by any
-visitor and used at your expense. With only `OPENAI_API_KEY` set, the client
-posts to `/api/ai/chat` and the key never leaves the server.
-
-The client picks its path automatically (`AI_MODE` in
-`src/services/openaiService.ts`): a client key means direct calls, no client key
-in a production build means the server relay, and no key anywhere in
-development means AI features are disabled.
+The relay allows 30 requests per visitor per 15 minutes
+(`AI_REQUESTS_PER_WINDOW` to change it) and rejects oversized prompts, so a
+deployed copy can't be used to run up your bill.
 
 ## Display currency
 

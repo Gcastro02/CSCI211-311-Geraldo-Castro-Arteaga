@@ -10,6 +10,8 @@ interface PositionSizerProps {
   onSymbolChange: (symbol: string) => void;
   confidence: number;
   onConfidenceChange: (confidence: number) => void;
+  /** Funds have no single-position cap. */
+  isFund: (symbol: string) => boolean;
   formatCurrency: (amount: number) => string;
 }
 
@@ -38,11 +40,13 @@ export function PositionSizer({
   onSymbolChange,
   confidence,
   onConfidenceChange,
+  isFund,
   formatCurrency,
 }: PositionSizerProps) {
   const activeSymbol = symbol || symbols[0] || '';
   const price = prices[activeSymbol] ?? 0;
   const currentPosition = audit.positions.find(p => p.symbol === activeSymbol);
+  const fund = Boolean(activeSymbol) && isFund(activeSymbol);
 
   const result = calculatePositionSize({
     price,
@@ -50,7 +54,7 @@ export function PositionSizer({
     totalPortfolioValue: audit.totalValue,
     currentPositionValue: currentPosition?.value ?? 0,
     confidence,
-    riskThreshold: audit.riskThreshold,
+    riskThreshold: fund ? Infinity : audit.riskThreshold,
   });
 
   const canBuy = result.shares > 0;
@@ -59,8 +63,8 @@ export function PositionSizer({
     <section aria-labelledby="sizer-heading">
       <h2 id="sizer-heading" className="text-lg font-semibold">Position sizer</h2>
       <p className="mt-1 text-sm text-ink-2">
-        How much you could add without going over your {(audit.riskThreshold * 100).toFixed(0)}% position limit
-        or spending the {(DEFAULT_CASH_BUFFER_PCT * 100).toFixed(0)}% of cash held back as a buffer.
+        How much you could add without going over your {(audit.riskThreshold * 100).toFixed(0)}% limit for one company
+        or spending the {(DEFAULT_CASH_BUFFER_PCT * 100).toFixed(0)}% of cash held back as a buffer. Funds have no limit.
       </p>
 
       {symbols.length === 0 ? (
@@ -105,7 +109,7 @@ export function PositionSizer({
                 ['Current price', price > 0 ? formatCurrency(price) : 'unavailable'],
                 ['Cash held back', formatCurrency(result.cashBuffer)],
                 ['Spendable cash', formatCurrency(result.spendableCash)],
-                ['Room under limit', formatCurrency(result.riskHeadroom)],
+                ['Room under limit', fund ? 'No limit (fund)' : formatCurrency(result.riskHeadroom)],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between border-t border-line-soft py-2">
                   <dt className="text-ink-2">{label}</dt>

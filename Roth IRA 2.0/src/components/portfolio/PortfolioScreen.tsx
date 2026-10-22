@@ -29,6 +29,7 @@ interface PortfolioScreenProps {
     onSymbolChange: (symbol: string) => void;
     confidence: number;
     onConfidenceChange: (confidence: number) => void;
+    isFund: (symbol: string) => boolean;
   };
   formatCurrency: (amount: number) => string;
 }
@@ -242,6 +243,7 @@ export function PortfolioScreen({
           onSymbolChange={sizer.onSymbolChange}
           confidence={sizer.confidence}
           onConfidenceChange={sizer.onConfidenceChange}
+          isFund={sizer.isFund}
           formatCurrency={formatCurrency}
         />
       </div>

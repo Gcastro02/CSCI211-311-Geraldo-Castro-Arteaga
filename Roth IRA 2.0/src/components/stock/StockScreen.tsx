@@ -130,6 +130,7 @@ export function StockScreen({
       >
         {item.title}
       </a>
+      {item.snippet && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-ink-2">{item.snippet}</p>}
     </li>
   );
 
@@ -149,7 +150,10 @@ export function StockScreen({
     const shares = lots.reduce((sum, lot) => sum + lot.shares, 0);
     if (!(shares > 0)) return null;
     const cost = lots.reduce((sum, lot) => sum + lot.shares * (lot.averagePrice || 0), 0);
-    return { shares, cost, averagePrice: cost > 0 ? cost / shares : null };
+    // A lot entered without a cost would count as free and inflate the gain,
+    // so the average and gain show only when every lot's cost is known.
+    const allCostsKnown = lots.every(lot => lot.averagePrice > 0);
+    return { shares, cost, averagePrice: allCostsKnown && cost > 0 ? cost / shares : null };
   }, [holdings, symbol]);
 
   const snapshot = technicals ?? ownTechnicals ?? undefined;

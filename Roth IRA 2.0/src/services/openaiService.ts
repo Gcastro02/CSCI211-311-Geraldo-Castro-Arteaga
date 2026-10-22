@@ -2,9 +2,6 @@ import { StockAnalysis, MarketSuggestion, StockHolding, NewsItem, UserSettings, 
 import { TechnicalSnapshot, computeIndicators, describeTechnicals } from "../lib/indicators";
 import { readingLevelInstruction } from "../lib/level";
 
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY || "";
-const OPENAI_MODEL = import.meta.env.VITE_OPENAI_MODEL || "gpt-4.1-mini";
-
 /**
  * The account-type context matters more than it might look. Without it the
  * model reasons as though this were a taxable brokerage account and produces
@@ -242,73 +239,35 @@ const extractJson = <T>(content: string): T => {
   return JSON.parse(cleaned) as T;
 };
 
-const PLACEHOLDER_KEYS = ["MY_OPENAI_API_KEY", "YOUR_OPENAI_API_KEY"];
-
-const hasClientKey = (() => {
-  const trimmed = OPENAI_API_KEY.trim();
-  return trimmed.length > 0 && !PLACEHOLDER_KEYS.includes(trimmed);
-})();
-
 /**
- * How AI calls reach OpenAI:
- *   'client' - a VITE_OPENAI_API_KEY is set, so call OpenAI directly. Convenient
- *              for local development, but note that anything with a VITE_ prefix
- *              is compiled into the bundle and readable by anyone loading a
- *              deployed page. Fine locally, not fine on a public host.
- *   'server' - no client key, but a production build, so assume server.ts is
- *              relaying with a server-side OPENAI_API_KEY.
- *   'disabled' - no key anywhere; AI features are switched off in the UI.
+ * Whether AI features are set up. The key lives on the server (aiRelay.ts, run
+ * by the dev server and by server.ts) and never in the page, so the page asks.
  */
-export const AI_MODE: 'client' | 'server' | 'disabled' =
-  hasClientKey ? 'client' : import.meta.env.DEV ? 'disabled' : 'server';
+export const getAiStatus = async (): Promise<boolean> => {
+  try {
+    const response = await fetch("/api/ai/status");
+    if (!response.ok) return false;
+    const payload = await response.json();
+    return payload?.enabled === true;
+  } catch {
+    return false;
+  }
+};
 
-export const isAiConfigured = AI_MODE !== 'disabled';
-
+/** Send a prompt through the server's relay and parse the JSON it returns. */
 const chatJson = async <T>(prompt: string, settings: UserSettings): Promise<T> => {
-  if (AI_MODE === 'disabled') {
-    throw new Error("Missing OpenAI API key. Set VITE_OPENAI_API_KEY in .env and restart the app.");
-  }
-
-  if (AI_MODE === 'server') {
-    const response = await fetch("/api/ai/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ system: systemPrompt(settings), prompt }),
-    });
-
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(payload?.error || `AI request failed: ${response.status}`);
-    }
-
-    return extractJson<T>(payload?.content || "");
-  }
-
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("/api/ai/chat", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: OPENAI_MODEL,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: systemPrompt(settings) },
-        { role: "user", content: prompt },
-      ],
-      temperature: 0.2,
-    }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ system: systemPrompt(settings), prompt }),
   });
 
+  const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    const body = await response.text();
-    throw new Error(`OpenAI request failed: ${response.status} ${body}`);
+    throw new Error(payload?.error || `AI request failed: ${response.status}`);
   }
 
-  const payload = await response.json();
-  const content: string = payload?.choices?.[0]?.message?.content || "";
-  return extractJson<T>(content);
+  return extractJson<T>(payload?.content || "");
 };
 
 export interface Quote {
@@ -325,6 +284,8 @@ export interface Quote {
   volume?: number;
   /** ISO time of the last regular-session trade. */
   marketTime?: string;
+  /** Yahoo's instrument type says ETF or mutual fund. Undefined when it says nothing. */
+  isFund?: boolean;
 }
 
 /** A positive finite number, or undefined. */
@@ -365,6 +326,7 @@ const fetchYahooQuote = async (symbol: string): Promise<Quote | null> => {
     yearLow: positive(meta?.fiftyTwoWeekLow),
     volume: positive(meta?.regularMarketVolume),
     marketTime: marketSeconds ? new Date(marketSeconds * 1000).toISOString() : undefined,
+    isFund: meta?.instrumentType ? ['ETF', 'MUTUALFUND'].includes(String(meta.instrumentType).toUpperCase()) : undefined,
   };
 };
 
@@ -422,22 +384,83 @@ export const getTechnicals = async (symbol: string): Promise<TechnicalSnapshot |
   return computeIndicators(symbol.trim().toUpperCase(), bars);
 };
 
-/**
- * Real headlines from Yahoo Finance's search endpoint.
- *
- * This used to ask the language model for news, which cannot work: the model has
- * no web access during a completion, so every headline, publisher and URL it
- * returned was invented and the links went nowhere. These are actual articles
- * with working links and real publish times.
- */
-export const getStockNews = async (
-  symbol: string,
-  settings: UserSettings,
-  isGeneral: boolean = false,
-): Promise<NewsItem[]> => {
-  const query = isGeneral ? "stock market" : normalizeToYahooSymbol(symbol);
-  if (!query) return [];
+// Same reason as the Yahoo proxy above: the RSS host sends no CORS headers.
+const YAHOO_RSS_BASE_URL = "/yahoo-rss";
 
+/** Publishers by web address, for RSS items, which name only the link. */
+const PUBLISHERS_BY_HOST: Record<string, string> = {
+  "finance.yahoo.com": "Yahoo Finance",
+  "fool.com": "Motley Fool",
+  "247wallst.com": "24/7 Wall St.",
+  "thestreet.com": "TheStreet",
+  "trefis.com": "Trefis",
+  "benzinga.com": "Benzinga",
+  "investors.com": "Investor's Business Daily",
+  "barrons.com": "Barron's",
+  "zacks.com": "Zacks",
+  "apnews.com": "Associated Press",
+  "reuters.com": "Reuters",
+  "bloomberg.com": "Bloomberg",
+  "marketwatch.com": "MarketWatch",
+  "cnbc.com": "CNBC",
+  "cnn.com": "CNN",
+  "etf.com": "etf.com",
+};
+
+const publisherFromUrl = (url: string): string => {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    return PUBLISHERS_BY_HOST[host] ?? host;
+  } catch {
+    return "";
+  }
+};
+
+/** Letters and digits only, for matching one headline across two feeds. */
+const headlineKey = (title: string) => title.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/**
+ * A feed's summary, or "" when it isn't one: some publishers put a contact
+ * line or the headline itself there instead.
+ */
+const cleanSummary = (raw: string, title: string): string => {
+  const text = raw.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  const excerpt = text.length <= 220 ? text : `${text.slice(0, 220).replace(/\s+\S*$/, "")}…`;
+  // An address in what would be shown means a contact line, not a summary; one
+  // further down a press release is fine, since it's cut off anyway.
+  if (text.length < 25 || /\S+@\S+\.\S+/.test(excerpt) || headlineKey(text).startsWith(headlineKey(title))) return "";
+  return excerpt;
+};
+
+/**
+ * Yahoo's free headline RSS for one or more tickers (comma-separated). Each
+ * item carries a one-line summary, which the search endpoint doesn't have.
+ */
+const fetchYahooRss = async (tickers: string): Promise<NewsItem[]> => {
+  const response = await fetch(
+    `${YAHOO_RSS_BASE_URL}/rss/2.0/headline?s=${encodeURIComponent(tickers)}&region=US&lang=en-US`,
+  );
+  if (!response.ok) return [];
+  const doc = new DOMParser().parseFromString(await response.text(), "text/xml");
+  return Array.from(doc.querySelectorAll("item"))
+    .map((item) => {
+      const text = (tag: string) => item.querySelector(tag)?.textContent?.trim() ?? "";
+      const title = text("title");
+      const url = text("link");
+      const published = Date.parse(text("pubDate"));
+      return {
+        title,
+        url,
+        source: publisherFromUrl(url),
+        snippet: cleanSummary(text("description"), title),
+        date: Number.isFinite(published) ? new Date(published).toISOString() : undefined,
+      };
+    })
+    .filter((item) => item.title && item.url);
+};
+
+/** Yahoo's search endpoint: publisher names and tagged tickers, but no summaries. */
+const fetchYahooSearchNews = async (query: string): Promise<NewsItem[]> => {
   const response = await fetch(
     getYahooUrl(`/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=0&newsCount=12`),
   );
@@ -448,7 +471,7 @@ export const getStockNews = async (
   const payload = await response.json();
   const rawItems: any[] = Array.isArray(payload?.news) ? payload.news : [];
 
-  const items: NewsItem[] = rawItems
+  return rawItems
     .filter((item) => item?.title && item?.link)
     .map((item) => {
       const publishedSeconds = Number(item.providerPublishTime);
@@ -456,26 +479,61 @@ export const getStockNews = async (
         title: String(item.title),
         url: String(item.link),
         source: String(item.publisher || "Yahoo Finance"),
-        // The search endpoint returns no summary text, so the related tickers
-        // stand in as context rather than leaving the card blank.
-        snippet: Array.isArray(item.relatedTickers) && item.relatedTickers.length > 0
-          ? `Related: ${item.relatedTickers.slice(0, 6).join(", ")}`
-          : "",
+        snippet: "",
         date: Number.isFinite(publishedSeconds) && publishedSeconds > 0
           ? new Date(publishedSeconds * 1000).toISOString()
           : undefined,
         relatedTickers: Array.isArray(item.relatedTickers) ? item.relatedTickers.map(String) : undefined,
       };
     });
+};
+
+/** Words in a publisher's name, for matching "Barron's" against "Barrons.com". */
+const publisherKey = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/**
+ * Headlines for a ticker, or for the market when `isGeneral`. Both of Yahoo's
+ * free feeds are read and merged by headline: search names the publisher and
+ * tags tickers, RSS adds a summary. Newest first; preferred sources lead.
+ * Free and keyless — no news API account needed.
+ */
+export const getStockNews = async (
+  symbol: string,
+  settings: UserSettings,
+  isGeneral: boolean = false,
+): Promise<NewsItem[]> => {
+  const ticker = isGeneral ? "" : normalizeToYahooSymbol(symbol);
+  if (!isGeneral && !ticker) return [];
+
+  const [searchResult, rssResult] = await Promise.allSettled([
+    fetchYahooSearchNews(isGeneral ? "stock market" : ticker),
+    fetchYahooRss(isGeneral ? "^GSPC,^DJI,^IXIC" : ticker),
+  ]);
+  const searched = searchResult.status === "fulfilled" ? searchResult.value : [];
+  const fed = rssResult.status === "fulfilled" ? rssResult.value : [];
+  if (searchResult.status === "rejected" && fed.length === 0) throw searchResult.reason;
+
+  const byHeadline = new Map<string, NewsItem>();
+  for (const item of searched) byHeadline.set(headlineKey(item.title), item);
+  for (const item of fed) {
+    const key = headlineKey(item.title);
+    const match = byHeadline.get(key);
+    if (match) {
+      if (!match.snippet) match.snippet = item.snippet;
+    } else {
+      byHeadline.set(key, item);
+    }
+  }
+
+  const items = Array.from(byHeadline.values())
+    .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""));
 
   // Preferred sources move to the front rather than filtering others out, so the
   // feed never empties just because a favourite publisher had a quiet day.
-  const preferred = settings.preferredNewsSources.map((source) => source.toLowerCase());
+  const preferred = settings.preferredNewsSources.map(publisherKey);
   if (preferred.length === 0) return items;
 
-  const isPreferred = (item: NewsItem) =>
-    preferred.some((source) => item.source.toLowerCase().includes(source));
-
+  const isPreferred = (item: NewsItem) => preferred.some((source) => publisherKey(item.source).includes(source));
   return [...items.filter(isPreferred), ...items.filter((item) => !isPreferred(item))];
 };
 

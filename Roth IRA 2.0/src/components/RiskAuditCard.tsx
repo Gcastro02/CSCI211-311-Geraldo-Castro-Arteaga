@@ -27,7 +27,7 @@ export function RiskAuditCard({ audit, formatCurrency, onOpenStock }: RiskAuditC
     <section aria-labelledby="risk-heading">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="risk-heading" className="text-lg font-semibold">Risk and diversification</h2>
-        <span className="text-xs text-muted">Limit: {limitPct}% per position</span>
+        <span className="text-xs text-muted">Limit: {limitPct}% per company</span>
       </div>
 
       {audit.positions.length === 0 ? (
@@ -64,6 +64,7 @@ export function RiskAuditCard({ audit, formatCurrency, onOpenStock }: RiskAuditC
                     {position.estimated && (
                       <span className="text-xs text-muted" title="No live quote — valued at your average cost">est.</span>
                     )}
+                    {position.isFund && <span className="rounded bg-chip px-1.5 py-0.5 text-xs text-muted">fund</span>}
                   </span>
                   <span className="flex items-baseline gap-3 text-sm">
                     <span className="text-muted">{formatCurrency(position.value)}</span>
@@ -73,13 +74,17 @@ export function RiskAuditCard({ audit, formatCurrency, onOpenStock }: RiskAuditC
                   </span>
                 </div>
 
-                {/* Bar fills relative to the limit, so a full bar means "at the limit". */}
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-line-soft">
-                  <div
-                    className={cn('h-full rounded-full', position.overLimit ? 'bg-warn' : 'bg-accent')}
-                    style={{ width: `${Math.min(100, (position.weight / audit.riskThreshold) * 100)}%` }}
-                  />
-                </div>
+                {position.isFund ? (
+                  <p className="mt-1 text-xs text-muted">A fund spreads its money across many companies, so the per-company limit doesn’t apply.</p>
+                ) : (
+                  // Bar fills relative to the limit, so a full bar means "at the limit".
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-line-soft">
+                    <div
+                      className={cn('h-full rounded-full', position.overLimit ? 'bg-warn' : 'bg-accent')}
+                      style={{ width: `${Math.min(100, (position.weight / audit.riskThreshold) * 100)}%` }}
+                    />
+                  </div>
+                )}
 
                 {position.overLimit && (
                   <p className="mt-1.5 text-xs text-warn-ink">

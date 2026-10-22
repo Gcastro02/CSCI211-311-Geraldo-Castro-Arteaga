@@ -4,7 +4,11 @@ import { UserSettings } from '../../types';
 import { cn } from '../../lib/utils';
 import { LEVELS } from '../../lib/level';
 
-const NEWS_SOURCES = ['Bloomberg', 'Reuters', 'CNBC', 'WSJ', 'Financial Times', 'Yahoo Finance'];
+/**
+ * Publishers that actually turn up in the app's free Yahoo news feeds. Paywalled
+ * outlets like the WSJ and Bloomberg rarely do, so offering them did nothing.
+ */
+export const NEWS_SOURCES = ['Associated Press', 'Barron’s', 'Investor’s Business Daily', 'Motley Fool', 'Reuters', 'TheStreet', 'Yahoo Finance', 'Zacks'];
 
 interface SettingsScreenProps {
   settings: UserSettings;
@@ -173,7 +177,7 @@ export function SettingsScreen({ settings, onUpdate, aiEnabled, formatCurrency }
               ]}
             />
           </Setting>
-          <Setting title="Preferred news sources" description="Headlines from these publishers are listed first. Others still appear after them.">
+          <Setting title="Preferred news sources" description="Headlines from these publishers are listed first. Others still appear after them. News comes from Yahoo Finance’s free feeds, so no news account is needed.">
             <div role="group" aria-label="Preferred news sources" className="flex flex-wrap gap-2">
               {NEWS_SOURCES.map(source => {
                 const selected = settings.preferredNewsSources.includes(source);
