@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Our Sponsors | Chico State Formula SAE</title>
+  <meta name="description" content="The companies and organizations that make Chico State Formula SAE possible." />
+  <link rel="icon" type="image/jpeg" href="images/institutional-wildcat.jpg" />
+  <link rel="shortcut icon" href="images/institutional-wildcat.jpg" />
+  <link rel="apple-touch-icon" href="images/institutional-wildcat.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#070709;
+      --panel:#0f0f12;
+      --text:#f2f2f4;
+      --muted:#b4b4bd;
+      --red:#d8453d;
+      --yellow:#e7c84a;
+      --line:#1b1b22;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+      --max: 1160px;
+      --h1: clamp(34px, 5vw, 62px);
+      --h2: clamp(24px, 3vw, 36px);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1000px 600px at 50% -220px, rgba(216,69,61,.18), transparent 65%), var(--bg);
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+    .container{max-width:var(--max); margin:0 auto; padding:0 22px;}
+    .mono{font-family:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    .header{
+      border-bottom:1px solid rgba(216,69,61,.25);
+      background: rgba(7,7,9,.85);
+    }
+    .header-inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:16px 0;
+    }
+    .brand{display:flex; align-items:center; gap:10px}
+    .logo-mark{width:44px; height:44px; border-radius:12px; overflow:hidden}
+    .logo-mark img{width:100%; height:100%; object-fit:cover}
+    .header-actions{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:11px 15px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      font-weight:700;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(216,69,61,.95), rgba(216,69,61,.75));
+      color:#0b0b0e;
+      border-color: rgba(216,69,61,.35);
+    }
+
+    main{padding:56px 0 72px}
+    .hero{
+      padding:28px;
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+    }
+    h1{
+      margin:0 0 12px;
+      font-size: var(--h1);
+      line-height:.92;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      font-weight:900;
+    }
+    h2{margin:0 0 8px; font-size: var(--h2); letter-spacing:.06em; text-transform:uppercase}
+    .lead{margin:0; color:rgba(242,242,244,.8); line-height:1.7; max-width:70ch}
+
+    /* Sponsor tiles */
+    .sponsor-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap:16px;
+      margin-top:26px;
+    }
+    .sponsor-tile{
+      display:flex;
+      flex-direction:column;
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      overflow:hidden;
+      transition:.18s transform, .18s border-color, .18s box-shadow;
+    }
+    .sponsor-tile:hover,
+    .sponsor-tile:focus-visible{
+      transform:translateY(-3px);
+      border-color: rgba(231,200,74,.45);
+      box-shadow: 0 14px 40px rgba(0,0,0,.5), 0 0 0 1px rgba(231,200,74,.15);
+      outline:none;
+    }
+    .sponsor-logo{
+      aspect-ratio: 3 / 2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:#ffffff;
+      overflow:hidden;
+    }
+    .sponsor-logo img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+    }
+    /* These logo files have a lot of built-in whitespace */
+    .sponsor-logo img[src*="partner5"],
+    .sponsor-logo img[src*="partner9"]{
+      transform:scale(1.4);
+    }
+    .sponsor-info{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 16px;
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .sponsor-name{font-weight:800; font-size:14px; letter-spacing:.02em}
+    .sponsor-link{font-size:11px; color:var(--yellow); white-space:nowrap}
+
+    .contact{
+      margin-top:26px;
+      padding:20px;
+      border-radius: var(--radius);
+      border:1px solid rgba(216,69,61,.25);
+      background: linear-gradient(180deg, rgba(216,69,61,.08), rgba(216,69,61,.04));
+    }
+
+    @media (max-width: 600px){
+      .brand-sub{display:none}
+      .hero{padding:20px}
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Back to home">
+        <div class="logo-mark" aria-hidden="true">
+          <img src="images/institutional-wildcat.jpg" alt="School logo">
+        </div>
+        <div>
+          <div><b>SAE Formula Chico State</b></div>
+          <div class="mono brand-sub" style="font-size:11px; color:#8b8b96; margin-top:2px;">Our Sponsors</div>
+        </div>
+      </a>
+      <div class="header-actions">
+        <a class="btn" href="index.html">Back to Home</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="hero">
+        <h1>Our Sponsors</h1>
+        <p class="lead mono">Chico State Formula SAE is built on the support of these companies and organizations. Their funding, materials, software, and expertise put our car on the track.</p>
+
+        <div class="sponsor-grid">
+          <a class="sponsor-tile" href="https://www.ansys.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner1.png" alt="Ansys logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Ansys</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.cyclegear.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner2.png" alt="Cycle Gear logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Cycle Gear</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.haascnc.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner3.png" alt="Haas Automation logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Haas Automation</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://yc.yccd.edu" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner4.png" alt="Yuba College logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Yuba College</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.simpsonraceproducts.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner5.png" alt="Simpson logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Simpson</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.solidworks.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner6.png" alt="SolidWorks logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">SolidWorks</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.teamtube.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner7.png" alt="Team Tube logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Team Tube</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.transferflow.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner8.jpg" alt="Transfer Flow logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Transfer Flow</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.wilwood.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner9.png" alt="Wilwood Disc Brakes logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Wilwood Disc Brakes</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://www.yamahamotorsports.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner10.png" alt="Yamaha logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">Yamaha</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+          <a class="sponsor-tile" href="https://thesensorconnection.com" target="_blank" rel="noopener noreferrer">
+            <div class="sponsor-logo"><img src="images/partners/partner11.jpg" alt="HGSI The Sensor Connection logo"></div>
+            <div class="sponsor-info"><span class="sponsor-name">The Sensor Connection</span><span class="sponsor-link mono">Visit site ↗</span></div>
+          </a>
+        </div>
+
+        <section class="contact">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+            <div>
+              <h2 style="margin-top:0; color:var(--yellow);">Become a Sponsor</h2>
+              <p class="mono" style="margin:0; color:rgba(242,242,244,.8);">Want your logo here and on the car? See our sponsorship tiers and get in touch.</p>
+            </div>
+            <a class="btn btn-primary" href="partners.html">Partner With Us</a>
+          </div>
+        </section>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

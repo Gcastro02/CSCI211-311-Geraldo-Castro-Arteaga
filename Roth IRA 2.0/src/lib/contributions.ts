@@ -21,6 +21,8 @@ export const DEFAULT_CONTRIBUTION_LIMITS: Record<number, { standard: number; cat
   2023: { standard: 6500, catchUp: 7500 },
   2024: { standard: 7000, catchUp: 8000 },
   2025: { standard: 7000, catchUp: 8000 },
+  // IRS newsroom, Nov 2025: $7,500, plus a $1,100 catch-up (now indexed under SECURE 2.0).
+  2026: { standard: 7500, catchUp: 8600 },
 };
 
 export interface ContributionLimit {

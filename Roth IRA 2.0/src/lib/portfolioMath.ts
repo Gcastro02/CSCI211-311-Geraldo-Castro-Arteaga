@@ -24,6 +24,8 @@ export interface PositionWeight {
   value: number;
   /** Fraction of total portfolio value, 0-1. */
   weight: number;
+  /** A fund, which the single-position limit doesn't apply to. */
+  isFund: boolean;
   overLimit: boolean;
   /** Dollars that would need to be sold to come back under the limit. */
   excessValue: number;
@@ -51,13 +53,15 @@ export interface RiskAudit {
  * position exceeding `RISK_THRESHOLD` of total value.
  *
  * Positions in the same symbol are merged, so adding a holding twice does not
- * understate concentration.
+ * understate concentration. Funds are weighed but never flagged: the limit is
+ * about one company, and a fund holds many.
  */
 export const auditRisk = (
   holdings: StockHolding[],
   livePrices: Record<string, number>,
   cashBalance: number,
   riskThreshold: number = DEFAULT_RISK_THRESHOLD,
+  isFund: (symbol: string) => boolean = () => false,
 ): RiskAudit => {
   const merged = new Map<string, { shares: number; costBasis: number; price: number; estimated: boolean }>();
 
@@ -101,7 +105,9 @@ export const auditRisk = (
     .map(([symbol, entry]) => {
       const value = entry.shares * entry.price;
       const weight = totalValue > 0 ? value / totalValue : 0;
-      const excessValue = weight > riskThreshold ? value - riskThreshold * totalValue : 0;
+      const fund = isFund(symbol);
+      const overLimit = !fund && weight > riskThreshold;
+      const excessValue = overLimit ? value - riskThreshold * totalValue : 0;
 
       return {
         symbol,
@@ -109,7 +115,8 @@ export const auditRisk = (
         price: entry.price,
         value,
         weight,
-        overLimit: weight > riskThreshold,
+        isFund: fund,
+        overLimit,
         excessValue,
         estimated: entry.estimated,
       };
@@ -190,8 +197,11 @@ export const calculatePositionSize = ({
   const clampedConfidence = Math.max(0, Math.min(1, confidence));
   const confidenceAllocation = spendableCash * clampedConfidence;
 
-  const maxAllowed = riskThreshold * totalPortfolioValue;
-  const riskHeadroom = Math.max(0, maxAllowed - currentPositionValue);
+  // An infinite threshold (a fund) means no cap; spelled out because
+  // Infinity × 0 is NaN for an empty portfolio.
+  const riskHeadroom = Number.isFinite(riskThreshold)
+    ? Math.max(0, riskThreshold * totalPortfolioValue - currentPositionValue)
+    : Infinity;
 
   const empty = (limitedBy: PositionSizeResult['limitedBy']): PositionSizeResult => ({
     shares: 0,

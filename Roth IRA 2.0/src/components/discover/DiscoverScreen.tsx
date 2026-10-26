@@ -57,9 +57,9 @@ export function DiscoverScreen({
         <div className="rounded-lg border border-line p-6">
           <h2 className="text-base font-semibold">AI features are off</h2>
           <p className="mt-1 text-sm text-ink-2">
-            Discover needs an OpenAI API key. Add <code className="font-mono text-[13px]">VITE_OPENAI_API_KEY</code> to
-            the app’s <code className="font-mono text-[13px]">.env</code> file and restart it. Everything else in the
-            app works without one.
+            Discover needs an OpenAI API key. Add <code className="font-mono text-[13px]">OPENAI_API_KEY</code> to
+            the app’s <code className="font-mono text-[13px]">.env</code> file and restart it. The key stays on the
+            server and is never sent to the page. Everything else in the app works without one.
           </p>
         </div>
       ) : suggestions.length === 0 ? (

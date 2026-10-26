@@ -15,6 +15,7 @@
  */
 
 import { PriceData, Transaction } from '../types';
+import { isFund } from './funds';
 import { replayTransactions } from './transactions';
 
 export interface ScenarioAsset {
@@ -437,9 +438,6 @@ export const mysteryLabels = (scenario: PracticeScenario): Record<string, string
     scenario.assets.map((asset, i) => [asset.symbol, `${asset.isFund ? 'Fund' : 'Stock'} ${String.fromCharCode(65 + i)}`]),
   );
 
-/** Well-known funds, so a custom scenario holding them isn't held to single-company limits. */
-const KNOWN_FUNDS = new Set(['SPY', 'VOO', 'IVV', 'VTI', 'QQQ', 'DIA', 'IWM', 'GLD', 'SLV', 'TLT', 'AGG', 'BND', 'VEA', 'VWO', 'EFA', 'SCHD', 'VGT', 'XLK', 'XLF', 'ARKK']);
-
 export interface CustomScenarioInput {
   symbols: string;
   start: string;
@@ -475,7 +473,7 @@ export const buildCustomScenario = (
       id: 'custom',
       name: 'Your scenario',
       summary: `${symbols.join(', ')} from ${input.start} to ${input.end}.`,
-      assets: symbols.map(symbol => ({ symbol, name: symbol, isFund: KNOWN_FUNDS.has(symbol) })),
+      assets: symbols.map(symbol => ({ symbol, name: symbol, isFund: isFund(symbol) })),
       historyStart,
       start: input.start,
       end: input.end,

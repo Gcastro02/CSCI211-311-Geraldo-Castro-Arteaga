@@ -18,7 +18,8 @@ interface ActivityScreenProps {
   replay: ReplayResult;
   reconciliation: ReconciliationRow[];
   symbols: string[];
-  onRecord: (transaction: Omit<Transaction, 'id'>) => void;
+  /** Returns why the entry was refused, or null once it is recorded. */
+  onRecord: (transaction: Omit<Transaction, 'id'>) => string | null;
   onDelete: (id: string) => void;
   contributions: {
     summary: ContributionSummary;
