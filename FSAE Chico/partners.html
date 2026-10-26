@@ -175,13 +175,15 @@
       color:var(--yellow);
       font-weight:900;
     }
+    /* Track holds two identical sets, so scrolling -50% loops seamlessly at any logo size or count */
     .logo-track{
       display:flex;
-      gap:40px;
+      width:max-content;
       animation: scroll 20s linear infinite;
     }
     .logo-item{
       flex-shrink:0;
+      margin-right:40px;
       width:140px;
       height:80px;
       display:flex;
@@ -212,7 +214,7 @@
     }
     @keyframes scroll{
       0%{transform:translateX(0)}
-      100%{transform:translateX(calc(-140px * 11 - 40px * 11))}
+      100%{transform:translateX(-50%)}
     }
 
     @media (max-width: 900px){
