@@ -126,7 +126,7 @@ export function LineChart({
   return (
     <div>
       <div
-        className="relative touch-none"
+        className="relative touch-pan-y"
         style={{ height }}
         onPointerMove={handlePointerMove}
         onPointerLeave={() => setHoverIndex(null)}

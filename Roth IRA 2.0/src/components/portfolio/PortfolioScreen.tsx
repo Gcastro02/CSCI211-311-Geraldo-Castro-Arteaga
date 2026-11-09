@@ -4,6 +4,8 @@ import { StockAnalysis, StockHolding } from '../../types';
 import { RiskAudit } from '../../lib/portfolioMath';
 import { cn } from '../../lib/utils';
 import { Change } from '../ui/Change';
+import { PriceFreshness, PriceStatus } from '../ui/PriceStatus';
+import { SymbolInput, SymbolProblemNotice, useSymbolCheck } from '../ui/SymbolInput';
 import { RiskAuditCard } from '../RiskAuditCard';
 import { PositionSizer } from '../PositionSizer';
 import type { Tab } from '../layout/AppHeader';
@@ -32,6 +34,7 @@ interface PortfolioScreenProps {
     isFund: (symbol: string) => boolean;
   };
   formatCurrency: (amount: number) => string;
+  priceStatus: PriceFreshness;
 }
 
 const fieldClass =
@@ -54,25 +57,36 @@ export function PortfolioScreen({
   onNavigate,
   sizer,
   formatCurrency,
+  priceStatus,
 }: PortfolioScreenProps) {
   const [symbol, setSymbol] = useState('');
   const [shares, setShares] = useState('');
   const [averagePrice, setAveragePrice] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    const cleanSymbol = symbol.trim().toUpperCase();
-    const shareCount = parseFloat(shares);
+  const symbolCheck = useSymbolCheck(sizer.symbols);
+
+  const add = (chosenSymbol: string) => {
     const cost = parseFloat(averagePrice);
-    if (!cleanSymbol) return setError('Enter a symbol.');
-    if (!Number.isFinite(shareCount) || shareCount <= 0) return setError('Enter a share count above zero.');
-    if (averagePrice.trim() && (!Number.isFinite(cost) || cost < 0)) return setError('Enter a valid average cost, or leave it blank.');
-    onAddHolding({ symbol: cleanSymbol, shares: shareCount, averagePrice: Number.isFinite(cost) ? cost : 0 });
+    onAddHolding({ symbol: chosenSymbol, shares: parseFloat(shares), averagePrice: Number.isFinite(cost) ? cost : 0 });
     setSymbol('');
     setShares('');
     setAveragePrice('');
     setError(null);
+    symbolCheck.clearProblem();
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    const shareCount = parseFloat(shares);
+    const cost = parseFloat(averagePrice);
+    symbolCheck.clearProblem();
+    if (!symbol.trim()) return setError('Enter a symbol.');
+    if (!Number.isFinite(shareCount) || shareCount <= 0) return setError('Enter a share count above zero.');
+    if (averagePrice.trim() && (!Number.isFinite(cost) || cost < 0)) return setError('Enter a valid average cost, or leave it blank.');
+    setError(null);
+    const checked = await symbolCheck.check(symbol);
+    if (checked) add(checked);
   };
 
   return (
@@ -86,6 +100,7 @@ export function PortfolioScreen({
               <> · <Change amount={unrealized.gain} percent={unrealized.percent} formatCurrency={formatCurrency} /> unrealized</>
             )}
           </p>
+          <PriceStatus status={priceStatus} className="mt-1" />
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -122,8 +137,15 @@ export function PortfolioScreen({
         </p>
         <form onSubmit={handleSubmit} className="mt-3 grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]">
           <div>
-            <label htmlFor="holding-symbol" className="text-sm text-ink-2">Symbol</label>
-            <input id="holding-symbol" value={symbol} onChange={e => setSymbol(e.target.value)} placeholder="e.g. VOO" autoComplete="off" className={cn(fieldClass, 'uppercase placeholder:normal-case')} />
+            <label htmlFor="holding-symbol" className="text-sm text-ink-2">Company or ticker</label>
+            <SymbolInput
+              id="holding-symbol"
+              value={symbol}
+              onChange={value => { setSymbol(value); symbolCheck.clearProblem(); }}
+              onSelect={value => { setSymbol(value); symbolCheck.clearProblem(); }}
+              placeholder="e.g. Vanguard or VOO"
+              className={fieldClass}
+            />
           </div>
           <div>
             <label htmlFor="holding-shares" className="text-sm text-ink-2">Shares</label>
@@ -133,11 +155,12 @@ export function PortfolioScreen({
             <label htmlFor="holding-cost" className="text-sm text-ink-2">Average cost per share</label>
             <input id="holding-cost" type="number" step="any" min="0" value={averagePrice} onChange={e => setAveragePrice(e.target.value)} placeholder="optional" className={fieldClass} />
           </div>
-          <button type="submit" className="flex h-11 items-center justify-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong">
-            <Plus className="h-4 w-4" aria-hidden="true" /> Add
+          <button type="submit" disabled={symbolCheck.checking} className="flex h-11 items-center justify-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong disabled:opacity-60">
+            <Plus className="h-4 w-4" aria-hidden="true" /> {symbolCheck.checking ? 'Checking…' : 'Add'}
           </button>
         </form>
         {error && <p role="alert" className="mt-2 text-sm font-medium text-down">{error}</p>}
+        {symbolCheck.problem && <SymbolProblemNotice problem={symbolCheck.problem} onChoose={add} />}
       </section>
 
       {/* Holdings */}

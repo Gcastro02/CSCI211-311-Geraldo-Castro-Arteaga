@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port=3000 --host=0.0.0.0",
+    "dev": "vite --port=3000 --host=127.0.0.1",
     "build": "vite build",
     "preview": "vite preview",
     "serve": "tsx server.ts",
@@ -17,7 +17,10 @@
     "verify:bot": "tsx scripts/verify-bot.ts",
     "verify:news": "tsx scripts/verify-news.ts",
     "verify:risk": "tsx scripts/verify-risk.ts",
-    "verify": "npm run verify:indicators && npm run verify:transactions && npm run verify:history && npm run verify:practice && npm run verify:bot && npm run verify:news && npm run verify:risk"
+    "verify:search": "tsx scripts/verify-search.ts",
+    "verify:relay": "tsx scripts/verify-relay.ts",
+    "verify:live": "tsx scripts/verify-live.ts",
+    "verify": "npm run verify:indicators && npm run verify:transactions && npm run verify:history && npm run verify:practice && npm run verify:bot && npm run verify:news && npm run verify:risk && npm run verify:search && npm run verify:relay && npm run verify:live"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",

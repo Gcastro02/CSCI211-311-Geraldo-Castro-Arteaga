@@ -25,12 +25,16 @@ import {
   getStockPriceHistory,
   getQuote,
   getTechnicals,
-  getAiStatus
+  getAiStatus,
+  getLiveQuotes
 } from './services/openaiService';
 import { TechnicalSnapshot } from './lib/indicators';
 import { auditRisk, DEFAULT_RISK_THRESHOLD } from './lib/portfolioMath';
 import { isFund } from './lib/funds';
-import { applyTransaction, reconcile, replayTransactions, sharesHeld } from './lib/transactions';
+import { normalizeAnalysis } from './lib/aiResponses';
+import { LIVE_REFRESH_MS, LiveQuote, MarketSession, isMarketOpen, newestTime } from './lib/liveQuotes';
+import type { PriceFreshness } from './components/ui/PriceStatus';
+import { applyTransaction, isValidTransaction, reconcile, replayTransactions, sharesHeld, transactionLabel } from './lib/transactions';
 import { contributionBasis, contributionYears, summarizeContributions } from './lib/contributions';
 import { AppHeader, type Tab } from './components/layout/AppHeader';
 import { HomeScreen } from './components/home/HomeScreen';
@@ -71,6 +75,9 @@ const defaultSettings: UserSettings = {
   contributionLimitOverrides: {},
 };
 
+/** The currencies Settings offers. */
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'];
+
 const normalizeSettings = (raw: unknown): UserSettings => {
   if (!raw || typeof raw !== 'object') return defaultSettings;
 
@@ -78,6 +85,14 @@ const normalizeSettings = (raw: unknown): UserSettings => {
   return {
     ...defaultSettings,
     ...candidate,
+    // An unknown currency code makes every price on every screen throw.
+    currency: CURRENCIES.includes(candidate.currency as string) ? candidate.currency! : defaultSettings.currency,
+    dateFormat: (['MM/DD/YYYY', 'DD/MM/YYYY', 'YYYY-MM-DD'] as const).includes(candidate.dateFormat as never)
+      ? candidate.dateFormat!
+      : defaultSettings.dateFormat,
+    investmentHorizon: (['LONG_TERM', 'SHORT_TERM', 'BOTH'] as const).includes(candidate.investmentHorizon as never)
+      ? candidate.investmentHorizon!
+      : defaultSettings.investmentHorizon,
     // Settings saved before account types existed came from the Roth-only
     // version of the app, so those accounts are Roth IRAs.
     accountType: candidate.accountType === 'BROKERAGE' ? 'BROKERAGE' : 'ROTH_IRA',
@@ -129,16 +144,23 @@ export default function App() {
       value => value && Array.isArray(value.holdings));
     return {
       cashBalance: Number.isFinite(saved.cashBalance) ? saved.cashBalance : 0,
-      holdings: saved.holdings.filter(h => h && typeof h.symbol === 'string' && Number.isFinite(h.shares)),
+      holdings: saved.holdings
+        .filter(h => h && typeof h.symbol === 'string' && Number.isFinite(h.shares))
+        .map(h => ({
+          ...h,
+          symbol: h.symbol.trim().toUpperCase(),
+          averagePrice: Number.isFinite(h.averagePrice) ? h.averagePrice : 0,
+        })),
     };
   });
 
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>(() =>
     readStored<WatchlistItem[]>('roth_ira_watchlist', [], Array.isArray)
-      .filter(item => item && typeof item.symbol === 'string'));
+      .filter(item => item && typeof item.symbol === 'string')
+      .map(item => ({ ...item, symbol: item.symbol.trim().toUpperCase() })));
 
   const [transactions, setTransactions] = useState<Transaction[]>(() =>
-    readStored<Transaction[]>('roth_ira_transactions', [], Array.isArray));
+    readStored<Transaction[]>('roth_ira_transactions', [], Array.isArray).filter(isValidTransaction));
 
   const [selectedTaxYear, setSelectedTaxYear] = useState(() => new Date().getFullYear());
 
@@ -146,11 +168,14 @@ export default function App() {
   // being requested again on every visit.
   const [analyses, setAnalyses] = useState<Record<string, StockAnalysis>>(() => {
     try {
-      const saved: Record<string, StockAnalysis> = JSON.parse(localStorage.getItem('roth_ira_analyses') || '{}');
+      const saved: Record<string, unknown> = JSON.parse(localStorage.getItem('roth_ira_analyses') || '{}');
       const cutoff = Date.now() - ANALYSIS_MAX_AGE_MS;
-      return Object.fromEntries(
-        Object.entries(saved).filter(([, a]) => a?.analyzedAt && Date.parse(a.analyzedAt) > cutoff),
-      );
+      const kept: Record<string, StockAnalysis> = {};
+      Object.entries(saved).forEach(([symbol, value]) => {
+        const analysis = normalizeAnalysis(value, symbol);
+        if (analysis?.analyzedAt && Date.parse(analysis.analyzedAt) > cutoff) kept[symbol] = analysis;
+      });
+      return kept;
     } catch {
       return {};
     }
@@ -174,6 +199,12 @@ export default function App() {
   const [currentPrices, setCurrentPrices] = useState<Record<string, number>>({});
   /** Prior session's close per symbol, for "today" changes. */
   const [previousCloses, setPreviousCloses] = useState<Record<string, number>>({});
+  /** Latest prices from the fast refresh, with when each is from. */
+  const [liveQuotes, setLiveQuotes] = useState<Record<string, LiveQuote>>({});
+  const [marketSession, setMarketSession] = useState<MarketSession | null>(null);
+  const [marketOpen, setMarketOpen] = useState(false);
+  /** Fast refreshes in a row that got nothing back. */
+  const [liveFailures, setLiveFailures] = useState(0);
   /** What each quote said the symbol is, where it said: true for a fund. */
   const [quotedAsFund, setQuotedAsFund] = useState<Record<string, boolean>>({});
   const [isUpdatingPrices, setIsUpdatingPrices] = useState(false);
@@ -276,7 +307,7 @@ export default function App() {
       setGeneralNews(data);
     } catch (error) {
       console.error("Failed to fetch general news", error);
-      addNotification(getErrorMessage(error, 'Failed to fetch general news.'), 'info');
+      addNotification('Couldn’t load market news. Check your connection and try refreshing.', 'info');
     } finally {
       setLoadingGeneralNews(false);
     }
@@ -372,18 +403,24 @@ export default function App() {
    * fires and cleared when price moves back to the other side of the target.
    * Without that, a five-minute refresh would re-notify forever.
    */
-  const evaluateAlerts = (prices: Record<string, number>): number => {
-    let triggered = 0;
-    const firedSymbols: string[] = [];
+  const targetCrossed = (item: WatchlistItem, price: number) =>
+    item.alertDirection === 'BELOW' ? price <= item.targetPrice! : price >= item.targetPrice!;
 
-    watchlist.forEach(item => {
+  // Refreshes overlap now that they're frequent, and one that started before an
+  // alert fired would otherwise act on the watchlist from before it fired.
+  const watchlistRef = useRef(watchlist);
+  watchlistRef.current = watchlist;
+
+  const evaluateAlerts = (prices: Record<string, number>): number => {
+    const fired = new Set<string>();
+    const rearmed = new Set<string>();
+
+    watchlistRef.current.forEach(item => {
       if (!item.targetPrice) return;
       const price = prices[item.symbol];
       if (!Number.isFinite(price) || price <= 0) return;
 
-      const crossed = item.alertDirection === 'BELOW'
-        ? price <= item.targetPrice
-        : price >= item.targetPrice;
+      const crossed = targetCrossed(item, price);
 
       if (crossed && !item.lastAlertedAt) {
         addNotification(
@@ -392,24 +429,24 @@ export default function App() {
             : `${item.symbol} reached ${formatCurrency(price)}, above your ${formatCurrency(item.targetPrice)} target.`,
           'success',
         );
-        firedSymbols.push(item.symbol);
-        triggered++;
+        fired.add(item.symbol);
       } else if (!crossed && item.lastAlertedAt) {
         // Back on the other side — re-arm so the next crossing notifies again.
-        firedSymbols.push(item.symbol);
+        rearmed.add(item.symbol);
       }
     });
 
-    if (firedSymbols.length > 0) {
-      setWatchlist(prev => prev.map(item => {
-        if (!firedSymbols.includes(item.symbol)) return item;
-        return item.lastAlertedAt
-          ? { ...item, lastAlertedAt: undefined }
-          : { ...item, lastAlertedAt: new Date().toISOString() };
-      }));
+    if (fired.size > 0 || rearmed.size > 0) {
+      const firedAt = new Date().toISOString();
+      const mark = (items: WatchlistItem[]) => items.map(item =>
+        fired.has(item.symbol) ? { ...item, lastAlertedAt: firedAt }
+          : rearmed.has(item.symbol) ? { ...item, lastAlertedAt: undefined }
+            : item);
+      watchlistRef.current = mark(watchlistRef.current);
+      setWatchlist(mark);
     }
 
-    return triggered;
+    return fired.size;
   };
 
   const checkWatchlistAlerts = async () => {
@@ -426,7 +463,15 @@ export default function App() {
       setPreviousCloses(prev => ({ ...prev, ...previous }));
 
       if (evaluateAlerts(prices) === 0) {
-        addNotification(`Checked ${itemsWithAlerts.length} alerts. No targets reached yet.`, 'info');
+        // One already past its target has fired before and won't again until the
+        // price comes back, but "not reached" would be untrue.
+        const alreadyPast = itemsWithAlerts.filter(item => item.lastAlertedAt && prices[item.symbol] > 0 && targetCrossed(item, prices[item.symbol]));
+        addNotification(
+          alreadyPast.length > 0
+            ? `Past target: ${alreadyPast.map(item => item.symbol).join(', ')}. You were already notified; it re-arms when the price comes back.`
+            : `Checked ${itemsWithAlerts.length} ${itemsWithAlerts.length === 1 ? 'alert' : 'alerts'}. No targets reached yet.`,
+          'info',
+        );
       }
     } finally {
       setIsCheckingAlerts(false);
@@ -485,6 +530,89 @@ export default function App() {
     } finally {
       setIsUpdatingPrices(false);
     }
+  };
+
+  /**
+   * One fast refresh. Prices flow into everything already derived from them
+   * (values, weights, gains, alerts), so each screen just shows the new numbers.
+   */
+  const refreshLivePrices = async () => {
+    const symbols = Array.from(new Set([
+      ...trackedSymbols,
+      ...MARKET_INDICES.map(index => index.symbol),
+      ...(activeTab === 'detailed' ? [detailedSymbol] : []),
+    ]));
+    const live = await getLiveQuotes(symbols);
+    const received = Object.keys(live);
+    setLiveFailures(count => (received.length > 0 ? 0 : count + 1));
+    if (received.length === 0) return;
+
+    const prices: Record<string, number> = {};
+    const previous: Record<string, number> = {};
+    received.forEach(symbol => {
+      prices[symbol] = live[symbol].price;
+      if (live[symbol].previousClose) previous[symbol] = live[symbol].previousClose!;
+    });
+    setLiveQuotes(prev => ({ ...prev, ...live }));
+    setCurrentPrices(prev => ({ ...prev, ...prices }));
+    setPreviousCloses(prev => ({ ...prev, ...previous }));
+    setMarketSnapshot(prev => {
+      const next = { ...prev };
+      MARKET_INDICES.forEach(({ key, symbol }) => {
+        const quote = live[symbol];
+        if (!quote?.previousClose) return;
+        const change = quote.price - quote.previousClose;
+        next[key] = { value: quote.price, change, changePercent: (change / quote.previousClose) * 100 };
+      });
+      return next;
+    });
+    evaluateAlerts(prices);
+  };
+
+  const refreshLivePricesRef = useRef(refreshLivePrices);
+  refreshLivePricesRef.current = refreshLivePrices;
+  const marketSessionRef = useRef(marketSession);
+  marketSessionRef.current = marketSession;
+
+  // Today's trading hours, rechecked so an app left open picks up the next session.
+  useEffect(() => {
+    const load = () => getQuote('SPY').then(quote => { if (quote?.session) setMarketSession(quote.session); });
+    load();
+    const interval = setInterval(load, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // The fast refresh: only while the market is open and someone can see the page.
+  // Outside those times prices aren't moving, or nobody is looking at them.
+  useEffect(() => {
+    let inFlight = false;
+    const tick = async () => {
+      const open = isMarketOpen(marketSessionRef.current, Date.now());
+      setMarketOpen(open);
+      if (!open) setLiveFailures(0);
+      if (!open || document.hidden || inFlight) return;
+      inFlight = true;
+      try {
+        await refreshLivePricesRef.current();
+      } finally {
+        inFlight = false;
+      }
+    };
+    tick();
+    const interval = setInterval(tick, LIVE_REFRESH_MS);
+    // Coming back to the tab shouldn't mean waiting up to 15 seconds for new prices.
+    const onVisible = () => { if (!document.hidden) tick(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [marketSession]);
+
+  const priceStatus: PriceFreshness = {
+    marketOpen,
+    asOf: marketOpen ? newestTime(liveQuotes) : null,
+    stale: marketOpen && liveFailures >= 2,
   };
 
   // The timer below outlives renders, so it calls through a ref. Calling the
@@ -549,6 +677,8 @@ export default function App() {
   };
 
   const handleRemoveHolding = (index: number) => {
+    const holding = portfolio.holdings[index];
+    if (holding && !window.confirm(`Remove ${holding.shares} ${holding.symbol} from your holdings? This can’t be undone.`)) return;
     setPortfolio(prev => ({
       ...prev,
       holdings: prev.holdings.filter((_, i) => i !== index)
@@ -651,9 +781,10 @@ export default function App() {
 
   const basis = useMemo(() => contributionBasis(transactions), [transactions]);
 
+  // Includes the selected year, which can lose its last entry to a deletion.
   const availableTaxYears = useMemo(
-    () => contributionYears(transactions, new Date().getFullYear()),
-    [transactions],
+    () => Array.from(new Set([selectedTaxYear, ...contributionYears(transactions, new Date().getFullYear())])).sort((a, b) => b - a),
+    [transactions, selectedTaxYear],
   );
 
   const handleRecordTransaction = (draft: Omit<Transaction, 'id'>): string | null => {
@@ -676,16 +807,25 @@ export default function App() {
     // single action rather than an edit in two places.
     setPortfolio(prev => applyTransaction(prev, transaction));
 
+    const cashAfter = applyTransaction(portfolio, transaction).cashBalance;
+    if (cashAfter < 0 && cashAfter < portfolio.cashBalance) {
+      addNotification(
+        `Your cash is now −${formatCurrency(-cashAfter)}, which lowers your total. If the money came from a deposit, record that too.`,
+        'info',
+      );
+    }
+
     if (transaction.taxYear) setSelectedTaxYear(transaction.taxYear);
 
     addNotification(
-      `Recorded ${transaction.type.toLowerCase()} of ${formatCurrency(transaction.amount)}.`,
+      `Recorded ${transactionLabel(transaction.type, settings.accountType).toLowerCase()} of ${formatCurrency(transaction.amount)}.`,
       'success',
     );
     return null;
   };
 
   const handleDeleteTransaction = (id: string) => {
+    if (!window.confirm('Delete this log entry? This can’t be undone.')) return;
     const transaction = transactions.find(item => item.id === id);
     setTransactions(prev => prev.filter(item => item.id !== id));
 
@@ -781,6 +921,7 @@ export default function App() {
         {activeTab === 'home' ? (
           <HomeScreen
             level={level}
+            priceStatus={priceStatus}
             holdings={portfolio.holdings}
             audit={riskAudit}
             unrealized={unrealized}
@@ -803,6 +944,8 @@ export default function App() {
           <StockScreen
             key={detailedSymbol}
             level={level}
+            live={liveQuotes[detailedSymbol]}
+            priceStatus={priceStatus}
             symbol={detailedSymbol}
             holdings={portfolio.holdings}
             inWatchlist={watchlist.some(item => item.symbol === detailedSymbol)}
@@ -816,11 +959,13 @@ export default function App() {
             onChartModeChange={(mode: StockChartMode) => setChartMode(prev => ({ ...prev, [detailedSymbol]: mode }))}
             settings={settings}
             onNavigate={setActiveTab}
+            onOpenStock={openStock}
             formatCurrency={formatCurrency}
             formatDate={formatDate}
           />
         ) : activeTab === 'holdings' ? (
           <PortfolioScreen
+            priceStatus={priceStatus}
             holdings={portfolio.holdings}
             audit={riskAudit}
             unrealized={unrealized}
@@ -846,6 +991,7 @@ export default function App() {
           />
         ) : activeTab === 'watchlist' ? (
           <WatchlistScreen
+            priceStatus={priceStatus}
             watchlist={watchlist}
             prices={currentPrices}
             previousCloses={previousCloses}

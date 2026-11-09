@@ -3,9 +3,12 @@ import { Check, Plus, RefreshCw, Sparkles } from 'lucide-react';
 import { ExperienceLevel, NewsItem, PriceData, StockAnalysis, StockHolding, UserSettings } from '../../types';
 import { TechnicalSnapshot } from '../../lib/indicators';
 import { rankNewsForSymbol } from '../../lib/news';
-import { getQuote, getStockNews, getStockPriceHistory, getTechnicals, type Quote } from '../../services/openaiService';
+import { LiveQuote } from '../../lib/liveQuotes';
+import { SymbolMatch } from '../../lib/symbolSearch';
+import { getQuote, getStockNews, getStockPriceHistory, getTechnicals, searchSymbols, type Quote } from '../../services/openaiService';
 import { cn, parseDay } from '../../lib/utils';
 import { Change } from '../ui/Change';
+import { PriceFreshness, PriceStatus } from '../ui/PriceStatus';
 import { LineChart, type LinePoint } from '../ui/LineChart';
 import { TechnicalsPanel } from '../TechnicalsPanel';
 import { explainMode, showsPlainSummary, type ExplainMode } from '../../lib/level';
@@ -42,9 +45,13 @@ interface StockScreenProps {
   onChartModeChange: (mode: StockChartMode) => void;
   settings: UserSettings;
   onNavigate: (tab: Tab) => void;
+  onOpenStock: (symbol: string) => void;
   formatCurrency: (amount: number) => string;
   formatDate: (date?: string) => string;
   level: ExperienceLevel;
+  /** The newest price from the app's fast refresh, when it has one for this symbol. */
+  live?: LiveQuote;
+  priceStatus: PriceFreshness;
 }
 
 /**
@@ -66,9 +73,12 @@ export function StockScreen({
   onChartModeChange,
   settings,
   onNavigate,
+  onOpenStock,
   formatCurrency,
   formatDate,
   level,
+  live,
+  priceStatus,
 }: StockScreenProps) {
   const [range, setRange] = useState<StockRange>('6M');
   /** undefined while loading, null when the lookup failed. */
@@ -158,9 +168,38 @@ export function StockScreen({
 
   const snapshot = technicals ?? ownTechnicals ?? undefined;
   const lastClose = points.length ? points[points.length - 1].value : undefined;
-  const price = quote?.price ?? lastClose;
+  const price = live?.price ?? quote?.price ?? lastClose;
   const loadingQuote = quote === undefined;
   const notFound = quote === null && bars !== null && bars.length === 0;
+
+  // The price follows the fast refresh. Day range, volume and the 1D chart change
+  // more slowly and cost more to fetch, so they catch up once a minute.
+  useEffect(() => {
+    if (!priceStatus.marketOpen || notFound) return;
+    const interval = setInterval(() => {
+      if (document.hidden) return;
+      getQuote(symbol).then(result => { if (result) setQuote(result); });
+      if (range === '1D') {
+        getStockPriceHistory(symbol, '1D', { sample: false })
+          .then(rows => { if (rows.length) setBars(rows); })
+          .catch(() => {});
+      }
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [priceStatus.marketOpen, notFound, symbol, range]);
+
+  // When the symbol doesn't exist, look for what was probably meant: a typo
+  // ("APPL") or a company name ("Tesla"). undefined while looking, null when
+  // the lookup itself failed, which points at the connection rather than the ticker.
+  const [matches, setMatches] = useState<SymbolMatch[] | null | undefined>(undefined);
+  useEffect(() => {
+    if (!notFound) return;
+    let cancelled = false;
+    searchSymbols(symbol)
+      .then(found => { if (!cancelled) setMatches(found); })
+      .catch(() => { if (!cancelled) setMatches(null); });
+    return () => { cancelled = true; };
+  }, [notFound, symbol]);
 
   const today = quote?.previousClose && price
     ? { amount: price - quote.previousClose, percent: (price / quote.previousClose - 1) * 100 }
@@ -182,9 +221,12 @@ export function StockScreen({
     return day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const asOf = quote?.marketTime
-    ? new Date(quote.marketTime).toLocaleString('en-US', {
-        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+  const quotedAt = live?.time ? new Date(live.time * 1000) : quote?.marketTime ? new Date(quote.marketTime) : null;
+  const asOf = quotedAt
+    ? quotedAt.toLocaleString('en-US', {
+        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+        ...(priceStatus.marketOpen ? { second: '2-digit' as const } : {}),
+        timeZoneName: 'short',
       })
     : null;
 
@@ -235,9 +277,36 @@ export function StockScreen({
 
   if (notFound) {
     return (
-      <div className="py-16 text-center">
-        <h1 className="text-2xl font-medium">We couldn’t find “{symbol}”</h1>
-        <p className="mt-2 text-sm text-muted">Check the ticker and try searching again.</p>
+      <div className="mx-auto max-w-xl py-16 text-center">
+        <h1 className="text-2xl font-medium">
+          {matches === null ? `We couldn’t look up “${symbol}”` : `We couldn’t find “${symbol}”`}
+        </h1>
+        {matches === undefined ? (
+          <p className="mt-2 text-sm text-muted">Looking for similar names…</p>
+        ) : matches === null ? (
+          <p className="mt-2 text-sm text-muted">Market data isn’t responding. Check your connection and try again.</p>
+        ) : matches.length === 0 ? (
+          <p className="mt-2 text-sm text-muted">Nothing similar turned up. Check the spelling, or try the company’s name or ticker.</p>
+        ) : (
+          <>
+            <h2 className="mt-2 text-sm text-muted">Did you mean:</h2>
+            <ul className="mt-4 text-left">
+              {matches.map(match => (
+                <li key={match.symbol} className="border-t border-line-soft">
+                  <button
+                    type="button"
+                    onClick={() => onOpenStock(match.symbol)}
+                    className="flex min-h-11 w-full items-center gap-3 px-2 py-2.5 text-left text-sm hover:bg-surface"
+                  >
+                    <span className="w-20 shrink-0 font-mono text-[13px] font-medium">{match.symbol}</span>
+                    <span className="min-w-0 flex-1 truncate text-ink-2">{match.name}</span>
+                    <span className="shrink-0 text-xs text-muted">{match.kind}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
         <button
           type="button"
           onClick={() => onNavigate('home')}
@@ -281,6 +350,8 @@ export function StockScreen({
               As of {asOf}{quote?.currency && ` · ${quote.currency}`}
             </p>
           )}
+          {/* The line above already gives this stock's own time. */}
+          <PriceStatus status={{ ...priceStatus, asOf: null }} className="mt-0.5" />
         </div>
         <button
           type="button"

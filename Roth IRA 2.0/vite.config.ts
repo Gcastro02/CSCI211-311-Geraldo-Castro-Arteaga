@@ -26,6 +26,13 @@ const aiRelayPlugin = (env: Record<string, string>): Plugin => ({
         res.end();
         return;
       }
+      // Any web page can send a plain-text POST to localhost without asking;
+      // requiring JSON stops other sites spending the key, as express.json does.
+      if (!req.headers['content-type']?.startsWith('application/json')) {
+        res.statusCode = 415;
+        res.end();
+        return;
+      }
       let raw = '';
       req.on('data', chunk => { raw += chunk; });
       req.on('end', async () => {

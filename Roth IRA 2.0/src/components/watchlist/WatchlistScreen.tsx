@@ -3,6 +3,8 @@ import { Bell, BellRing, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { StockAnalysis, WatchlistItem } from '../../types';
 import { cn } from '../../lib/utils';
 import { Change } from '../ui/Change';
+import { PriceFreshness, PriceStatus } from '../ui/PriceStatus';
+import { SymbolInput, SymbolProblemNotice, useSymbolCheck } from '../ui/SymbolInput';
 
 type AlertDirection = 'ABOVE' | 'BELOW';
 
@@ -24,6 +26,7 @@ interface WatchlistScreenProps {
   onOpenStock: (symbol: string) => void;
   formatCurrency: (amount: number) => string;
   formatDate: (date?: string) => string;
+  priceStatus: PriceFreshness;
 }
 
 const fieldClass =
@@ -46,6 +49,7 @@ export function WatchlistScreen({
   onOpenStock,
   formatCurrency,
   formatDate,
+  priceStatus,
 }: WatchlistScreenProps) {
   const [newSymbol, setNewSymbol] = useState('');
   const [editing, setEditing] = useState<string | null>(null);
@@ -57,12 +61,19 @@ export function WatchlistScreen({
   const columnCount = aiEnabled ? 6 : 5;
   const hasAlerts = watchlist.some(item => item.targetPrice);
 
-  const handleAdd = (event: FormEvent) => {
-    event.preventDefault();
-    const symbol = newSymbol.trim().toUpperCase();
-    if (!symbol) return;
+  const symbolCheck = useSymbolCheck(watchlist.map(item => item.symbol));
+
+  const add = (symbol: string) => {
     onAdd(symbol);
     setNewSymbol('');
+    symbolCheck.clearProblem();
+  };
+
+  const handleAdd = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!newSymbol.trim()) return;
+    const checked = await symbolCheck.check(newSymbol);
+    if (checked) add(checked);
   };
 
   const startEditing = (item: WatchlistItem) => {
@@ -88,6 +99,7 @@ export function WatchlistScreen({
           <p className="mt-1 text-sm text-muted">
             Stocks you’re following. Click a symbol for its chart, stats and news.
           </p>
+          <PriceStatus status={priceStatus} className="mt-1" />
         </div>
         <button
           type="button"
@@ -100,20 +112,23 @@ export function WatchlistScreen({
         </button>
       </div>
 
-      <form onSubmit={handleAdd} className="flex max-w-xl gap-2">
-        <label htmlFor="watch-symbol" className="sr-only">Symbol to watch</label>
-        <input
-          id="watch-symbol"
-          value={newSymbol}
-          onChange={e => setNewSymbol(e.target.value)}
-          placeholder="Add a symbol, e.g. MSFT"
-          autoComplete="off"
-          className={cn(fieldClass, 'min-w-0 flex-1 uppercase placeholder:normal-case')}
-        />
-        <button type="submit" className="flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong">
-          <Plus className="h-4 w-4" aria-hidden="true" /> Watch
-        </button>
-      </form>
+      <div>
+        <form onSubmit={handleAdd} className="flex max-w-xl gap-2">
+          <label htmlFor="watch-symbol" className="sr-only">Company or ticker to watch</label>
+          <SymbolInput
+            id="watch-symbol"
+            value={newSymbol}
+            onChange={value => { setNewSymbol(value); symbolCheck.clearProblem(); }}
+            onSelect={value => { setNewSymbol(value); symbolCheck.clearProblem(); }}
+            placeholder="Add a company or ticker, e.g. Microsoft"
+            className={cn(fieldClass, 'w-full')}
+          />
+          <button type="submit" disabled={symbolCheck.checking} className="flex h-11 shrink-0 items-center gap-2 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong disabled:opacity-60">
+            <Plus className="h-4 w-4" aria-hidden="true" /> {symbolCheck.checking ? 'Checking…' : 'Watch'}
+          </button>
+        </form>
+        {symbolCheck.problem && <SymbolProblemNotice problem={symbolCheck.problem} onChoose={add} />}
+      </div>
 
       <section aria-label="Watched symbols">
         {watchlist.length === 0 ? (

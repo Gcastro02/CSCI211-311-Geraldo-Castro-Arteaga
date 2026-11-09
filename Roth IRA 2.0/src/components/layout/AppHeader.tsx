@@ -1,6 +1,9 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Moon, Search, Settings, Sun } from 'lucide-react';
+import { SymbolMatch, cleanSearchInput, resolveSearch } from '../../lib/symbolSearch';
 import { cn } from '../../lib/utils';
+import { searchSymbols } from '../../services/openaiService';
+import { SymbolInput } from '../ui/SymbolInput';
 
 export const APP_NAME = 'Paper Trail';
 
@@ -29,13 +32,24 @@ interface AppHeaderProps {
 
 export function AppHeader({ activeTab, onNavigate, onSearch, theme, onToggleTheme, levelLabel }: AppHeaderProps) {
   const [query, setQuery] = useState('');
+  const latestQuery = useRef(query);
+  latestQuery.current = query;
 
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    const symbol = query.trim().toUpperCase();
-    if (!symbol) return;
+  const go = (symbol: string) => {
     onSearch(symbol);
     setQuery('');
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    const trimmed = query.trim();
+    if (!cleanSearchInput(trimmed)) return;
+    // Looked up here so a name resolves even when Enter beats the suggestions.
+    // If the lookup fails, what was typed is still tried as a ticker.
+    const found = await searchSymbols(trimmed).catch(() => [] as SymbolMatch[]);
+    // Typing on while that was looked up means they've moved on.
+    if (latestQuery.current.trim() !== trimmed) return;
+    go(resolveSearch(trimmed, found));
   };
 
   return (
@@ -72,16 +86,15 @@ export function AppHeader({ activeTab, onNavigate, onSearch, theme, onToggleThem
         </nav>
 
         <form role="search" onSubmit={handleSubmit} className="relative flex min-w-[220px] flex-[1_1_280px]">
-          <label htmlFor="ticker-search" className="sr-only">Search stocks and ETFs by ticker</label>
-          <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
-          <input
+          <label htmlFor="ticker-search" className="sr-only">Search stocks and funds by company name or ticker</label>
+          <Search className="pointer-events-none absolute left-4 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-muted" aria-hidden="true" />
+          <SymbolInput
             id="ticker-search"
             type="search"
             value={query}
-            onChange={event => setQuery(event.target.value)}
-            placeholder="Search a ticker, e.g. AAPL"
-            autoComplete="off"
-            spellCheck={false}
+            onChange={setQuery}
+            onSelect={go}
+            placeholder="Search a company or ticker, e.g. Apple"
             className="h-11 w-full rounded-full border border-edge bg-surface pl-10 pr-4 text-sm text-ink placeholder:text-muted focus:border-accent focus:outline-none"
           />
         </form>

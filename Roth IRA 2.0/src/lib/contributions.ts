@@ -135,7 +135,8 @@ export const summarizeContributions = (
 export const contributionYears = (transactions: Transaction[], currentYear: number): number[] => {
   const years = new Set<number>([currentYear]);
   transactions
-    .filter(tx => tx.type === 'CONTRIBUTION')
+    // A withdrawal only belongs to a year when tagged as correcting one.
+    .filter(tx => tx.type === 'CONTRIBUTION' || (tx.type === 'WITHDRAWAL' && tx.taxYear))
     .forEach(tx => years.add(taxYearOf(tx)));
   return Array.from(years).sort((a, b) => b - a);
 };
