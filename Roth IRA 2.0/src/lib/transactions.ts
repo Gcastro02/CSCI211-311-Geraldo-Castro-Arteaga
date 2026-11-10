@@ -24,6 +24,20 @@ export const normalizeSymbol = (symbol?: string): string => (symbol || '').trim(
 export const sortTransactions = (transactions: Transaction[]): Transaction[] =>
   [...transactions].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
 
+const TRANSACTION_TYPES: Transaction['type'][] = ['CONTRIBUTION', 'WITHDRAWAL', 'BUY', 'SELL', 'DIVIDEND'];
+
+/** Enough for replay to run on: saved entries are checked, since one bad one would stop it. */
+export const isValidTransaction = (value: unknown): value is Transaction => {
+  const tx = value as Transaction | null;
+  return Boolean(
+    tx
+      && typeof tx.id === 'string'
+      && typeof tx.date === 'string'
+      && TRANSACTION_TYPES.includes(tx.type)
+      && Number.isFinite(tx.amount),
+  );
+};
+
 interface Lot {
   shares: number;
   pricePerShare: number;

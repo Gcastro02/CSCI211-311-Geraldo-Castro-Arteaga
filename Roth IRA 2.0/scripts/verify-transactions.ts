@@ -8,6 +8,7 @@
 import {
   replayTransactions,
   applyTransaction,
+  isValidTransaction,
   reconcile,
   sharesHeld,
   sortTransactions,
@@ -210,6 +211,16 @@ console.log('\n--- contribution basis ---');
   check('basis is contributions less withdrawals', near(contributionBasis(log), 13000), `basis=${contributionBasis(log)}`);
   check('growth never adds to basis', !near(contributionBasis(log), 13400));
   check('lists every contribution year', contributionYears(log, 2026).join(',') === '2026,2025,2024');
+  check('an untagged withdrawal adds no year', contributionYears([tx({ date: '2019-01-01', type: 'WITHDRAWAL', amount: 1 })], 2026).join() === '2026');
+  check('a tagged withdrawal adds its year', contributionYears([tx({ date: '2026-01-01', type: 'WITHDRAWAL', amount: 1, taxYear: 2023 })], 2026).join() === '2026,2023');
+  const untagged = summarizeContributions([
+    tx({ date: '2026-01-01', type: 'CONTRIBUTION', amount: 5000 }),
+    tx({ date: '2026-02-01', type: 'WITHDRAWAL', amount: 2000 }),
+  ], 2026, { catchUpEligible: false, contributionLimitOverrides: {} });
+  check('an ordinary withdrawal gives back no contribution room', near(untagged.contributed, 5000));
+
+  check('saved entry: a normal one is usable', isValidTransaction(tx({ date: '2026-01-01', type: 'CONTRIBUTION', amount: 5 })));
+  check('saved entry: damaged ones are not', ![null, 5, { id: 'x' }, { id: 'x', date: '2026-01-01', type: 'NOPE', amount: 1 }, { id: 'x', date: '2026-01-01', type: 'BUY', amount: null }].some(isValidTransaction));
 }
 
 // ---------------------------------------------------------------------------

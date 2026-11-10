@@ -190,6 +190,9 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
   const [session, setSession] = useState<PracticeSession | null>(null);
   /** False until a saved session has been restored (or found unusable). */
   const [restored, setRestored] = useState(() => !scenarioOf(saved));
+  /** Prices for a saved session wouldn't load; `resumeAttempt` retries. */
+  const [resumeFailed, setResumeFailed] = useState(false);
+  const [resumeAttempt, setResumeAttempt] = useState(0);
   /** Which scenario card is loading, and any error per card. */
   const [launching, setLaunching] = useState<string | null>(null);
   const [launchError, setLaunchError] = useState<{ id: string; message: string } | null>(null);
@@ -208,9 +211,16 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
   useEffect(() => {
     if (restored || !saved || !scenario) return;
     let cancelled = false;
+    setResumeFailed(false);
     loadMarket(scenario).then(({ market }) => {
       if (cancelled) return;
-      if (market && isValidSession(saved, market)) {
+      // No prices usually means a connection problem, not a bad session, so the
+      // saved game stays put until it can be checked or the player discards it.
+      if (!market) {
+        setResumeFailed(true);
+        return;
+      }
+      if (isValidSession(saved, market)) {
         setBaseMarket(market);
         setSession(saved);
       } else {
@@ -219,7 +229,7 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
       setRestored(true);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [resumeAttempt]);
 
   useEffect(() => {
     if (!restored) return;
@@ -295,6 +305,38 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
   // ---------------------------------------------------------------------------
   // Before a session: pick a scenario.
   if (!session || !market || !scenario) {
+    if (resumeFailed) {
+      return (
+        <div className="max-w-xl py-16">
+          <h1 className="text-xl font-semibold">Couldn’t load your saved practice</h1>
+          <p className="mt-2 text-sm text-ink-2">
+            The price history didn’t load, so your game can’t be shown right now. It’s still saved. Check your connection and try again.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setResumeAttempt(n => n + 1)}
+              className="h-11 rounded-full bg-accent px-5 text-sm font-medium text-on-accent hover:bg-accent-strong"
+            >
+              Try again
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (!window.confirm('Discard your saved practice game?')) return;
+                setResumeFailed(false);
+                setScenario(null);
+                setRestored(true);
+              }}
+              className="h-11 rounded-full border border-edge px-5 text-sm font-medium text-ink hover:bg-surface"
+            >
+              Discard it and pick a scenario
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     if (!restored) {
       return (
         <p className="flex items-center gap-2 py-16 text-sm text-muted">
@@ -494,6 +536,9 @@ export function PracticeScreen({ formatCurrency, level }: PracticeScreenProps) {
 
   const submit = (side: OrderSide) => (event?: FormEvent) => {
     event?.preventDefault();
+    // Enter in the shares box while an order awaits confirmation would replace
+    // it with a buy, whatever it was. Only the confirm and cancel buttons act here.
+    if (pending) return;
     const shares = Number(sharesInput);
     const impact = orderImpact(session, market, scenario, asset.symbol, side, shares);
     if (!impact) {

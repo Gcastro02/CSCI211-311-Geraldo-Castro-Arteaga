@@ -94,7 +94,6 @@ export function ActivityScreen({
       <TransactionForm
         onSubmit={onRecord}
         symbols={symbols}
-        defaultTaxYear={contributions.selectedYear}
         accountType={accountType}
       />
 
