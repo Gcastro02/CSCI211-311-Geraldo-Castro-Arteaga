@@ -260,6 +260,10 @@ export function SettingsScreen({ settings, onUpdate, aiEnabled, formatCurrency }
           {aiEnabled && ' AI research sends the symbols you ask about to OpenAI — and, for a review of your holdings, their share counts and average costs.'}
         </p>
       </section>
+      <p className="mt-12 border-t border-line pt-4 text-xs text-muted">
+        Charts use TradingView Lightweight Charts™, © TradingView, Inc.{' '}
+        <a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">tradingview.com</a>
+      </p>
     </div>
   );
 }

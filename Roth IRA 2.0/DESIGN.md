@@ -200,6 +200,30 @@ https://claude.ai/artifact/EspVbjVyVu7YYn9BYr1BxV):
    **Paper Trail** (paper trading, plus a record of your real holdings). The
    storage keys keep their `roth_ira_*` names so existing data still loads.
 
+## Charts
+
+A Charts tab (between Watchlist and Practice) is a full-width chart workspace
+in the style of trading platforms; each stock page carries a smaller version of
+the same chart with an "Open in Charts" button. Built on TradingView's
+Lightweight Charts (Apache-2.0, credited on the chart and in Settings). One
+branch per step:
+
+1. ✅ **Interactive chart** — drag to scroll back, wheel or pinch to zoom,
+   crosshair, OHLC readout, candles or line, volume, 20/50/200 moving averages.
+   Bar sizes and the history Yahoo's free feed gives each: 1m (7 days), 5m
+   (1 month), 15m (60 days), 1h (2 years), daily (10 years), weekly and monthly
+   (all history). The latest bar follows the 15-second prices; bars reload each
+   minute while the market is open. Yahoo quirks handled: `range=max` turns any
+   bar size into 3-month bars, so all-time asks by date; weekly and monthly
+   series end with an extra point for today, folded into the current bar.
+2. **Position / risk-reward tool** — entry, stop and target dragged on the
+   chart, showing risk, reward and the ratio; usable in Practice, explained in
+   plain words for beginners.
+3. **Drawings that save** — trend lines, horizontal lines, boxes and text, per
+   stock, shared between the Charts tab and the stock page.
+4. **Session shading** — pre-market, regular hours and after-hours on intraday
+   charts.
+
 ## Decided
 
 - Practice orders fill at the simulated day's close. Next day's open is more

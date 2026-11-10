@@ -20,7 +20,8 @@
     "verify:search": "tsx scripts/verify-search.ts",
     "verify:relay": "tsx scripts/verify-relay.ts",
     "verify:live": "tsx scripts/verify-live.ts",
-    "verify": "npm run verify:indicators && npm run verify:transactions && npm run verify:history && npm run verify:practice && npm run verify:bot && npm run verify:news && npm run verify:risk && npm run verify:search && npm run verify:relay && npm run verify:live"
+    "verify:chart": "tsx scripts/verify-chart.ts",
+    "verify": "npm run verify:indicators && npm run verify:transactions && npm run verify:history && npm run verify:practice && npm run verify:bot && npm run verify:news && npm run verify:risk && npm run verify:search && npm run verify:relay && npm run verify:live && npm run verify:chart"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
@@ -28,6 +29,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
+    "lightweight-charts": "5.2.1",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
     "react": "^19.0.0",
