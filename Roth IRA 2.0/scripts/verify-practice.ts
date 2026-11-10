@@ -258,6 +258,7 @@ const multi: PracticeScenario = {
   check('a saved session that fits the market is accepted', isValidSession(session, market));
   check('a saved session past the last day is rejected', !isValidSession({ ...session, day: 99 }, market));
   check('garbage is rejected', !isValidSession({ foo: 1 }, market) && !isValidSession(null, market));
+  check('a session with a damaged trade is rejected', !isValidSession({ ...session, transactions: [null] }, market));
 }
 
 // ---------------------------------------------------------------------------

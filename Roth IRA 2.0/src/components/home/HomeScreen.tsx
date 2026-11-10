@@ -8,6 +8,7 @@ import { getStockPriceHistory } from '../../services/openaiService';
 import { cn, parseDay } from '../../lib/utils';
 import { Change } from '../ui/Change';
 import { LineChart } from '../ui/LineChart';
+import { PriceFreshness, PriceStatus } from '../ui/PriceStatus';
 import type { Tab } from '../layout/AppHeader';
 
 export interface IndexQuote {
@@ -53,6 +54,7 @@ interface HomeScreenProps {
   formatCurrency: (amount: number) => string;
   formatDate: (date?: string) => string;
   level: ExperienceLevel;
+  priceStatus: PriceFreshness;
 }
 
 export function HomeScreen({
@@ -74,6 +76,7 @@ export function HomeScreen({
   formatCurrency,
   formatDate,
   level,
+  priceStatus,
 }: HomeScreenProps) {
   const [range, setRange] = useState<ChartRange>('6M');
   const [histories, setHistories] = useState<Partial<Record<ChartRange, Record<string, PriceData[]>>>>({});
@@ -249,6 +252,7 @@ export function HomeScreen({
               )}
               Tracking only — trades happen at your broker
             </p>
+            <PriceStatus status={priceStatus} className="mt-1" />
 
             {hasHoldings ? (
               <>

@@ -27,6 +27,7 @@ export interface RelayResponse {
  */
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_PROMPT_CHARS = 20_000;
+const REQUEST_TIMEOUT_MS = 60_000;
 
 export const createAiRelay = ({ apiKey, model, requestsPerWindow = 30 }: AiRelayOptions) => {
   const requestLog = new Map<string, number[]>();
@@ -81,6 +82,8 @@ export const createAiRelay = ({ apiKey, model, requestsPerWindow = 30 }: AiRelay
           ],
           temperature: 0.2,
         }),
+        // A hung request would leave the app's "Writing research…" spinning for good.
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
 
       const payload = await upstream.json();

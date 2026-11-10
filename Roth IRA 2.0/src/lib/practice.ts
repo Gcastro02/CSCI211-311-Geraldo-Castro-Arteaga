@@ -16,7 +16,7 @@
 
 import { PriceData, Transaction } from '../types';
 import { isFund } from './funds';
-import { replayTransactions } from './transactions';
+import { isValidTransaction, replayTransactions } from './transactions';
 
 export interface ScenarioAsset {
   symbol: string;
@@ -492,6 +492,7 @@ export const isValidSession = (value: unknown, market: PracticeMarket): value is
       && session.day >= 0
       && session.day < market.dates.length
       && Array.isArray(session.transactions)
-      && session.transactions.length > 0,
+      && session.transactions.length > 0
+      && session.transactions.every(isValidTransaction),
   );
 };

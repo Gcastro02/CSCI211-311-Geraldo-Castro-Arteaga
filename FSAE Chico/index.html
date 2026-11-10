@@ -157,6 +157,26 @@
       display:grid; place-items:center;
     }
 
+    /* Mobile menu button (shown under 980px) */
+    .menu-toggle{
+      display:none;
+      align-content:center;
+      gap:4px;
+      padding:0;
+      color:var(--text);
+      cursor:pointer;
+    }
+    .menu-toggle span{
+      display:block;
+      width:18px; height:2px;
+      border-radius:2px;
+      background:currentColor;
+      transition:.2s transform, .2s opacity;
+    }
+    .menu-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+    .menu-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}
+    .menu-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
     /* Hero */
     .hero{
       position: relative;
@@ -553,7 +573,25 @@
       .gallery{grid-template-columns: 1fr}
       .footer-inner{grid-template-columns: 1fr}
       .footer-right{justify-content:flex-start}
-      .nav{display:none;} /* simple mobile behavior */
+      .brand, .header-actions{min-width:0}
+      .menu-toggle{display:grid}
+      .nav{
+        display:none;
+        position:absolute; top:100%; left:0; right:0;
+        flex-direction:column; align-items:stretch; gap:0;
+        padding:6px 22px 14px;
+        background: rgba(7,7,9,.97);
+        border-bottom:1px solid rgba(216,69,61,.25);
+      }
+      .nav.open{display:flex}
+      .nav a{padding:14px 0; border-bottom:1px solid rgba(255,255,255,.06)}
+      .nav a:last-child{border-bottom:0}
+      .nav a.active{color:var(--yellow)}
+      .nav a.active::after{display:none}
+    }
+    @media (max-width: 520px){
+      .brand span{display:none}
+      .header-actions .btn{display:none} /* Join Team is also in the hero */
     }
   </style>
 </head>
@@ -572,7 +610,7 @@
         </div>
       </a>
 
-      <nav class="nav" aria-label="Primary">
+      <nav class="nav" id="primary-nav" aria-label="Primary">
         <a href="#home" class="active">Home</a>
         <a href="#portfolio">Portfolio Page</a>
         <a href="#groups">Groups</a>
@@ -586,6 +624,9 @@
           <span class="mono">@</span>
         </a>
         <a class="btn btn-primary" href="#join">Join Team</a>
+        <button class="iconbtn menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
   </header>
@@ -806,7 +847,8 @@
           or a partner looking to support the next generation of engineers—your journey starts here.
         </p>
         <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
-          <a class="btn btn-primary" href="partners.html">PARTNER WITH US</a>
+          <a class="btn btn-primary" href="https://instagram.com/chico_state_formula" target="_blank" rel="noopener noreferrer">JOIN THE TEAM — MESSAGE US</a>
+          <a class="btn" href="partners.html">PARTNER WITH US</a>
         </div>
       </div>
     </div>
@@ -874,6 +916,18 @@
     };
     window.addEventListener("scroll", setActive, {passive:true});
     setActive();
+
+    // Mobile menu
+    const nav = document.getElementById("primary-nav");
+    const menuToggle = document.querySelector(".menu-toggle");
+    const setMenu = (open) => {
+      nav.classList.toggle("open", open);
+      menuToggle.setAttribute("aria-expanded", open);
+      menuToggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    };
+    menuToggle.addEventListener("click", () => setMenu(!nav.classList.contains("open")));
+    navLinks.forEach(a => a.addEventListener("click", () => setMenu(false)));
+    document.addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
 
     // Reveal on scroll
     const revealEls = document.querySelectorAll(".reveal");

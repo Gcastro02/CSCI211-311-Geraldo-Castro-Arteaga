@@ -1,6 +1,9 @@
 import { StockAnalysis, MarketSuggestion, StockHolding, NewsItem, UserSettings, PriceData } from "../types";
 import { TechnicalSnapshot, computeIndicators, describeTechnicals } from "../lib/indicators";
 import { readingLevelInstruction } from "../lib/level";
+import { normalizeAnalysis, normalizeSuggestion } from "../lib/aiResponses";
+import { SymbolMatch, cleanSearchInput, pickSymbolMatches } from "../lib/symbolSearch";
+import { LiveQuote, MarketSession, parseSparkQuotes, toBatches } from "../lib/liveQuotes";
 
 /**
  * The account-type context matters more than it might look. Without it the
@@ -267,7 +270,13 @@ const chatJson = async <T>(prompt: string, settings: UserSettings): Promise<T> =
     throw new Error(payload?.error || `AI request failed: ${response.status}`);
   }
 
-  return extractJson<T>(payload?.content || "");
+  try {
+    const parsed = extractJson<T>(payload?.content || "");
+    if (parsed && typeof parsed === "object") return parsed;
+  } catch {
+    // Falls through: the parser's own message means nothing to a reader.
+  }
+  throw new Error("The AI sent back a reply the app couldn't read. Try again.");
 };
 
 export interface Quote {
@@ -286,6 +295,8 @@ export interface Quote {
   marketTime?: string;
   /** Yahoo's instrument type says ETF or mutual fund. Undefined when it says nothing. */
   isFund?: boolean;
+  /** The current or most recent regular trading session. */
+  session?: MarketSession;
 }
 
 /** A positive finite number, or undefined. */
@@ -314,6 +325,8 @@ const fetchYahooQuote = async (symbol: string): Promise<Quote | null> => {
   if (!Number.isFinite(price) || price <= 0) return null;
 
   const marketSeconds = positive(meta?.regularMarketTime);
+  const sessionStart = positive(meta?.currentTradingPeriod?.regular?.start);
+  const sessionEnd = positive(meta?.currentTradingPeriod?.regular?.end);
   return {
     price,
     previousClose: positive(meta?.chartPreviousClose ?? meta?.previousClose) ?? null,
@@ -327,7 +340,36 @@ const fetchYahooQuote = async (symbol: string): Promise<Quote | null> => {
     volume: positive(meta?.regularMarketVolume),
     marketTime: marketSeconds ? new Date(marketSeconds * 1000).toISOString() : undefined,
     isFund: meta?.instrumentType ? ['ETF', 'MUTUALFUND'].includes(String(meta.instrumentType).toUpperCase()) : undefined,
+    session: sessionStart && sessionEnd ? { start: sessionStart, end: sessionEnd } : undefined,
   };
+};
+
+/**
+ * Current prices for many symbols in one request per batch, which is what makes
+ * refreshing every few seconds reasonable. A failed batch is skipped, so a
+ * caller gets whatever came back; an empty result means nothing did.
+ */
+export const getLiveQuotes = async (symbols: string[]): Promise<Record<string, LiveQuote>> => {
+  // Answers come back under Yahoo's spelling ("BRK-B"), the app's may differ ("BRK.B").
+  const appSymbol = new Map(symbols.map((symbol) => [normalizeToYahooSymbol(symbol), symbol]));
+  const yahooSymbols = Array.from(appSymbol.keys()).filter(Boolean);
+  const quotes: Record<string, LiveQuote> = {};
+
+  await Promise.all(toBatches(yahooSymbols).map(async (batch) => {
+    try {
+      const response = await fetch(
+        getYahooUrl(`/v8/finance/spark?symbols=${batch.map(encodeURIComponent).join(",")}&range=1d&interval=1d`),
+      );
+      if (!response.ok) return;
+      for (const [yahooSymbol, quote] of Object.entries(parseSparkQuotes(await response.json()))) {
+        quotes[appSymbol.get(yahooSymbol) ?? yahooSymbol] = quote;
+      }
+    } catch {
+      // Treated as no answer; the caller reports when nothing is coming back.
+    }
+  }));
+
+  return quotes;
 };
 
 /** Price plus previous close, or null when unavailable. */
@@ -386,6 +428,9 @@ export const getTechnicals = async (symbol: string): Promise<TechnicalSnapshot |
 
 // Same reason as the Yahoo proxy above: the RSS host sends no CORS headers.
 const YAHOO_RSS_BASE_URL = "/yahoo-rss";
+
+/** Feed links end up in an href, where any other scheme could run code. */
+const isWebLink = (url: unknown) => typeof url === "string" && /^https?:\/\//i.test(url);
 
 /** Publishers by web address, for RSS items, which name only the link. */
 const PUBLISHERS_BY_HOST: Record<string, string> = {
@@ -456,7 +501,41 @@ const fetchYahooRss = async (tickers: string): Promise<NewsItem[]> => {
         date: Number.isFinite(published) ? new Date(published).toISOString() : undefined,
       };
     })
-    .filter((item) => item.title && item.url);
+    .filter((item) => item.title && isWebLink(item.url));
+};
+
+/**
+ * Stocks and funds matching a company name, a ticker or a near miss of either.
+ * Yahoo's free lookup; throws when it can't be reached, so a caller can tell
+ * "nothing matches" from "couldn't check".
+ */
+export const searchSymbols = async (query: string): Promise<SymbolMatch[]> => {
+  // Tidied first: Yahoo finds neither MSFT from "$msft" nor BRK-B from "brk b".
+  const trimmed = cleanSearchInput(query);
+  if (!trimmed) return [];
+  const response = await fetch(
+    getYahooUrl(`/v1/finance/search?q=${encodeURIComponent(trimmed)}&quotesCount=10&newsCount=0`),
+  );
+  if (!response.ok) throw new Error(`Symbol lookup failed: ${response.status}`);
+  const payload = await response.json();
+  return pickSymbolMatches(payload?.quotes);
+};
+
+/**
+ * Whether a typed symbol is real, before something saves it. A quote is the
+ * proof, since it's what the app needs later anyway. Otherwise `matches` holds
+ * what might have been meant, and `lookupFailed` says the answer is "couldn't
+ * check", not "doesn't exist".
+ */
+export const checkSymbol = async (
+  typed: string,
+): Promise<{ symbol?: string; matches: SymbolMatch[]; lookupFailed: boolean }> => {
+  if (await getQuote(typed)) return { symbol: typed, matches: [], lookupFailed: false };
+  try {
+    return { matches: await searchSymbols(typed), lookupFailed: false };
+  } catch {
+    return { matches: [], lookupFailed: true };
+  }
 };
 
 /** Yahoo's search endpoint: publisher names and tagged tickers, but no summaries. */
@@ -472,7 +551,7 @@ const fetchYahooSearchNews = async (query: string): Promise<NewsItem[]> => {
   const rawItems: any[] = Array.isArray(payload?.news) ? payload.news : [];
 
   return rawItems
-    .filter((item) => item?.title && item?.link)
+    .filter((item) => item?.title && isWebLink(item?.link))
     .map((item) => {
       const publishedSeconds = Number(item.providerPublishTime);
       return {
@@ -577,8 +656,8 @@ export const analyzePortfolio = async (holdings: StockHolding[], settings: UserS
 
   const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","recommendation":"BUY|SELL|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}]}.\nAnalyze these holdings for ${accountPhrase(settings)} (${horizonText}): ${JSON.stringify(holdings)}.${technicalsPromptBlock(snapshots)}`;
 
-  const data = await chatJson<{ items?: StockAnalysis[] }>(prompt, settings);
-  return Array.isArray(data.items) ? data.items : [];
+  const data = await chatJson<{ items?: unknown[] }>(prompt, settings);
+  return (Array.isArray(data.items) ? data.items : []).map((item) => normalizeAnalysis(item)).filter((item) => item !== null);
 };
 
 export const getMarketSuggestions = async (settings: UserSettings): Promise<MarketSuggestion[]> => {
@@ -587,8 +666,8 @@ export const getMarketSuggestions = async (settings: UserSettings): Promise<Mark
     : settings.investmentHorizon.toLowerCase().replace("_", "-");
 
   const prompt = `Return ONLY JSON in this format: {"items": [{"symbol":"","name":"","reason":"","trend":"","keyFactors":["",""]}]}.\nSuggest 5 stocks or ETFs for growth in ${accountPhrase(settings)} for ${horizonText}.`;
-  const data = await chatJson<{ items?: MarketSuggestion[] }>(prompt, settings);
-  return Array.isArray(data.items) ? data.items : [];
+  const data = await chatJson<{ items?: unknown[] }>(prompt, settings);
+  return (Array.isArray(data.items) ? data.items : []).map(normalizeSuggestion).filter((item) => item !== null);
 };
 
 export const analyzeWatchlistStock = async (symbol: string, settings: UserSettings): Promise<StockAnalysis> => {
@@ -599,12 +678,8 @@ export const analyzeWatchlistStock = async (symbol: string, settings: UserSettin
   const snapshots = await collectTechnicals([symbol]);
 
   const prompt = `Return ONLY JSON in this format: {"item": {"symbol":"","recommendation":"BUY|HOLD","reasoning":"","riskLevel":"LOW|MEDIUM|HIGH","metrics":{"peRatio":"","marketCap":"","dividendYield":""},"projectedGrowth":"","keyFactors":["",""]}}.\nAnalyze ${symbol} as a potential addition to ${accountPhrase(settings)} for ${horizonText}.${technicalsPromptBlock(snapshots)}`;
-  const data = await chatJson<{ item?: StockAnalysis }>(prompt, settings);
-
-  return data.item || {
-    symbol,
-    recommendation: "HOLD",
-    reasoning: "No analysis returned.",
-    riskLevel: "MEDIUM",
-  };
+  const data = await chatJson<{ item?: unknown }>(prompt, settings);
+  const analysis = normalizeAnalysis(data.item, symbol);
+  if (!analysis) throw new Error(`The AI didn't return usable research for ${symbol}. Try again.`);
+  return analysis;
 };

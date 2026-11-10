@@ -209,6 +209,10 @@ https://claude.ai/artifact/EspVbjVyVu7YYn9BYr1BxV):
   selling or options for now.
 - AI research runs only when the user asks for it, and each result is kept
   for a week, since every request costs money.
+- Prices are near live, not streamed: every 15 seconds while the market is open
+  and the tab is visible, in one batched request to Yahoo's free feed. Every
+  price screen says how fresh it is and warns when updates stop. Yahoo's feed is
+  unofficial, so a public release with real users needs a licensed data provider.
 
 ## Open questions
 
