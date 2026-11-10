@@ -357,8 +357,13 @@ export const getLiveQuotes = async (symbols: string[]): Promise<Record<string, L
 
   await Promise.all(toBatches(yahooSymbols).map(async (batch) => {
     try {
+      // Yahoo marks these responses cacheable for 45 seconds, and both the browser
+      // and Yahoo's own servers would replay an identical request from cache, so a
+      // 15-second refresh could show prices up to a minute old. A unique address
+      // per request gets a fresh answer.
       const response = await fetch(
-        getYahooUrl(`/v8/finance/spark?symbols=${batch.map(encodeURIComponent).join(",")}&range=1d&interval=1d`),
+        getYahooUrl(`/v8/finance/spark?symbols=${batch.map(encodeURIComponent).join(",")}&range=1d&interval=1d&_=${Date.now()}`),
+        { cache: "no-store" },
       );
       if (!response.ok) return;
       for (const [yahooSymbol, quote] of Object.entries(parseSparkQuotes(await response.json()))) {
