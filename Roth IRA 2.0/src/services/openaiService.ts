@@ -4,6 +4,7 @@ import { readingLevelInstruction } from "../lib/level";
 import { normalizeAnalysis, normalizeSuggestion } from "../lib/aiResponses";
 import { SymbolMatch, cleanSearchInput, pickSymbolMatches } from "../lib/symbolSearch";
 import { LiveQuote, MarketSession, parseSparkQuotes, toBatches } from "../lib/liveQuotes";
+import { ChartInterval, foldTrailingPoint, isIntraday } from "../lib/chartData";
 
 /**
  * The account-type context matters more than it might look. Without it the
@@ -187,8 +188,11 @@ const fetchYahooPriceHistory = async (
   const { range, interval } = getYahooRangeAndInterval(selectedRange);
   const isIntraday = selectedRange === "1D";
 
+  // Yahoo turns range=max into 3-month bars whatever interval is asked for, so
+  // "all time" asks by date instead.
+  const span = range === "max" ? `period1=0&period2=${Math.floor(Date.now() / 1000)}` : `range=${range}`;
   const response = await fetch(
-    getYahooUrl(`/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?range=${range}&interval=${interval}`),
+    getYahooUrl(`/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?${span}&interval=${interval}`),
   );
   if (!response.ok) return [];
 
@@ -202,6 +206,26 @@ const fetchYahooPriceHistory = async (
 
   const deduped = dedupeByDate(rows);
   return sample ? sampleEvenly(deduped, 30) : deduped;
+};
+
+/**
+ * Every bar Yahoo has for a symbol at one bar size, oldest first, for the
+ * Charts tab. Unsampled: the chart itself handles thousands of bars. Asked
+ * fresh each time (Yahoo marks these cacheable), since the latest bar is the
+ * one being watched.
+ */
+export const getChartBars = async (symbol: string, interval: ChartInterval): Promise<PriceData[]> => {
+  const yahooSymbol = normalizeToYahooSymbol(symbol);
+  if (!yahooSymbol) return [];
+  const span = interval.yahoo.fromStart
+    ? `period1=0&period2=${Math.floor(Date.now() / 1000)}`
+    : `range=${interval.yahoo.range}`;
+  const response = await fetch(
+    getYahooUrl(`/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?${span}&interval=${interval.yahoo.interval}&_=${Date.now()}`),
+    { cache: "no-store" },
+  );
+  if (!response.ok) return [];
+  return foldTrailingPoint(dedupeByDate(parseChartBars(await response.json(), { isIntraday: isIntraday(interval) })), interval);
 };
 
 /**
