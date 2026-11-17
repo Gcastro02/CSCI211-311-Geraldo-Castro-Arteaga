@@ -9,7 +9,8 @@ import { getQuote, getStockNews, getStockPriceHistory, getTechnicals, searchSymb
 import { cn, parseDay } from '../../lib/utils';
 import { Change } from '../ui/Change';
 import { PriceFreshness, PriceStatus } from '../ui/PriceStatus';
-import { LineChart, type LinePoint } from '../ui/LineChart';
+import { type LinePoint } from '../ui/LineChart';
+import { PriceChart } from '../charts/PriceChart';
 import { TechnicalsPanel } from '../TechnicalsPanel';
 import { explainMode, showsPlainSummary, type ExplainMode } from '../../lib/level';
 import type { Tab } from '../layout/AppHeader';
@@ -46,6 +47,8 @@ interface StockScreenProps {
   settings: UserSettings;
   onNavigate: (tab: Tab) => void;
   onOpenStock: (symbol: string) => void;
+  /** Opens this symbol in the Charts tab. */
+  onOpenChart: (symbol: string) => void;
   formatCurrency: (amount: number) => string;
   formatDate: (date?: string) => string;
   level: ExperienceLevel;
@@ -74,6 +77,7 @@ export function StockScreen({
   settings,
   onNavigate,
   onOpenStock,
+  onOpenChart,
   formatCurrency,
   formatDate,
   level,
@@ -213,13 +217,6 @@ export function StockScreen({
     : null;
   const rangeCaption = RANGES.find(r => r.id === range)!.caption;
 
-  const chartDate = (value: string) => {
-    if (range === '1D') return new Date(value).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    const day = parseDay(value);
-    if (range === 'MAX') return String(day.getFullYear());
-    if (range === '1Y' || range === '5Y') return day.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    return day.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
 
   const quotedAt = live?.time ? new Date(live.time * 1000) : quote?.marketTime ? new Date(quote.marketTime) : null;
   const asOf = quotedAt
@@ -410,7 +407,14 @@ export function StockScreen({
                 </button>
               ))}
             </div>
-            <div role="group" aria-label="Chart style" className="ml-auto flex rounded-full border border-edge p-0.5 text-xs font-medium">
+            <button
+              type="button"
+              onClick={() => onOpenChart(symbol)}
+              className="ml-auto h-8 rounded-full px-3 text-xs font-medium text-accent hover:bg-surface"
+            >
+              Open in Charts
+            </button>
+            <div role="group" aria-label="Chart style" className="flex rounded-full border border-edge p-0.5 text-xs font-medium">
               {(['LINE', 'CANDLES'] as const).map(mode => (
                 <button
                   key={mode}
@@ -440,14 +444,15 @@ export function StockScreen({
                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> Loading chart…
               </div>
             ) : (
-              <LineChart
-                points={points}
+              <PriceChart
+                bars={bars}
+                intraday={range === '1D'}
+                style={chartMode === 'CANDLES' ? 'candles' : 'line'}
+                dataKey={`${symbol}|${range}`}
                 height={300}
-                mode={chartMode === 'CANDLES' ? 'candles' : 'line'}
                 baseline={range === '1D' ? quote?.previousClose ?? undefined : undefined}
                 ariaLabel={`${symbol} price, ${rangeCaption}`}
-                formatValue={formatCurrency}
-                formatDate={chartDate}
+                formatPrice={formatCurrency}
               />
             )}
           </div>

@@ -176,3 +176,10 @@ Contribution tracking is a convenience, not a compliance tool. It does not know
 your income, your other IRAs, or your filing status — all of which affect how
 much you may actually contribute. Confirm limits and eligibility against IRS
 Publication 590-A or a tax professional before acting on anything here.
+
+## Credits
+
+Charts use [TradingView Lightweight Charts™](https://www.tradingview.com/lightweight-charts/)
+(Apache-2.0). Copyright © TradingView, Inc. <https://www.tradingview.com/>. The
+license asks for this notice and a link to tradingview.com where users can see
+it: the chart shows TradingView's logo, and Settings carries the notice.

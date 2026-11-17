@@ -6,7 +6,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Info, X, CheckCircle2 } from 'lucide-react';
-import { localIsoDate, parseDay } from './lib/utils';
+import { cn, localIsoDate, parseDay } from './lib/utils';
 import {
   PortfolioData,
   StockHolding,
@@ -45,6 +45,7 @@ import { ActivityScreen } from './components/activity/ActivityScreen';
 import { DiscoverScreen } from './components/discover/DiscoverScreen';
 import { NEWS_SOURCES, SettingsScreen } from './components/settings/SettingsScreen';
 import { PracticeScreen } from './components/practice/PracticeScreen';
+import { ChartsScreen } from './components/charts/ChartsScreen';
 import { OnboardingScreen } from './components/onboarding/OnboardingScreen';
 import { levelLabel } from './lib/level';
 
@@ -237,6 +238,8 @@ export default function App() {
       || watchlist[0]?.symbol?.trim().toUpperCase()
       || 'AAPL';
   });
+  /** The Charts tab's symbol; it starts on whatever stock was last opened. */
+  const [chartSymbol, setChartSymbol] = useState(detailedSymbol);
   const priceRefreshKey = trackedSymbols.join('|');
 
   // Same guard for indicator fetches: a symbol with too little history never
@@ -501,12 +504,23 @@ export default function App() {
   };
 
   const updateAllPrices = async (showNotification = true) => {
-    if (trackedSymbols.length === 0) return;
+    const indexSymbols = MARKET_INDICES.map(index => index.symbol);
+    if (trackedSymbols.length === 0) {
+      // Nothing tracked: the timed refresh still keeps the indexes (Home's strip,
+      // Charts' market list) current. A button press has nothing to report.
+      if (showNotification) return;
+      const { prices, previous } = await fetchQuotes(indexSymbols);
+      setCurrentPrices(prev => ({ ...prev, ...prices }));
+      setPreviousCloses(prev => ({ ...prev, ...previous }));
+      return;
+    }
 
     setIsUpdatingPrices(true);
     try {
-      const { prices, previous } = await fetchQuotes(trackedSymbols);
-      setCurrentPrices(prev => ({ ...prev, ...prices }));
+      const { prices: fetched, previous } = await fetchQuotes([...trackedSymbols, ...indexSymbols]);
+      // The indexes ride along for display; the count and alerts are about your stocks.
+      const prices = Object.fromEntries(Object.entries(fetched).filter(([symbol]) => trackedSymbols.includes(symbol)));
+      setCurrentPrices(prev => ({ ...prev, ...fetched }));
       setPreviousCloses(prev => ({ ...prev, ...previous }));
 
       // Every refresh is also an alert check — otherwise a target could be hit
@@ -541,6 +555,7 @@ export default function App() {
       ...trackedSymbols,
       ...MARKET_INDICES.map(index => index.symbol),
       ...(activeTab === 'detailed' ? [detailedSymbol] : []),
+      ...(activeTab === 'charts' ? [chartSymbol] : []),
     ]));
     const live = await getLiveQuotes(symbols);
     const received = Object.keys(live);
@@ -873,6 +888,11 @@ export default function App() {
     setActiveTab('detailed');
   };
 
+  const openChart = (symbol: string) => {
+    setChartSymbol(symbol.trim().toUpperCase());
+    setActiveTab('charts');
+  };
+
   // First launch, or settings saved before levels existed: ask before anything else.
   if (!settings.experienceLevel) {
     return <OnboardingScreen onChoose={level => setSettings(prev => ({ ...prev, experienceLevel: level }))} />;
@@ -917,7 +937,8 @@ export default function App() {
         levelLabel={levelLabel(level)}
       />
 
-      <main className="mx-auto max-w-7xl px-4 pb-16 pt-8 sm:px-6">
+      {/* Charts uses the full width, like a trading platform's chart workspace. */}
+      <main className={cn('mx-auto px-4 pb-16 sm:px-6', activeTab === 'charts' ? 'max-w-[1800px] pt-5' : 'max-w-7xl pt-8')}>
         {activeTab === 'home' ? (
           <HomeScreen
             level={level}
@@ -960,6 +981,7 @@ export default function App() {
             settings={settings}
             onNavigate={setActiveTab}
             onOpenStock={openStock}
+            onOpenChart={openChart}
             formatCurrency={formatCurrency}
             formatDate={formatDate}
           />
@@ -1028,6 +1050,18 @@ export default function App() {
             }}
             formatCurrency={formatCurrency}
             formatDate={formatDate}
+          />
+        ) : activeTab === 'charts' ? (
+          <ChartsScreen
+            symbol={chartSymbol}
+            onSymbolChange={setChartSymbol}
+            symbols={trackedSymbols}
+            prices={currentPrices}
+            previousCloses={previousCloses}
+            live={liveQuotes[chartSymbol]}
+            priceStatus={priceStatus}
+            onOpenStock={openStock}
+            formatCurrency={formatCurrency}
           />
         ) : activeTab === 'practice' ? (
           <PracticeScreen formatCurrency={formatCurrency} level={level} />
